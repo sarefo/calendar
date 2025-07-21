@@ -263,14 +263,13 @@ class CalendarGenerator:
         # Get calendar grid from week calculator
         grid_data = self.week_calculator.generate_calendar_grid(year, month)
         
-        # Load location data from README.md if not provided
-        if not location_data:
-            readme_location = self._load_location_from_readme(year, month)
-            location_data = {
-                **readme_location,
-                "website_url": "https://sarefo.github.io/calendar/",
-                "photographer_name": "Photographer"
-            }
+        # Always load location data from README.md
+        readme_location = self._load_location_from_readme(year, month)
+        location_data = {
+            **readme_location,
+            "website_url": "https://sarefo.github.io/calendar/",
+            "photographer_name": "Photographer"
+        }
         
         # Default photo directories using new structure
         if not photo_dirs:

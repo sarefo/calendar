@@ -97,24 +97,10 @@ class CalendarBuilder:
             return {"success": False, "reason": "insufficient_photos"}
         
         try:
-            # Load location data
-            location_data = None
-            if locations_file and Path(locations_file).exists():
-                with open(locations_file, 'r') as f:
-                    all_locations = json.load(f)
-                    month_key = f"{year}-{month:02d}"
-                    location_data = all_locations.get(month_key, {
-                        "location": f"Month {month}, {year}",
-                        "coordinates": "0°N, 0°E",
-                        "website_url": "https://sarefo.github.io/calendar/",
-                        "photographer_name": "Photographer"
-                    })
-            # If no locations file provided, let calendar generator read from README.md
+            # Location data will be automatically loaded from README.md by calendar generator
             
             # Generate QR code
             base_url = "https://sarefo.github.io/calendar/"
-            if location_data:
-                base_url = location_data.get("website_url", base_url)
             qr_file = self.qr_gen.generate_calendar_qr(
                 year, month, base_url,
                 f"{output_dir}/assets"
@@ -122,10 +108,7 @@ class CalendarBuilder:
             print(f"✅ Generated QR code: {qr_file}")
             
             # Generate world map
-            # Get location data for map generation (from README if location_data is None)
-            map_location_data = location_data
-            if not map_location_data:
-                map_location_data = self.calendar_gen._load_location_from_readme(year, month)
+            map_location_data = self.calendar_gen._load_location_from_readme(year, month)
             map_file = self.map_gen.save_map_svg(
                 map_location_data,
                 f"{output_dir}/assets/map-{year}-{month:02d}.svg"
@@ -140,7 +123,7 @@ class CalendarBuilder:
                 autoescape=select_autoescape(['html', 'xml'])
             )
             html_file = self.calendar_gen.generate_calendar_page(
-                year, month, location_data,
+                year, month, None,
                 photo_dirs=[f"photos/{year}/{month:02d}"],
                 output_dir=output_dir,
                 use_absolute_paths=False
@@ -154,7 +137,7 @@ class CalendarBuilder:
                 "html_file": html_file,
                 "qr_file": qr_file,
                 "map_file": map_file,
-                "location": location_data.get("location", f"Month {month}") if location_data else map_location_data.get("location", f"Month {month}")
+                "location": map_location_data.get("location", f"Month {month}")
             }
             
             # Generate PDF if requested
@@ -274,7 +257,7 @@ def main():
     parser.add_argument('--month', type=int, help="Specific month to build (1-12)")
     parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3')")
     parser.add_argument('--config', help="Path to calendar configuration file")
-    parser.add_argument('--locations', default="data/locations.json", help="Location data file")
+    parser.add_argument('--locations', help="Location data file")
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
     parser.add_argument('--check-photos', action='store_true', help="Only check photo availability")
