@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="200" viewBox="0 0 400 200" 
+     xmlns="http://www.w3.org/2000/svg">
+    
+    <!-- Background -->
+    <rect width="400" height="200" fill="#F8FAFE" stroke="#E1E8ED" stroke-width="1"/>
+    
+    <!-- World outline -->
+    <g class="world-continents">
+        
+        <!-- North America -->
+        <path d="M50,40 Q60,30 80,35 L100,30 Q120,35 140,40 L145,50 Q140,60 130,65 L120,75 Q100,80 80,75 L70,70 Q55,65 50,55 Z" 
+              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
+        
+        <!-- South America -->
+        <path d="M90,90 Q95,85 105,90 L110,110 Q108,130 105,140 L100,150 Q95,155 90,150 L85,140 Q82,120 85,100 Z" 
+              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
+        
+        <!-- Europe -->
+        <path d="M180,35 Q190,30 200,35 L205,40 Q200,50 195,45 L185,45 Q180,40 180,35 Z" 
+              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
+        
+        <!-- Africa -->
+        <path d="M170,55 Q180,50 190,55 L195,70 Q190,90 185,110 L180,120 Q175,125 170,120 L165,110 Q160,90 165,70 Z" 
+              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
+        
+        <!-- Asia -->
+        <path d="M200,30 Q230,25 260,35 L290,40 Q310,45 320,50 L325,60 Q320,70 310,75 L280,80 Q250,75 220,70 L210,60 Q200,50 200,40 Z" 
+              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
+        
+        <!-- Australia -->
+        <path d="M280,120 Q290,115 300,120 L305,125 Q300,135 295,130 L285,130 Q280,125 280,120 Z" 
+              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
+        
+    </g>
+    
+    <!-- Location marker -->
+    
+        <!-- Location marker for  -->
+        <g class="location-marker">
+            <circle cx="200.0" cy="100.0" r="3" fill="#E74C3C" stroke="white" stroke-width="1"/>
+            <circle cx="200.0" cy="100.0" r="1.5" fill="white"/>
+        </g>
+        
+    
+    <!-- Grid lines (optional, subtle) -->
+    <defs>
+        <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#E8E8E8" stroke-width="0.25" opacity="0.5"/>
+        </pattern>
+    </defs>
+    <rect width="400" height="200" fill="url(#grid)" opacity="0.3"/>
+    
+</svg>

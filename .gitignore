@@ -5,7 +5,6 @@ __pycache__/
 *.so
 
 # Calendar production temporary files
-calendar-production/output/
 calendar-production/test_*.html
 calendar-production/test_*.pdf
 

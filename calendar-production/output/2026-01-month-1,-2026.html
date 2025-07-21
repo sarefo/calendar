@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>January 2026 - Month 1, 2026</title>
+    <link rel="stylesheet" href="print_styles.css">
+    <style>
+        /* Print-specific styles for A3 landscape */
+        @page {
+            size: A3 landscape;
+            margin: 0;
+            bleed: 3mm;
+        }
+        
+        .calendar-page {
+            width: 420mm;
+            height: 297mm;
+            position: relative;
+            background: white;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        /* Header section with title and world map */
+        .header {
+            height: 45mm;
+            padding: 8mm 10mm;
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .title-section {
+            flex: 1;
+        }
+        
+        .month-title {
+            font-size: 24pt;
+            font-weight: 600;
+            margin: 0 0 4mm 0;
+            letter-spacing: 0.5mm;
+        }
+        
+        .location-subtitle {
+            font-size: 14pt;
+            font-weight: 300;
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .world-map-container {
+            width: 80mm;
+            height: 30mm;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10pt;
+            text-align: center;
+        }
+        
+        /* Main calendar grid */
+        .calendar-container {
+            flex: 1;
+            padding: 5mm 10mm;
+            display: flex;
+        }
+        
+        .week-numbers {
+            width: 15mm;
+            display: flex;
+            flex-direction: column;
+            margin-right: 3mm;
+        }
+        
+        .week-number-header {
+            height: 8mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            font-weight: 600;
+            color: #7F8C8D;
+            border-bottom: 1px solid #BDC3C7;
+        }
+        
+        .week-number {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            font-weight: 500;
+            color: #7F8C8D;
+            border-bottom: 1px solid #ECF0F1;
+        }
+        
+        .calendar-grid {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .weekday-headers {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            height: 8mm;
+            border-bottom: 2px solid #2C3E50;
+        }
+        
+        .weekday-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10pt;
+            font-weight: 600;
+            color: #2C3E50;
+            text-transform: uppercase;
+            letter-spacing: 0.5mm;
+        }
+        
+        .calendar-weeks {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .calendar-week {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2mm;
+            margin-bottom: 2mm;
+        }
+        
+        .calendar-day {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 2mm;
+            overflow: hidden;
+            background: #F8F9FA;
+            border: 1px solid #E9ECEF;
+        }
+        
+        .calendar-day.previous-month,
+        .calendar-day.next-month {
+            opacity: 0.5;
+        }
+        
+        .day-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 2mm;
+        }
+        
+        .day-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 2mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .day-number {
+            font-size: 14pt;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .day-weekday {
+            font-size: 7pt;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.3mm;
+            opacity: 0.9;
+        }
+        
+        /* Footer section */
+        .footer {
+            height: 25mm;
+            padding: 5mm 10mm;
+            background: #F8F9FA;
+            border-top: 1px solid #E9ECEF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 5mm;
+        }
+        
+        .qr-code {
+            width: 15mm;
+            height: 15mm;
+            background: #2C3E50;
+            border-radius: 2mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 8pt;
+            text-align: center;
+        }
+        
+        .qr-text {
+            font-size: 9pt;
+            color: #7F8C8D;
+            line-height: 1.3;
+        }
+        
+        .branding {
+            text-align: right;
+            font-size: 9pt;
+            color: #7F8C8D;
+        }
+        
+        /* Print optimizations */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .calendar-page {
+                page-break-after: always;
+            }
+        }
+        
+        /* Crop marks for professional printing */
+        .crop-marks {
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .crop-mark {
+            position: absolute;
+            background: #000;
+        }
+        
+        .crop-mark.horizontal {
+            height: 1px;
+            width: 5mm;
+        }
+        
+        .crop-mark.vertical {
+            width: 1px;
+            height: 5mm;
+        }
+        
+        /* Top-left crop marks */
+        .crop-mark.tl-h { top: -4mm; left: -2mm; }
+        .crop-mark.tl-v { top: -4mm; left: -2mm; }
+        
+        /* Top-right crop marks */
+        .crop-mark.tr-h { top: -4mm; right: -2mm; }
+        .crop-mark.tr-v { top: -4mm; right: -2mm; }
+        
+        /* Bottom-left crop marks */
+        .crop-mark.bl-h { bottom: -4mm; left: -2mm; }
+        .crop-mark.bl-v { bottom: -4mm; left: -2mm; }
+        
+        /* Bottom-right crop marks */
+        .crop-mark.br-h { bottom: -4mm; right: -2mm; }
+        .crop-mark.br-v { bottom: -4mm; right: -2mm; }
+    </style>
+</head>
+<body>
+    <div class="calendar-page">
+        <!-- Crop marks for professional printing -->
+        <div class="crop-marks">
+            <div class="crop-mark horizontal tl-h"></div>
+            <div class="crop-mark vertical tl-v"></div>
+            <div class="crop-mark horizontal tr-h"></div>
+            <div class="crop-mark vertical tr-v"></div>
+            <div class="crop-mark horizontal bl-h"></div>
+            <div class="crop-mark vertical bl-v"></div>
+            <div class="crop-mark horizontal br-h"></div>
+            <div class="crop-mark vertical br-v"></div>
+        </div>
+        
+        <!-- Header with title and world map -->
+        <header class="header">
+            <div class="title-section">
+                <h1 class="month-title">January 2026</h1>
+                <p class="location-subtitle">Month 1, 2026</p>
+            </div>
+            <div class="world-map-container">
+                <!-- World map SVG will be inserted here -->
+                <div class="map-placeholder">
+                    📍 Month 1, 2026<br>
+                    <small>0°N, 0°E</small>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main calendar grid -->
+        <main class="calendar-container">
+            <!-- Week numbers column -->
+            <div class="week-numbers">
+                <div class="week-number-header">WK</div>
+                
+                <div class="week-number">1</div>
+                
+                <div class="week-number">2</div>
+                
+                <div class="week-number">3</div>
+                
+                <div class="week-number">4</div>
+                
+                <div class="week-number">5</div>
+                
+            </div>
+            
+            <!-- Calendar grid -->
+            <div class="calendar-grid">
+                <!-- Weekday headers -->
+                <div class="weekday-headers">
+                    
+                    <div class="weekday-header">Mon</div>
+                    
+                    <div class="weekday-header">Tue</div>
+                    
+                    <div class="weekday-header">Wed</div>
+                    
+                    <div class="weekday-header">Thu</div>
+                    
+                    <div class="weekday-header">Fri</div>
+                    
+                    <div class="weekday-header">Sat</div>
+                    
+                    <div class="weekday-header">Sun</div>
+                    
+                </div>
+                
+                <!-- Calendar weeks -->
+                <div class="calendar-weeks">
+                    
+                    <div class="calendar-week">
+                        
+                        <div class="calendar-day previous-month">
+                            
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==" alt="Photo for 2025-12-29" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Mon</div>
+                                <div class="day-number">29</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day previous-month">
+                            
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==" alt="Photo for 2025-12-30" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Tue</div>
+                                <div class="day-number">30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day previous-month">
+                            
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==" alt="Photo for 2025-12-31" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Wed</div>
+                                <div class="day-number">31</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1210046.jpg" alt="Photo for 2026-01-01" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Thu</div>
+                                <div class="day-number">1</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1210181.jpg" alt="Photo for 2026-01-02" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Fri</div>
+                                <div class="day-number">2</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1210191.jpg" alt="Photo for 2026-01-03" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sat</div>
+                                <div class="day-number">3</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1210220.jpg" alt="Photo for 2026-01-04" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sun</div>
+                                <div class="day-number">4</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="calendar-week">
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1210320.jpg" alt="Photo for 2026-01-05" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Mon</div>
+                                <div class="day-number">5</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230043.jpg" alt="Photo for 2026-01-06" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Tue</div>
+                                <div class="day-number">6</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230064.jpg" alt="Photo for 2026-01-07" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Wed</div>
+                                <div class="day-number">7</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230070.jpg" alt="Photo for 2026-01-08" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Thu</div>
+                                <div class="day-number">8</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230130.jpg" alt="Photo for 2026-01-09" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Fri</div>
+                                <div class="day-number">9</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230139.jpg" alt="Photo for 2026-01-10" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sat</div>
+                                <div class="day-number">10</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230165.jpg" alt="Photo for 2026-01-11" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sun</div>
+                                <div class="day-number">11</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="calendar-week">
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230203.jpg" alt="Photo for 2026-01-12" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Mon</div>
+                                <div class="day-number">12</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230223.jpg" alt="Photo for 2026-01-13" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Tue</div>
+                                <div class="day-number">13</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230233.jpg" alt="Photo for 2026-01-14" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Wed</div>
+                                <div class="day-number">14</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230245.jpg" alt="Photo for 2026-01-15" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Thu</div>
+                                <div class="day-number">15</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230268.jpg" alt="Photo for 2026-01-16" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Fri</div>
+                                <div class="day-number">16</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230305.jpg" alt="Photo for 2026-01-17" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sat</div>
+                                <div class="day-number">17</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230360.jpg" alt="Photo for 2026-01-18" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sun</div>
+                                <div class="day-number">18</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="calendar-week">
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230374.jpg" alt="Photo for 2026-01-19" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Mon</div>
+                                <div class="day-number">19</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230398.jpg" alt="Photo for 2026-01-20" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Tue</div>
+                                <div class="day-number">20</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1230515.jpg" alt="Photo for 2026-01-21" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Wed</div>
+                                <div class="day-number">21</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250008.jpg" alt="Photo for 2026-01-22" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Thu</div>
+                                <div class="day-number">22</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250026.jpg" alt="Photo for 2026-01-23" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Fri</div>
+                                <div class="day-number">23</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250037.jpg" alt="Photo for 2026-01-24" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sat</div>
+                                <div class="day-number">24</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250087.jpg" alt="Photo for 2026-01-25" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sun</div>
+                                <div class="day-number">25</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="calendar-week">
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250097.jpg" alt="Photo for 2026-01-26" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Mon</div>
+                                <div class="day-number">26</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250102.jpg" alt="Photo for 2026-01-27" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Tue</div>
+                                <div class="day-number">27</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250122.jpg" alt="Photo for 2026-01-28" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Wed</div>
+                                <div class="day-number">28</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250142.jpg" alt="Photo for 2026-01-29" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Thu</div>
+                                <div class="day-number">29</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250215.jpg" alt="Photo for 2026-01-30" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Fri</div>
+                                <div class="day-number">30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day ">
+                            
+                            <img src="../photos/2026/01/P1250263.jpg" alt="Photo for 2026-01-31" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sat</div>
+                                <div class="day-number">31</div>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-day next-month">
+                            
+                            <img src="../photos/2026/02/cows.jpg" alt="Photo for 2026-02-01" class="day-image">
+                            
+                            <div class="day-overlay">
+                                <div class="day-weekday">Sun</div>
+                                <div class="day-number">1</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer with QR code and branding -->
+        <footer class="footer">
+            <div class="qr-section">
+                <div class="qr-code">
+                    <!-- QR code will be generated and inserted here -->
+                    QR
+                </div>
+                <div class="qr-text">
+                    Scan for photo stories<br>
+                    <strong>https://example.com</strong>
+                </div>
+            </div>
+            <div class="branding">
+                <strong>Photographer</strong><br>
+                Macro Photography Calendar 2026
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
