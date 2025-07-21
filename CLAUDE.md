@@ -3,7 +3,7 @@
 **Project**: Professional macro photography calendar with daily photos  
 **Format**: A3 Landscape (420mm × 297mm)  
 **Target**: Print-ready PDFs for professional printing  
-**Status**: ✅ Core workflow implemented and tested  
+**Status**: ✅ Production-ready with optimized print layout  
 **Date**: July 2025  
 
 ---
@@ -15,9 +15,9 @@ This system generates professional A3 landscape photo calendars featuring:
 - **Daily macro photography** (one photo per day, 28-31 per month)
 - **7-column grid layout** (Monday-Sunday) with ISO week numbering
 - **Monthly location themes** with world map integration
-- **QR codes** linking to GitHub.io photo stories website
+- **Smart QR codes** with automatic date picker integration
 - **Print-ready output** (CMYK, 300 DPI, PDF/X compliant)
-- **Previous/next month overflow** with reduced opacity
+- **Clean minimal design** optimized for A3 print production
 
 ---
 
@@ -56,6 +56,26 @@ calendar/
 
 ---
 
+## 🚀 **Latest Optimizations (July 2025)**
+
+### **Print-First Design Philosophy**
+- **Uniform Photo Sizing**: All photos exactly 54mm × 38mm for consistent print quality
+- **Clean Layout**: Removed weekday text overlays, "No Photo" placeholders, and footer clutter  
+- **A3 Optimization**: Enhanced 240mm calendar grid height for maximum photo visibility
+- **Enhanced Typography**: 16pt day numbers with improved text shadow for print clarity
+
+### **Smart QR Code Integration**
+- **Hash Parameters**: QR codes generate URLs like `https://sarefo.github.io/calendar/#202601`
+- **Auto Date Picker**: Landing page automatically sets date based on QR code month
+- **Seamless Flow**: Scan printed calendar → auto-navigate to correct month online
+
+### **Automation Enhancements**
+- **Auto Location Reading**: System reads location data from `photos/YYYY/MM/README.md` files
+- **Streamlined Header**: All elements (title, location, QR, map) integrated in 35mm header
+- **PDF Consistency**: Enhanced print media CSS ensures uniform dimensions across all output
+
+---
+
 ## 🔧 Technical Implementation
 
 ### Core Components
@@ -68,10 +88,10 @@ calendar/
 
 #### 2. **Calendar Generation**
 - **Grid**: 7 columns (Mon-Sun) with ISO week numbers using HTML table layout
-- **Overflow**: Previous/next month photos at 50% opacity
-- **Typography**: Inter font family, CMYK-safe colors
-- **Layout**: 45mm header, table-based calendar grid, 25mm footer
-- **PDF Compatibility**: Table-based CSS layout ensures proper rendering in WeasyPrint
+- **Photos**: Uniform 54mm × 38mm dimensions, no weekday text overlays
+- **Typography**: Inter font family, CMYK-safe colors, 16pt day numbers
+- **Layout**: Streamlined 35mm header with integrated elements, 240mm calendar grid
+- **PDF Compatibility**: Enhanced print media CSS ensures consistent dimensions
 
 #### 3. **Print Optimization**
 - **Format**: A3 landscape (420×297mm) with 3mm bleed
@@ -79,17 +99,18 @@ calendar/
 - **Color**: CMYK color space (ISO Coated v2 300%)
 - **PDF**: PDF/X-1a compliant with embedded fonts
 
-#### 4. **Location Integration**
-- **World maps**: Simplified SVG with location markers
-- **QR codes**: Link to photo stories website
-- **Theming**: Monthly location data in JSON format
+#### 4. **Smart QR & Location Integration**
+- **Auto-location reading**: From `photos/YYYY/MM/README.md` files
+- **QR codes**: Link to `https://sarefo.github.io/calendar/#YYYYMM` with hash parameters
+- **Landing page**: Automatic date picker setting based on QR code month
+- **World maps**: Simplified SVG with location markers in streamlined header
 
-#### 5. **Landing Page & Web Integration**
-- **Landing Page**: `index.html` with date picker and calendar navigation
+#### 5. **Enhanced Web Integration**
+- **Smart Landing Page**: Hash parameter support (e.g., `#202601`) for automatic date setting
 - **iNaturalist Integration**: Date selection opens corresponding observation URLs
-- **HTML Naming**: Simplified format `YYYYMM.html` (e.g., `202601.html`)
+- **Calendar Navigation**: Direct links to `YYYYMM.html` format
 - **Auto-Update**: Observation IDs sync automatically with `photo_information.txt`
-- **Design**: Fresh green color scheme (#74ac00) with portioid credit linking to iNaturalist profile
+- **Responsive Design**: Fresh green color scheme (#74ac00) with portioid credit
 
 ---
 
@@ -97,10 +118,14 @@ calendar/
 
 ### Phase 1: Photo Preparation
 
-1. **Organize Photos**
+1. **Organize Photos and Location Data**
    ```bash
    # Create month directory
    mkdir -p calendar-production/photos/2026/01
+   
+   # Create README.md with location info (auto-read by system)
+   echo "+ location: Tulamben, Bali" > calendar-production/photos/2026/01/README.md
+   echo "+ coordinates: 8°017'03\"S 115°035'021\"E" >> calendar-production/photos/2026/01/README.md
    
    # Update calendar-production/photos/photo_information.txt with photo order
    # Format: month\tfilename\tobservation_id (tab-separated)
@@ -200,15 +225,15 @@ Monthly location themes:
 ### Layout Dimensions (A3 Landscape)
 - **Total size**: 420mm × 297mm
 - **Bleed area**: 3mm all around
-- **Header section**: 45mm (title + world map)
-- **Calendar grid**: Flexible height
-- **Footer section**: 25mm (QR code + branding)
+- **Header section**: 35mm (title, location, QR code - all integrated)
+- **Calendar grid**: 240mm (optimized for photo visibility)
+- **Photo cells**: Uniform 54mm × 38mm dimensions
 
 ### Typography
 - **Primary font**: Inter (Google Fonts)
 - **Title**: 24pt, bold
 - **Weekday headers**: 10pt, uppercase
-- **Day numbers**: 14pt, bold with text shadow
+- **Day numbers**: 16pt, bold with enhanced text shadow (no weekday text)
 - **Week numbers**: 8pt on left margin
 
 ### Color Palette (CMYK)
@@ -248,7 +273,7 @@ python3 scripts/photoshop_specs.py --input-dir photos/2026/01 --output specs.jso
 
 **QR Code Generation**:
 ```bash
-python3 scripts/qr_generator.py --year 2026 --month 1 --base-url "https://sarefo.github.io/calendar-stories"
+python3 scripts/qr_generator.py --year 2026 --month 1 --base-url "https://sarefo.github.io/calendar/"
 ```
 
 **World Map Generation**:
@@ -383,23 +408,23 @@ python3 scripts/build_calendar.py --install-deps
 ## 📞 Support & Development
 
 ### Current Status
-✅ **Core workflow implemented and fully tested**  
-✅ **January & February 2026 calendars generated successfully**  
-✅ **PDF image embedding issue resolved**  
-✅ **Table-based layout ensures WeasyPrint compatibility**  
-✅ **Print-ready PDFs generated (18MB & 22MB respectively)**  
-✅ **Photo consolidation completed**  
-✅ **Landing page with iNaturalist integration implemented**  
-✅ **Simplified HTML naming scheme (YYYYMM.html)**  
-✅ **Auto-update system for observation IDs**  
+✅ **Production-ready workflow with optimized A3 print layout**  
+✅ **Enhanced photo presentation: uniform 54mm × 38mm dimensions**  
+✅ **Streamlined design: removed weekday overlays and placeholders**  
+✅ **Smart QR integration: hash parameters for automatic date picker**  
+✅ **Auto-location reading from README.md files**  
+✅ **Print-optimized PDFs generated (26MB with consistent dimensions)**  
+✅ **Landing page with hash parameter support implemented**  
+✅ **Clean header design with integrated elements**  
+✅ **Enhanced print media CSS for PDF consistency**  
 
 ### Next Steps
-1. ✅ **Generated working PDFs** for January and February 2026
-2. ✅ **Resolved PDF image embedding** with table-based CSS layout
-3. ✅ **Consolidated photo storage** to single location
-4. ✅ **Created landing page** with date picker and iNaturalist integration
-5. ⏳ **Generate remaining months** for 2026 calendar
-6. ⏳ **Deploy to GitHub Pages** for public access
+1. ✅ **Optimized calendar layout for professional A3 printing**
+2. ✅ **Enhanced QR code integration with smart landing page**
+3. ✅ **Streamlined design focused on photo presentation**
+4. ✅ **Auto-location reading and hash parameter support**
+5. ⏳ **Generate remaining months for 2026 calendar**
+6. ⏳ **Deploy optimized system to GitHub Pages**
 
 ### Contact
 - **Project Repository**: This calendar system
