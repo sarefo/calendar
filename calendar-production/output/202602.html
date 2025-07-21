@@ -90,7 +90,8 @@
         }
         
         
-        /* Main calendar grid */
+        /* Main calendar grid - Dynamic 5-row layout */
+        /* Photo dimensions: 54mm × 42.4mm */
         .calendar-container {
             height: 240mm;
             padding: 8mm 10mm;
@@ -128,12 +129,12 @@
         }
         
         .calendar-week-row {
-            height: 38mm;
+            height: 46.4mm;
         }
         
         .calendar-day {
             width: 54mm;
-            height: 38mm;
+            height: 46.4mm;
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
@@ -149,7 +150,7 @@
         
         .day-image {
             width: 100%;
-            height: 100%;
+            height: 42.4mm;
             object-fit: cover;
             object-position: center;
             border-radius: 3mm;
@@ -189,7 +190,7 @@
             
             .day-image {
                 width: 54mm !important;
-                height: 38mm !important;
+                height: 42.4mm !important;
                 object-fit: cover !important;
                 object-position: center !important;
                 border-radius: 3mm !important;
@@ -198,7 +199,7 @@
             
             .calendar-day {
                 width: 54mm !important;
-                height: 38mm !important;
+                height: 46.4mm !important;
             }
         }
         
@@ -634,6 +635,7 @@
                     
                     <td class="calendar-day next-month">
                         
+                        <img src="../photos/2026/03/IMG_8440.jpg" alt="Photo for 2026-03-01" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">1</div>
                         </div>

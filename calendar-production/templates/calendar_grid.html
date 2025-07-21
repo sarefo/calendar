@@ -90,7 +90,8 @@
         }
         
         
-        /* Main calendar grid */
+        /* Main calendar grid - Dynamic {{ layout.layout_type }} layout */
+        /* Photo dimensions: {{ layout.photo_width }}mm × {{ layout.photo_height }}mm */
         .calendar-container {
             height: 240mm;
             padding: 8mm 10mm;
@@ -128,12 +129,12 @@
         }
         
         .calendar-week-row {
-            height: 38mm;
+            height: {{ layout.row_height }}mm;
         }
         
         .calendar-day {
-            width: 54mm;
-            height: 38mm;
+            width: {{ layout.photo_width }}mm;
+            height: {{ layout.row_height }}mm;
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
@@ -149,7 +150,7 @@
         
         .day-image {
             width: 100%;
-            height: 100%;
+            height: {{ layout.photo_height }}mm;
             object-fit: cover;
             object-position: center;
             border-radius: 3mm;
@@ -188,8 +189,8 @@
             }
             
             .day-image {
-                width: 54mm !important;
-                height: 38mm !important;
+                width: {{ layout.photo_width }}mm !important;
+                height: {{ layout.photo_height }}mm !important;
                 object-fit: cover !important;
                 object-position: center !important;
                 border-radius: 3mm !important;
@@ -197,8 +198,8 @@
             }
             
             .calendar-day {
-                width: 54mm !important;
-                height: 38mm !important;
+                width: {{ layout.photo_width }}mm !important;
+                height: {{ layout.row_height }}mm !important;
             }
         }
         

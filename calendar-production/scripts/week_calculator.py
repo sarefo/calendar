@@ -114,10 +114,52 @@ class WeekCalculator:
         
         return weeks
     
+    def analyze_month_layout(self, year: int, month: int) -> Dict:
+        """
+        Analyze month layout requirements for dynamic row sizing
+        Returns row count, optimal dimensions, and layout info
+        """
+        # Get first day of month and days in month
+        first_day = datetime.date(year, month, 1)
+        if month == 12:
+            last_day = datetime.date(year + 1, 1, 1) - datetime.timedelta(days=1)
+        else:
+            last_day = datetime.date(year, month + 1, 1) - datetime.timedelta(days=1)
+        
+        days_in_month = last_day.day
+        
+        # Calculate rows needed
+        # First day weekday: Monday=0, Sunday=6
+        first_weekday = first_day.weekday()
+        total_cells_needed = first_weekday + days_in_month
+        rows_needed = (total_cells_needed + 6) // 7  # Ceiling division
+        
+        # Define layout constants
+        total_grid_height = 240  # mm - keep consistent
+        header_row_height = 8    # mm - weekday headers
+        available_height = total_grid_height - header_row_height  # 232mm
+        
+        # Calculate optimal row height based on actual rows needed
+        row_height = available_height / rows_needed
+        # Optimize photo height - leave less margin for better space utilization
+        photo_height = row_height - 4  # Reduced margin for better photo visibility
+        layout_type = f"{rows_needed}-row"
+        
+        return {
+            "rows_needed": rows_needed,
+            "layout_type": layout_type,
+            "row_height": round(row_height, 1),
+            "photo_height": round(photo_height, 1),
+            "photo_width": 54,  # Keep width constant
+            "first_weekday": first_weekday,
+            "days_in_month": days_in_month,
+            "has_overflow": rows_needed > 5
+        }
+    
     def generate_calendar_grid(self, year: int, month: int) -> Dict:
         """
         Generate complete calendar grid data for a month
-        Includes overflow from previous/next months
+        Includes overflow from previous/next months and layout analysis
         """
         weeks = self.get_month_weeks(year, month)
         
@@ -135,6 +177,9 @@ class WeekCalculator:
         else:
             next_month, next_year = month + 1, year
         
+        # Analyze layout requirements for this month
+        layout_analysis = self.analyze_month_layout(year, month)
+
         grid_data = {
             "year": year,
             "month": month,
@@ -150,6 +195,7 @@ class WeekCalculator:
             "weeks": weeks,
             "total_weeks": len(weeks),
             "weekday_headers": self._get_weekday_headers(),
+            "layout": layout_analysis,
             "config": self.config
         }
         
