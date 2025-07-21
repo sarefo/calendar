@@ -58,8 +58,16 @@ calendar/
 
 ## 🚀 **Latest Optimizations (July 2025)**
 
+### **Dynamic Row Layout System** 🆕
+- **Smart Row Analysis**: Automatically detects each month's row requirements (5 vs 6 rows needed)
+- **Optimized Photo Sizes**: Dynamic photo dimensions based on available space:
+  - **5-row months (9 of 12)**: Photos are **54mm × 42.4mm** (larger for better impact)
+  - **6-row months (3 of 12)**: Photos are **54mm × 34.7mm** (optimized to fit 6 rows)
+- **No Empty Rows**: Eliminates wasted space that appeared in 75% of months
+- **Better Space Utilization**: +10% larger photos with professional consistency
+
 ### **Print-First Design Philosophy**
-- **Uniform Photo Sizing**: All photos exactly 54mm × 38mm for consistent print quality
+- **Variable Photo Sizing**: Dynamic dimensions (42.4mm vs 34.7mm height) for optimal space usage
 - **Clean Layout**: Removed weekday text overlays, "No Photo" placeholders, and footer clutter  
 - **A3 Optimization**: Enhanced 240mm calendar grid height for maximum photo visibility
 - **Enhanced Typography**: 16pt day numbers with improved text shadow for print clarity
@@ -88,7 +96,10 @@ calendar/
 
 #### 2. **Calendar Generation**
 - **Grid**: 7 columns (Mon-Sun) with ISO week numbers using HTML table layout
-- **Photos**: Uniform 54mm × 38mm dimensions, no weekday text overlays
+- **Dynamic Photos**: Variable dimensions based on month row requirements:
+  - **5-row months**: 54mm × 42.4mm (Jan, Feb, Apr, May, Jun, Jul, Sep, Oct, Dec)
+  - **6-row months**: 54mm × 34.7mm (Mar, Aug, Nov)
+- **Smart Layout**: Automatic row height calculation eliminates empty rows
 - **Typography**: Inter font family, CMYK-safe colors, 16pt day numbers
 - **Layout**: Streamlined 35mm header with integrated elements, 240mm calendar grid
 - **PDF Compatibility**: Enhanced print media CSS ensures consistent dimensions
@@ -227,7 +238,10 @@ Monthly location themes:
 - **Bleed area**: 3mm all around
 - **Header section**: 35mm (title, location, QR code - all integrated)
 - **Calendar grid**: 240mm (optimized for photo visibility)
-- **Photo cells**: Uniform 54mm × 38mm dimensions
+- **Photo cells**: Dynamic dimensions based on month requirements:
+  - **5-row months**: 54mm × 42.4mm (Jan, Feb, Apr, May, Jun, Jul, Sep, Oct, Dec)
+  - **6-row months**: 54mm × 34.7mm (Mar, Aug, Nov)
+  - **Row heights**: Automatically calculated (46.4mm vs 38.7mm per row)
 
 ### Typography
 - **Primary font**: Inter (Google Fonts)
@@ -409,19 +423,20 @@ python3 scripts/build_calendar.py --install-deps
 
 ### Current Status
 ✅ **Production-ready workflow with optimized A3 print layout**  
-✅ **Enhanced photo presentation: uniform 54mm × 38mm dimensions**  
+✅ **Dynamic row layout system - eliminates empty rows completely**  
+✅ **Enhanced photo presentation: Variable dimensions (42.4mm vs 34.7mm height)**  
 ✅ **Streamlined design: removed weekday overlays and placeholders**  
 ✅ **Smart QR integration: hash parameters for automatic date picker**  
 ✅ **Auto-location reading from README.md files**  
-✅ **Print-optimized PDFs generated (26MB with consistent dimensions)**  
+✅ **Print-optimized PDFs generated with dynamic sizing**  
 ✅ **Landing page with hash parameter support implemented**  
 ✅ **Clean header design with integrated elements**  
 ✅ **Enhanced print media CSS for PDF consistency**  
 
 ### Next Steps
-1. ✅ **Optimized calendar layout for professional A3 printing**
+1. ✅ **Dynamic calendar layout system - NO MORE EMPTY ROWS!**
 2. ✅ **Enhanced QR code integration with smart landing page**
-3. ✅ **Streamlined design focused on photo presentation**
+3. ✅ **Optimized photo sizing - 10% larger photos in 75% of months**
 4. ✅ **Auto-location reading and hash parameter support**
 5. ⏳ **Generate remaining months for 2026 calendar**
 6. ⏳ **Deploy optimized system to GitHub Pages**
