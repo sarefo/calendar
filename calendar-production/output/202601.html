@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>January 2026 - Bali</title>
+    <title>January 2026 - Bali, Indonesia</title>
     <link rel="stylesheet" href="print_styles.css">
     <style>
         /* Print-specific styles for A3 landscape */
@@ -37,7 +37,7 @@
         .title-section {
             flex: 1;
             display: flex;
-            align-items: baseline;
+            align-items: center;
             justify-content: flex-start;
             gap: 8mm;
         }
@@ -54,8 +54,9 @@
         .month-location-container {
             display: flex;
             align-items: center;
-            gap: 3mm;
+            gap: 6mm;
             height: 100%;
+            flex: 1;
         }
         
         .month-name {
@@ -67,13 +68,15 @@
         }
         
         .location-text {
-            font-size: 18pt;
+            font-size: 36pt;
             font-weight: 400;
             margin: 0;
-            color: white;
-            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.85);
             white-space: nowrap;
             line-height: 1;
+            font-style: italic;
+            flex: 1;
+            text-align: center;
         }
         
         .header-right {
@@ -335,7 +338,7 @@
                 <h1 class="year-title">2026</h1>
                 <div class="month-location-container">
                     <h2 class="month-name">January</h2>
-                    <p class="location-text">in Bali, Indonesia</p>
+                    <p class="location-text">Bali, Indonesia</p>
                 </div>
             </div>
             <div class="header-right">

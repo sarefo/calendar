@@ -104,7 +104,6 @@ class CalendarGenerator:
             print(f"   Please create {readme_path} with location data:")
             print(f"   + location: [City, Country]")
             print(f"   + coordinates: [Lat°N/S, Long°E/W]")
-            print(f"   + country: [Country]")
             print(f"   + year: {year}")
             raise FileNotFoundError(f"Location data required: {readme_path} not found")
         
@@ -120,8 +119,6 @@ class CalendarGenerator:
                 location_data['location'] = line.replace('+ location:', '').strip()
             elif line.startswith('+ coordinates:'):
                 location_data['coordinates'] = line.replace('+ coordinates:', '').strip()
-            elif line.startswith('+ country:'):
-                location_data['country'] = line.replace('+ country:', '').strip()
         
         # Validate required location data - no fallback values!
         missing_data = []
@@ -137,11 +134,6 @@ class CalendarGenerator:
             missing_data.append('coordinates')
         elif '[Coordinates needed]' in location_data.get('coordinates', ''):
             placeholder_data.append('coordinates')
-            
-        if 'country' not in location_data or not location_data.get('country').strip():
-            missing_data.append('country')
-        elif '[Country needed]' in location_data.get('country', ''):
-            placeholder_data.append('country')
         
         # Fail fast if data is missing or has placeholders
         if missing_data or placeholder_data:
@@ -156,11 +148,8 @@ class CalendarGenerator:
             print(f"   Please update the file with actual location information.")
             raise ValueError(f"Incomplete location data in {readme_path}: {'; '.join(error_msg)}")
         
-        # Create display format: "Location, Country" if country not already in location
-        if location_data['country'] and location_data['country'] not in location_data['location']:
-            location_data['location_display'] = f"{location_data['location']}, {location_data['country']}"
-        else:
-            location_data['location_display'] = location_data['location']
+        # Use location directly as display format
+        location_data['location_display'] = location_data['location']
         
         return location_data
     

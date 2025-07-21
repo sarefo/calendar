@@ -135,9 +135,8 @@ calendar/
    mkdir -p calendar-production/photos/2026/01
    
    # Create README.md with complete location info (required - no fallbacks!)
-   echo "+ location: Tulamben, Bali" > calendar-production/photos/2026/01/README.md
+   echo "+ location: Tulamben, Bali, Indonesia" > calendar-production/photos/2026/01/README.md
    echo "+ coordinates: 8°017'03\"S 115°035'021\"E" >> calendar-production/photos/2026/01/README.md
-   echo "+ country: Indonesia" >> calendar-production/photos/2026/01/README.md
    echo "+ year: 2026" >> calendar-production/photos/2026/01/README.md
    
    # Update calendar-production/photos/photo_information.txt with photo order
@@ -224,15 +223,13 @@ Each photo month directory contains location information in `README.md`:
 calendar-production/photos/YYYY/MM/README.md:
 + location: [City, Country/Region]
 + coordinates: [Lat°N/S, Long°E/W]
-+ country: [Country]
 + year: [YYYY]
 ```
 
 Example:
 ```
-+ location: Bali, Indonesia
++ location: Tulamben, Bali, Indonesia
 + coordinates: 8°017′03″S 115°035′021″E
-+ country: Indonesia
 + year: 2026
 ```
 

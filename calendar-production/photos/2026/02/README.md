@@ -1,5 +1,4 @@
-+ location: Su-ngai Kolok
++ location: Su-ngai Kolok, Thailand
 + coordinates: 6°02′N 101°58′E
-+ country: Thailand
 + year: 2023
 

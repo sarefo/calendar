@@ -1,4 +1,3 @@
-* location: 
-* coordinates: 
-* country: 
-* year: 
++ location: 
++ coordinates: 
++ year: 
