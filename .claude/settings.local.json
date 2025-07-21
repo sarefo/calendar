@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(python3 scripts/build_calendar.py:*)",
+      "Bash(PYTHONPATH=$HOME/.local/lib/python3.11/site-packages:$PYTHONPATH python3 scripts/build_calendar.py --check-photos --year 2026 --month 1)",
+      "Bash(python3:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": []
+  }
+}
