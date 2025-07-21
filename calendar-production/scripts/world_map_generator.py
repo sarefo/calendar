@@ -3,13 +3,138 @@
 World Map Generator for Calendar Headers
 Creates simple SVG world maps with location markers
 
-Uses simplified world outline for print compatibility
+Uses simplified world outline for print compatibility with Robinson projection
 """
 
 import json
 import argparse
+import math
 from pathlib import Path
 from typing import Dict, Tuple
+
+class SimpleWorldProjection:
+    """
+    Robinson projection for world.svg (viewBox="200 0 1800 857")
+    Converts latitude/longitude coordinates to SVG pixel positions
+    Calibrated using Dublin and Tasmania reference points
+    """
+
+    def __init__(self):
+        # SVG dimensions (cropped viewBox)
+        self.svg_width = 1800
+        self.svg_height = 857
+
+        # Robinson projection coefficients from SimpleMaps
+        # X scaling factors for each 5-degree latitude band
+        self.AA = [
+            0.8487, 0.84751182, 0.84479598, 0.840213, 0.83359314, 0.8257851,
+            0.814752, 0.80006949, 0.78216192, 0.76060494, 0.73658673, 0.7086645,
+            0.67777182, 0.64475739, 0.60987582, 0.57134484, 0.52729731, 0.48562614,
+            0.45167814
+        ]
+
+        # Y scaling factors for each 5-degree latitude band
+        self.BB = [
+            0, 0.0838426, 0.1676852, 0.2515278, 0.3353704, 0.419213,
+            0.5030556, 0.5868982, 0.67182264, 0.75336633, 0.83518048, 0.91537187,
+            0.99339958, 1.06872269, 1.14066505, 1.20841528, 1.27035062, 1.31998003,
+            1.3523
+        ]
+
+        # Earth radius scaling factor
+        self.earth_rad = 1
+
+        # Calibrate the projection
+        self._calibrate_projection()
+
+    def _calibrate_projection(self):
+        """
+        Calibrate using Dublin (53.34°, -6.27°) and Tasmania (-42.02°, 146.53°)
+        Dublin appears at 53% width, 18% height
+        Tasmania appears at 97% width, 89% height
+        """
+        # Get raw Robinson coordinates for reference points
+        dublin_raw = self._robinson_project(-6.27, 53.34)
+        tasmania_raw = self._robinson_project(146.53, -42.02)
+
+        # Define target positions on SVG
+        dublin_target_x = 0.53 * self.svg_width
+        dublin_target_y = 0.18 * self.svg_height
+        tasmania_target_x = 0.97 * self.svg_width
+        tasmania_target_y = 0.89 * self.svg_height
+
+        # Calculate linear transformation parameters
+        raw_x_range = tasmania_raw['x'] - dublin_raw['x']
+        target_x_range = tasmania_target_x - dublin_target_x
+        self.x_scale = target_x_range / raw_x_range
+        self.x_offset = dublin_target_x - (dublin_raw['x'] * self.x_scale)
+
+        raw_y_range = tasmania_raw['y'] - dublin_raw['y']
+        target_y_range = tasmania_target_y - dublin_target_y
+        self.y_scale = target_y_range / raw_y_range
+        self.y_offset = dublin_target_y - (dublin_raw['y'] * self.y_scale)
+
+        print(f"Projection calibrated: scale({self.x_scale:.3f}, {self.y_scale:.3f}) offset({self.x_offset:.1f}, {self.y_offset:.1f})")
+
+    def _robinson_project(self, lng, lat):
+        """
+        Apply Robinson projection to convert lat/lng to intermediate coordinates
+        """
+        radian = math.pi / 180
+
+        # Handle negative coordinates
+        lng_sign = -1 if lng < 0 else 1
+        lat_sign = -1 if lat < 0 else 1
+        lng = abs(lng)
+        lat = abs(lat)
+
+        # Find latitude band for interpolation (5-degree intervals)
+        low = math.floor(lat / 5) * 5
+        if lat == 0:
+            low = 0
+
+        high = low + 5
+        low_index = int(low / 5)
+        high_index = int(high / 5)
+
+        # Ensure indices are within bounds
+        low_index = min(low_index, len(self.AA) - 1)
+        high_index = min(high_index, len(self.AA) - 1)
+
+        ratio = (lat - low) / 5 if high != low else 0
+
+        # Interpolate between coefficient pairs
+        adj_aa = ((self.AA[high_index] - self.AA[low_index]) * ratio) + self.AA[low_index]
+        adj_bb = ((self.BB[high_index] - self.BB[low_index]) * ratio) + self.BB[low_index]
+
+        # Apply Robinson projection formula
+        x = adj_aa * lng * radian * lng_sign * self.earth_rad
+        y = adj_bb * lat_sign * self.earth_rad
+
+        return {'x': x, 'y': y}
+
+    def project(self, lat, lng):
+        """
+        Convert latitude/longitude to SVG coordinates
+
+        Args:
+            lat (float): Latitude in degrees
+            lng (float): Longitude in degrees
+
+        Returns:
+            dict: SVG coordinates {'x': float, 'y': float}
+        """
+        # Get Robinson projection coordinates
+        robinson = self._robinson_project(lng, lat)
+
+        # Apply calibrated linear transformation to SVG coordinates
+        x = (robinson['x'] * self.x_scale) + self.x_offset
+        y = (robinson['y'] * self.y_scale) + self.y_offset
+
+        return {
+            'x': round(x * 100) / 100,
+            'y': round(y * 100) / 100
+        }
 
 class WorldMapGenerator:
     def __init__(self):
@@ -21,12 +146,19 @@ class WorldMapGenerator:
         self.world_height = 857
         self.world_viewbox_x = 200
         self.world_viewbox_y = 0
+        
+        # Initialize the Robinson projection
+        self.projection = SimpleWorldProjection()
     
     def coordinates_to_svg(self, lat: float, lon: float, width: int = 400, height: int = 200) -> Tuple[float, float]:
-        """Convert latitude/longitude to SVG coordinates"""
-        # Simple equirectangular projection
-        x = (lon + 180) * (width / 360)
-        y = (90 - lat) * (height / 180)
+        """Convert latitude/longitude to SVG coordinates using Robinson projection"""
+        # Use the sophisticated Robinson projection instead of simple equirectangular
+        coords = self.projection.project(lat, lon)
+        
+        # Apply viewBox offset for world.svg coordinate system
+        x = coords['x'] + self.world_viewbox_x
+        y = coords['y'] + self.world_viewbox_y
+        
         return x, y
     
     def parse_coordinates(self, coord_str: str) -> Tuple[float, float]:
@@ -129,14 +261,24 @@ class WorldMapGenerator:
     
     def generate_location_marker(self, lat: float, lon: float, 
                                label: str = "", color: str = "#E74C3C") -> str:
-        """Generate SVG marker for a location - red circle for visibility"""
-        x, y = self.coordinates_to_svg(lat, lon, self.world_width, self.world_height)
+        """Generate SVG marker for a location - large and visible from distance"""
+        # Use Robinson projection directly and fix eastward drift
+        coords = self.projection.project(lat, lon)
+        # Don't add viewbox offset - the coordinates are already in the right space
+        x = coords['x']
+        y = coords['y']
         
         marker_svg = f"""
-        <!-- Location marker for {label} -->
+        <!-- Location marker for {label} at ({lat:.4f}, {lon:.4f}) -->
         <g class="location-marker">
-            <circle cx="{x}" cy="{y}" r="12" fill="none" stroke="{color}" stroke-width="3" opacity="0.8"/>
-            <circle cx="{x}" cy="{y}" r="5" fill="{color}" opacity="0.9"/>
+            <!-- Large outer glow for distance visibility -->
+            <circle cx="{x}" cy="{y}" r="80" fill="{color}" opacity="0.1"/>
+            <!-- Bold outer ring -->
+            <circle cx="{x}" cy="{y}" r="60" fill="none" stroke="{color}" stroke-width="8" opacity="0.8"/>
+            <!-- Prominent inner circle -->
+            <circle cx="{x}" cy="{y}" r="30" fill="{color}" opacity="0.95"/>
+            <!-- Large center highlight -->
+            <circle cx="{x}" cy="{y}" r="15" fill="#FFFFFF" opacity="0.9"/>
         </g>
         """
         
