@@ -30,6 +30,9 @@ class CalendarBuilder:
         
         # Initialize components
         self.calendar_gen = CalendarGenerator(config_file)
+        # Clear any template cache to ensure fresh template loading
+        self.calendar_gen.jinja_env.cache = {}
+        self.calendar_gen.jinja_env.auto_reload = True
         self.qr_gen = QRGenerator()
         self.map_gen = WorldMapGenerator()
         
@@ -95,7 +98,7 @@ class CalendarBuilder:
         
         try:
             # Load location data
-            location_data = {}
+            location_data = None
             if locations_file and Path(locations_file).exists():
                 with open(locations_file, 'r') as f:
                     all_locations = json.load(f)
@@ -106,23 +109,36 @@ class CalendarBuilder:
                         "website_url": "https://sarefo.github.io/calendar/",
                         "photographer_name": "Photographer"
                     })
+            # If no locations file provided, let calendar generator read from README.md
             
             # Generate QR code
+            base_url = "https://sarefo.github.io/calendar/"
+            if location_data:
+                base_url = location_data.get("website_url", base_url)
             qr_file = self.qr_gen.generate_calendar_qr(
-                year, month, 
-                location_data.get("website_url", "https://sarefo.github.io/calendar/"),
+                year, month, base_url,
                 f"{output_dir}/assets"
             )
             print(f"✅ Generated QR code: {qr_file}")
             
             # Generate world map
+            # Get location data for map generation (from README if location_data is None)
+            map_location_data = location_data
+            if not map_location_data:
+                map_location_data = self.calendar_gen._load_location_from_readme(year, month)
             map_file = self.map_gen.save_map_svg(
-                location_data,
+                map_location_data,
                 f"{output_dir}/assets/map-{year}-{month:02d}.svg"
             )
             print(f"✅ Generated world map: {map_file}")
             
             # Generate calendar HTML (using source photos directly)
+            # Clear template cache and reload template environment completely
+            from jinja2 import Environment, FileSystemLoader, select_autoescape
+            self.calendar_gen.jinja_env = Environment(
+                loader=FileSystemLoader(self.calendar_gen.template_dir),
+                autoescape=select_autoescape(['html', 'xml'])
+            )
             html_file = self.calendar_gen.generate_calendar_page(
                 year, month, location_data,
                 photo_dirs=[f"photos/{year}/{month:02d}"],
@@ -138,7 +154,7 @@ class CalendarBuilder:
                 "html_file": html_file,
                 "qr_file": qr_file,
                 "map_file": map_file,
-                "location": location_data.get("location", f"Month {month}")
+                "location": location_data.get("location", f"Month {month}") if location_data else map_location_data.get("location", f"Month {month}")
             }
             
             # Generate PDF if requested

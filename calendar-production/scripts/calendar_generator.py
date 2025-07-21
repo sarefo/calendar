@@ -21,6 +21,7 @@ import re
 
 # Import our custom modules
 from week_calculator import WeekCalculator
+from world_map_generator import WorldMapGenerator
 
 try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -35,6 +36,7 @@ class CalendarGenerator:
         self.template_dir = template_dir or "templates"
         self.config = self._load_config()
         self.week_calculator = WeekCalculator(config_file)
+        self.world_map_generator = WorldMapGenerator()
         
         # Setup Jinja2 environment
         self.jinja_env = Environment(
@@ -99,8 +101,10 @@ class CalendarGenerator:
         
         if not readme_path.exists():
             return {
-                "location": f"Month {month}, {year}",
-                "coordinates": "0°N, 0°E"
+                "location": "Unknown Location",
+                "country": "",
+                "coordinates": "0°N, 0°E",
+                "location_display": "Unknown Location"
             }
         
         location_data = {}
@@ -115,14 +119,50 @@ class CalendarGenerator:
                 location_data['location'] = line.replace('+ location:', '').strip()
             elif line.startswith('+ coordinates:'):
                 location_data['coordinates'] = line.replace('+ coordinates:', '').strip()
+            elif line.startswith('+ country:'):
+                location_data['country'] = line.replace('+ country:', '').strip()
         
         # Fallback values if not found
         if 'location' not in location_data:
-            location_data['location'] = f"Month {month}, {year}"
+            location_data['location'] = "Unknown Location"
         if 'coordinates' not in location_data:
             location_data['coordinates'] = "0°N, 0°E"
+        if 'country' not in location_data:
+            location_data['country'] = ""
+        
+        # Create display format: "Location, Country"
+        if location_data['country'] and location_data['location']:
+            location_data['location_display'] = f"{location_data['location']}, {location_data['country']}"
+        else:
+            location_data['location_display'] = location_data['location']
         
         return location_data
+    
+    def _generate_world_map_content(self, location_data: Dict[str, str]) -> str:
+        """Generate SVG content for world map (inner SVG elements only)"""
+        try:
+            # Get full SVG from world map generator
+            full_svg = self.world_map_generator.generate_world_map_svg(location_data, width=400, height=200)
+            
+            # Extract just the inner content (everything between <svg> and </svg>)
+            import re
+            match = re.search(r'<svg[^>]*>(.*?)</svg>', full_svg, re.DOTALL)
+            if match:
+                return match.group(1).strip()
+            else:
+                return self._fallback_world_map_content()
+        except Exception as e:
+            print(f"Warning: Could not generate world map: {e}")
+            return self._fallback_world_map_content()
+    
+    def _fallback_world_map_content(self) -> str:
+        """Fallback world map content if generation fails"""
+        return """
+        <!-- Fallback world map -->
+        <rect width="400" height="200" fill="#F8FAFE" stroke="#E1E8ED" stroke-width="1"/>
+        <text x="200" y="100" text-anchor="middle" font-family="Inter, sans-serif" 
+              font-size="12" fill="#666">World Map</text>
+        """
 
     def find_photo_for_date(self, target_date: date, photo_dirs: List[str], use_absolute_paths: bool = False) -> Optional[str]:
         """
@@ -259,11 +299,15 @@ class CalendarGenerator:
                 
                 # Don't add placeholder for empty days
         
+        # Generate world map SVG content
+        world_map_svg = self._generate_world_map_content(location_data)
+        
         # Combine all data
         calendar_data = {
             **grid_data,
             **location_data,
-            "config": self.config
+            "config": self.config,
+            "world_map_svg": world_map_svg
         }
         
         return calendar_data

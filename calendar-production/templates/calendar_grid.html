@@ -26,7 +26,7 @@
         .header {
             height: 35mm;
             padding: 6mm 10mm;
-            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            background: #74ac00;
             color: white;
             position: relative;
             display: flex;
@@ -36,19 +36,40 @@
         
         .title-section {
             flex: 1;
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-start;
+            gap: 8mm;
         }
         
-        .month-title {
-            font-size: 24pt;
-            font-weight: 600;
-            margin: 0 0 4mm 0;
-            letter-spacing: 0.5mm;
-        }
-        
-        .location-subtitle {
-            font-size: 14pt;
-            font-weight: 300;
+        .year-title {
+            font-size: 48pt;
+            font-weight: 700;
             margin: 0;
+            letter-spacing: 1mm;
+            color: white;
+            line-height: 1;
+        }
+        
+        .month-location-container {
+            display: flex;
+            align-items: baseline;
+            gap: 3mm;
+        }
+        
+        .month-name {
+            font-size: 48pt;
+            font-weight: 600;
+            margin: 0;
+            color: white;
+            line-height: 1;
+        }
+        
+        .location-text {
+            font-size: 24pt;
+            font-weight: 400;
+            margin: 0;
+            color: white;
             opacity: 0.9;
         }
         
@@ -59,16 +80,27 @@
         }
         
         .world-map-container {
-            width: 60mm;
+            width: 40mm;
             height: 20mm;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 3mm;
-            font-size: 9pt;
-            text-align: center;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
+        }
+        
+        .world-map-svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Override world map colors */
+        .world-map-svg path {
+            fill: rgba(255, 255, 255, 0.3) !important;
+            stroke: rgba(255, 255, 255, 0.5) !important;
+            stroke-width: 0.5 !important;
         }
         
         .qr-section {
@@ -258,16 +290,18 @@
         <!-- Header with title and world map -->
         <header class="header">
             <div class="title-section">
-                <h1 class="month-title">{{ month_name }} {{ year }}</h1>
-                <p class="location-subtitle">{{ location }}</p>
+                <h1 class="year-title">{{ year }}</h1>
+                <div class="month-location-container">
+                    <h2 class="month-name">{{ month_name }}</h2>
+                    <p class="location-text">in {{ location_display }}</p>
+                </div>
             </div>
             <div class="header-right">
                 <div class="world-map-container">
                     <!-- World map SVG will be inserted here -->
-                    <div class="map-placeholder">
-                        📍 {{ location }}<br>
-                        <small>{{ coordinates }}</small>
-                    </div>
+                    <svg class="world-map-svg" viewBox="200 0 1800 857" xmlns="http://www.w3.org/2000/svg">
+                        {{ world_map_svg|safe }}
+                    </svg>
                 </div>
                 
                 <div class="qr-section">

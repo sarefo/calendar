@@ -13,38 +13,14 @@ from typing import Dict, Tuple
 
 class WorldMapGenerator:
     def __init__(self):
-        # Simplified world map outline (major continents only)
-        # Coordinates are in SVG viewBox 0 0 400 200 (2:1 aspect ratio)
-        self.world_outline = self._get_world_outline()
-        
-    def _get_world_outline(self) -> str:
-        """Simplified SVG path for world continents (optimized for small size)"""
-        # Very simplified world map paths
-        return """
-        <!-- North America -->
-        <path d="M50,40 Q60,30 80,35 L100,30 Q120,35 140,40 L145,50 Q140,60 130,65 L120,75 Q100,80 80,75 L70,70 Q55,65 50,55 Z" 
-              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
-        
-        <!-- South America -->
-        <path d="M90,90 Q95,85 105,90 L110,110 Q108,130 105,140 L100,150 Q95,155 90,150 L85,140 Q82,120 85,100 Z" 
-              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
-        
-        <!-- Europe -->
-        <path d="M180,35 Q190,30 200,35 L205,40 Q200,50 195,45 L185,45 Q180,40 180,35 Z" 
-              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
-        
-        <!-- Africa -->
-        <path d="M170,55 Q180,50 190,55 L195,70 Q190,90 185,110 L180,120 Q175,125 170,120 L165,110 Q160,90 165,70 Z" 
-              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
-        
-        <!-- Asia -->
-        <path d="M200,30 Q230,25 260,35 L290,40 Q310,45 320,50 L325,60 Q320,70 310,75 L280,80 Q250,75 220,70 L210,60 Q200,50 200,40 Z" 
-              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
-        
-        <!-- Australia -->
-        <path d="M280,120 Q290,115 300,120 L305,125 Q300,135 295,130 L285,130 Q280,125 280,120 Z" 
-              fill="#E8E8E8" stroke="#CCC" stroke-width="0.5"/>
-        """
+        # Load the proper world map SVG from data directory
+        self.world_svg_path = Path("data/world.svg")
+        # Use Natural Earth / Robinson projection coordinate system
+        # viewBox for the world.svg: "200 0 1800 857" (width=1800, height=857)
+        self.world_width = 1800
+        self.world_height = 857
+        self.world_viewbox_x = 200
+        self.world_viewbox_y = 0
     
     def coordinates_to_svg(self, lat: float, lon: float, width: int = 400, height: int = 200) -> Tuple[float, float]:
         """Convert latitude/longitude to SVG coordinates"""
@@ -55,72 +31,125 @@ class WorldMapGenerator:
     
     def parse_coordinates(self, coord_str: str) -> Tuple[float, float]:
         """
-        Parse coordinate string like "4.25°S, 79.23°W" or "6.25°N, 75.56°W"
+        Parse coordinate string like "4.25°S, 79.23°W" or "8°017′03″S 115°035′021″E"
         Returns (latitude, longitude) as floats
         """
         try:
-            # Split by comma
-            parts = coord_str.replace('°', '').replace(' ', '').split(',')
+            import re
             
-            if len(parts) != 2:
-                raise ValueError(f"Invalid coordinate format: {coord_str}")
+            # Handle degree-minute-second format with ′ and ″ symbols
+            coord_str = coord_str.replace('″', '').replace('′', ' ')  # Remove seconds, convert minutes to space
             
-            # Parse latitude
-            lat_str = parts[0]
-            if lat_str.endswith('N'):
-                lat = float(lat_str[:-1])
-            elif lat_str.endswith('S'):
-                lat = -float(lat_str[:-1])
-            else:
-                lat = float(lat_str)  # Assume positive is North
+            # Extract latitude and longitude patterns
+            # Look for patterns like "8°017 03 S" or "4.25°S"
+            lat_match = re.search(r'([0-9.]+)(?:°([0-9]+)\s*([0-9]+))?\s*[SN]', coord_str)
+            lon_match = re.search(r'([0-9.]+)(?:°([0-9]+)\s*([0-9]+))?\s*[EW]', coord_str)
             
-            # Parse longitude
-            lon_str = parts[1]
-            if lon_str.endswith('E'):
-                lon = float(lon_str[:-1])
-            elif lon_str.endswith('W'):
-                lon = -float(lon_str[:-1])
-            else:
-                lon = float(lon_str)  # Assume positive is East
+            if not lat_match or not lon_match:
+                # Fall back to simple decimal parsing
+                parts = coord_str.replace('°', '').replace(' ', '').split(',')
+                if len(parts) != 2:
+                    raise ValueError(f"Invalid coordinate format: {coord_str}")
+                
+                # Parse latitude
+                lat_str = parts[0]
+                if lat_str.endswith('N'):
+                    lat = float(lat_str[:-1])
+                elif lat_str.endswith('S'):
+                    lat = -float(lat_str[:-1])
+                else:
+                    lat = float(lat_str)
+                
+                # Parse longitude
+                lon_str = parts[1]
+                if lon_str.endswith('E'):
+                    lon = float(lon_str[:-1])
+                elif lon_str.endswith('W'):
+                    lon = -float(lon_str[:-1])
+                else:
+                    lon = float(lon_str)
+                
+                return lat, lon
+            
+            # Parse latitude (DMS or decimal)
+            lat_deg = float(lat_match.group(1))
+            lat_min = float(lat_match.group(2)) if lat_match.group(2) else 0
+            lat_sec = float(lat_match.group(3)) if lat_match.group(3) else 0
+            lat = lat_deg + lat_min/60 + lat_sec/3600
+            if 'S' in coord_str.upper():
+                lat = -lat
+            
+            # Parse longitude (DMS or decimal)
+            lon_deg = float(lon_match.group(1))
+            lon_min = float(lon_match.group(2)) if lon_match.group(2) else 0
+            lon_sec = float(lon_match.group(3)) if lon_match.group(3) else 0
+            lon = lon_deg + lon_min/60 + lon_sec/3600
+            if 'W' in coord_str.upper():
+                lon = -lon
             
             return lat, lon
             
-        except (ValueError, IndexError) as e:
+        except (ValueError, IndexError, AttributeError) as e:
             raise ValueError(f"Could not parse coordinates '{coord_str}': {e}")
+    
+    def _load_world_svg_content(self) -> str:
+        """Load the world SVG content and extract the inner paths"""
+        try:
+            if not self.world_svg_path.exists():
+                return self._fallback_world_content()
+            
+            with open(self.world_svg_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Extract everything between the opening and closing svg tags
+            import re
+            # Find the content between <svg...> and </svg>
+            svg_match = re.search(r'<svg[^>]*>(.*?)</svg>', content, re.DOTALL)
+            if svg_match:
+                inner_content = svg_match.group(1)
+                # Remove the defs and namedview elements that are specific to the standalone SVG
+                inner_content = re.sub(r'<defs[^>]*>.*?</defs>', '', inner_content, flags=re.DOTALL)
+                inner_content = re.sub(r'<sodipodi:namedview[^>]*>.*?</sodipodi:namedview>', '', inner_content, flags=re.DOTALL)
+                inner_content = re.sub(r'<sodipodi:namedview[^>]*/>', '', inner_content)
+                return inner_content.strip()
+            else:
+                return self._fallback_world_content()
+        except Exception as e:
+            print(f"Warning: Could not load world.svg: {e}")
+            return self._fallback_world_content()
+    
+    def _fallback_world_content(self) -> str:
+        """Fallback world map content if world.svg is not available"""
+        return '''
+        <!-- Fallback: Simple world continents -->
+        <rect x="200" y="0" width="1800" height="857" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
+        <text x="1100" y="428" text-anchor="middle" font-family="Inter, sans-serif" 
+              font-size="24" fill="#666">World Map</text>
+        '''
     
     def generate_location_marker(self, lat: float, lon: float, 
                                label: str = "", color: str = "#E74C3C") -> str:
-        """Generate SVG marker for a location"""
-        x, y = self.coordinates_to_svg(lat, lon)
+        """Generate SVG marker for a location - red circle for visibility"""
+        x, y = self.coordinates_to_svg(lat, lon, self.world_width, self.world_height)
         
         marker_svg = f"""
         <!-- Location marker for {label} -->
         <g class="location-marker">
-            <circle cx="{x}" cy="{y}" r="3" fill="{color}" stroke="white" stroke-width="1"/>
-            <circle cx="{x}" cy="{y}" r="1.5" fill="white"/>
+            <circle cx="{x}" cy="{y}" r="12" fill="none" stroke="{color}" stroke-width="3" opacity="0.8"/>
+            <circle cx="{x}" cy="{y}" r="5" fill="{color}" opacity="0.9"/>
         </g>
         """
-        
-        if label:
-            # Add label if coordinates allow (not too close to edges)
-            if 20 < x < 380 and 20 < y < 180:
-                label_x = x + 8
-                label_y = y - 5
-                marker_svg += f"""
-                <text x="{label_x}" y="{label_y}" font-family="Inter, sans-serif" 
-                      font-size="8" fill="{color}" font-weight="500">{label}</text>
-                """
         
         return marker_svg
     
     def generate_world_map_svg(self, location_data: Dict, width: int = 400, height: int = 200) -> str:
         """
-        Generate complete SVG world map with location marker
+        Generate complete SVG world map with location marker using proper world.svg
         
         Args:
             location_data: Dict with 'coordinates' and 'location' keys
-            width: SVG width
-            height: SVG height
+            width: Target SVG width (will be scaled to fit)
+            height: Target SVG height (will be scaled to fit)
             
         Returns:
             Complete SVG as string
@@ -135,32 +164,23 @@ class WorldMapGenerator:
         
         location_name = location_data.get('location', 'Unknown Location')
         
-        # Generate location marker
+        # Load the world map content
+        world_content = self._load_world_svg_content()
+        
+        # Generate location marker (using world.svg coordinate system)
         marker = self.generate_location_marker(lat, lon, label="", color="#E74C3C")
         
-        # Build complete SVG
+        # Build complete SVG with proper viewBox for the world.svg
+        # The world.svg uses viewBox="200 0 1800 857"
         svg = f"""<?xml version="1.0" encoding="UTF-8"?>
-<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" 
+<svg width="{width}" height="{height}" viewBox="{self.world_viewbox_x} {self.world_viewbox_y} {self.world_width} {self.world_height}" 
      xmlns="http://www.w3.org/2000/svg">
     
-    <!-- Background -->
-    <rect width="{width}" height="{height}" fill="#F8FAFE" stroke="#E1E8ED" stroke-width="1"/>
-    
-    <!-- World outline -->
-    <g class="world-continents">
-        {self.world_outline}
-    </g>
+    <!-- World map content from world.svg -->
+    {world_content}
     
     <!-- Location marker -->
     {marker}
-    
-    <!-- Grid lines (optional, subtle) -->
-    <defs>
-        <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#E8E8E8" stroke-width="0.25" opacity="0.5"/>
-        </pattern>
-    </defs>
-    <rect width="{width}" height="{height}" fill="url(#grid)" opacity="0.3"/>
     
 </svg>"""
         
