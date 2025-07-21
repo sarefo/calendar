@@ -194,8 +194,8 @@ class CalendarGenerator:
                     photo_path = Path(photo_dir) / f"{filename}.jpg"
                     if photo_path.exists():
                         if use_absolute_paths:
-                            # Return absolute file:// URL for PDF conversion
-                            return photo_path.resolve().as_uri()
+                            # Return absolute filesystem path for PDF conversion (not file:// URI)
+                            return str(photo_path.resolve())
                         else:
                             # Return relative path from output directory to source photos
                             return f"../{photo_path}"
@@ -219,8 +219,8 @@ class CalendarGenerator:
             if photo_index < len(jpg_files):
                 photo_file = jpg_files[photo_index]
                 if use_absolute_paths:
-                    # Return absolute file:// URL for PDF conversion
-                    return photo_file.resolve().as_uri()
+                    # Return absolute filesystem path for PDF conversion (not file:// URI)
+                    return str(photo_file.resolve())
                 else:
                     # Return relative path from output directory to source photos
                     return f"../{photo_file}"

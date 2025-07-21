@@ -142,10 +142,25 @@ class CalendarBuilder:
             
             # Generate PDF if requested
             if generate_pdf:
-                pdf_file = await self._convert_to_pdf(html_file, output_dir)
+                # First generate a PDF-specific HTML with absolute paths
+                pdf_html_file = self.calendar_gen.generate_calendar_page(
+                    year, month, None,
+                    photo_dirs=[f"photos/{year}/{month:02d}"],
+                    output_dir=output_dir,
+                    use_absolute_paths=True
+                )
+                
+                pdf_file = await self._convert_to_pdf(pdf_html_file, output_dir)
                 if pdf_file:
                     result["pdf_file"] = pdf_file
                     print(f"✅ Generated PDF: {pdf_file}")
+                    
+                # Clean up the temporary PDF HTML file
+                try:
+                    if pdf_html_file != html_file:
+                        Path(pdf_html_file).unlink()
+                except:
+                    pass
             
             return result
             

@@ -1,14 +1,7 @@
 ## Title bar
-+ improve title: remove "Month 1, 2016"
-+ stretch vertical space used by images (empty space on bottom now)
 + show location in title
-+ use iNaturalist green for title?
 
 ## World map
-+ not showing
-+ dimensions wrong in PDF
-+ red circle, not pin
-+ no text
 
 ## Landing page
 + optionally expand url parameter to #YYYYMMDD (which then sets the exact date given in the date picker)
@@ -21,10 +14,12 @@
 + website: make calendar html mobile ready
 + click on image opens observation
 + able to navigate to next/previous month
-+ 
 
 ## PDF version
++ world map not showing
 + QR code not showing
++ images don't fill their frame
++ last row not showing when six rows
 
 ## Photos
 + add 3 pictures from previous year :)
