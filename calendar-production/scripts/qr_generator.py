@@ -8,10 +8,20 @@ Install with: pip install qrcode[pil]
 """
 
 import qrcode
-from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers import RoundedModuleDrawer
-from qrcode.image.styles.colorfills import SquareGradientColorFill
 from PIL import Image, ImageDraw, ImageFont
+# Optional styled imports - will fallback to basic if not available
+try:
+    from qrcode.image.styledpil import StyledPilImage
+    from qrcode.image.styles.moduledrawers import RoundedModuleDrawer
+    STYLED_AVAILABLE = True
+except ImportError:
+    STYLED_AVAILABLE = False
+
+try:
+    from qrcode.image.styles.colorfills import SquareGradientColorFill
+    GRADIENT_AVAILABLE = True
+except ImportError:
+    GRADIENT_AVAILABLE = False
 import argparse
 import json
 from pathlib import Path
@@ -48,14 +58,14 @@ class QRGenerator:
         qr.make(fit=True)
         
         # Generate image based on style
-        if style == "rounded":
+        if style == "rounded" and STYLED_AVAILABLE:
             img = qr.make_image(
                 image_factory=StyledPilImage,
                 module_drawer=RoundedModuleDrawer(),
                 fill_color="#2C3E50",
                 back_color="white"
             )
-        elif style == "gradient":
+        elif style == "gradient" and GRADIENT_AVAILABLE:
             img = qr.make_image(
                 image_factory=StyledPilImage,
                 color_mask=SquareGradientColorFill(
@@ -65,7 +75,7 @@ class QRGenerator:
                 )
             )
         else:
-            # Default black and white
+            # Default black and white (works with all qrcode versions)
             img = qr.make_image(fill_color="#2C3E50", back_color="white")
         
         # Resize to exact size

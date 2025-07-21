@@ -9,7 +9,11 @@
       "Bash(PYTHONPATH=$HOME/.local/lib/python3.11/site-packages:$PYTHONPATH python3 scripts/build_calendar.py --check-photos --year 2026 --month 1)",
       "Bash(python3:*)",
       "Bash(find:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(PYTHONPATH=/mnt/c/Users/stefa/OneDrive/Documents/GitHub/sarefo.github.io/calendar/calendar-production/scripts python3 scripts/build_calendar.py --year 2026 --month 1)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "Bash(grep:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

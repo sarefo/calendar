@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Calendar production temporary files
+calendar-production/output/
+calendar-production/test_*.html
+calendar-production/test_*.pdf
+
+# IDE
+.vscode/
+.idea/
+
+# System
+.DS_Store
+Thumbs.db

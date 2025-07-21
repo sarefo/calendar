@@ -117,7 +117,8 @@ class CalendarGenerator:
                 for photo_dir in photo_dirs:
                     photo_path = Path(photo_dir) / f"{filename}.jpg"
                     if photo_path.exists():
-                        return str(photo_path.relative_to(Path.cwd()))
+                        # Return relative path from output directory: photos/ -> ../photos/
+                        return str(photo_path).replace("photos/", "../photos/")
         
         # Fallback to old behavior if photo_information.txt doesn't have entry
         for photo_dir in photo_dirs:
@@ -137,7 +138,7 @@ class CalendarGenerator:
             
             if photo_index < len(jpg_files):
                 photo_file = jpg_files[photo_index]
-                return str(photo_file.relative_to(Path.cwd()))
+                return str(photo_file).replace("photos/", "../photos/")
         
         return None
     

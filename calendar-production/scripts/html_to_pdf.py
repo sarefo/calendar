@@ -181,8 +181,11 @@ class HTMLToPDFConverter:
         pdf_path = Path(pdf_file)
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Convert HTML to PDF
-        html_doc = HTML(filename=html_file)
+        # Convert HTML to PDF with proper base URL for relative paths
+        html_path = Path(html_file).resolve()
+        base_url = html_path.parent.as_uri() + "/"
+        
+        html_doc = HTML(filename=str(html_path), base_url=base_url)
         css_doc = CSS(string=css_string)
         
         html_doc.write_pdf(str(pdf_path), stylesheets=[css_doc])
