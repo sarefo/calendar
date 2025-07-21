@@ -342,26 +342,6 @@ class WorldMapGenerator:
         
         return str(output_file)
     
-    def generate_year_maps(self, locations_file: str, output_dir: str = "output/maps") -> list:
-        """Generate world maps for all locations in a year"""
-        
-        with open(locations_file, 'r') as f:
-            locations_data = json.load(f)
-        
-        generated_files = []
-        
-        for month_key, location_data in locations_data.items():
-            # Generate filename
-            filename = f"map-{month_key}.svg"
-            output_path = Path(output_dir) / filename
-            
-            # Generate map
-            map_file = self.save_map_svg(location_data, output_path)
-            generated_files.append(map_file)
-            
-            print(f"✓ Generated map: {map_file}")
-        
-        return generated_files
     
     def create_preview_html(self, svg_files: list, output_path: str = "output/maps/preview.html"):
         """Create HTML preview of all generated maps"""
@@ -412,50 +392,32 @@ class WorldMapGenerator:
         return str(output_file)
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate world maps for calendar headers")
-    parser.add_argument('--locations', required=True, help="JSON file with location data")
-    parser.add_argument('--output', default="output/maps", help="Output directory")
+    parser = argparse.ArgumentParser(description="Generate world maps for individual locations")
+    parser.add_argument('--coordinates', required=True, help="Coordinates string (e.g., '8°017′03″S 115°035′021″E')")
+    parser.add_argument('--location', required=True, help="Location name")
+    parser.add_argument('--output', required=True, help="Output SVG file path")
     parser.add_argument('--width', type=int, default=400, help="Map width in pixels")
     parser.add_argument('--height', type=int, default=200, help="Map height in pixels")
-    parser.add_argument('--preview', action='store_true', help="Generate HTML preview")
-    parser.add_argument('--test', help="Test with single location (month key like '2024-01')")
     
     args = parser.parse_args()
     
     generator = WorldMapGenerator()
     
     try:
-        if args.test:
-            # Test single location
-            with open(args.locations, 'r') as f:
-                locations_data = json.load(f)
-            
-            if args.test not in locations_data:
-                print(f"Location key '{args.test}' not found in {args.locations}")
-                return 1
-            
-            location_data = locations_data[args.test]
-            output_path = f"{args.output}/test-{args.test}.svg"
-            
-            result = generator.save_map_svg(location_data, output_path, args.width, args.height)
-            print(f"✓ Generated test map: {result}")
-            
-        else:
-            # Generate all maps
-            svg_files = generator.generate_year_maps(args.locations, args.output)
-            print(f"✓ Generated {len(svg_files)} world maps")
-            
-            if args.preview:
-                preview_file = generator.create_preview_html(svg_files, f"{args.output}/preview.html")
-                print(f"✓ Generated preview: {preview_file}")
+        location_data = {
+            'coordinates': args.coordinates,
+            'location': args.location
+        }
+        
+        result = generator.save_map_svg(location_data, args.output, args.width, args.height)
+        print(f"✓ Generated world map: {result}")
+        return 0
                 
     except Exception as e:
-        print(f"Error generating world maps: {e}")
+        print(f"Error generating world map: {e}")
         import traceback
         traceback.print_exc()
         return 1
-    
-    return 0
 
 if __name__ == "__main__":
     exit(main())

@@ -1,2 +1,4 @@
-Costa Rica 2025
-
+* location: 
+* coordinates: 
+* country: 
+* year: 

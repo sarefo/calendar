@@ -85,7 +85,7 @@ class CalendarBuilder:
         
         return photo_status["photo_count"] > 0
     
-    async def build_month(self, year: int, month: int, locations_file: str = None,
+    async def build_month(self, year: int, month: int,
                          output_dir: str = "output", generate_pdf: bool = True) -> dict:
         """Build calendar for a single month"""
         
@@ -97,7 +97,13 @@ class CalendarBuilder:
             return {"success": False, "reason": "insufficient_photos"}
         
         try:
-            # Location data will be automatically loaded from README.md by calendar generator
+            # Load and validate location data first - fail fast if missing
+            try:
+                map_location_data = self.calendar_gen._load_location_from_readme(year, month)
+                print(f"✅ Loaded location data: {map_location_data['location_display']}")
+            except (FileNotFoundError, ValueError) as e:
+                print(f"❌ Cannot build calendar for {year}-{month:02d}: {e}")
+                return {"success": False, "reason": f"location_data_missing: {e}"}
             
             # Generate QR code
             base_url = "https://sarefo.github.io/calendar/"
@@ -108,7 +114,6 @@ class CalendarBuilder:
             print(f"✅ Generated QR code: {qr_file}")
             
             # Generate world map
-            map_location_data = self.calendar_gen._load_location_from_readme(year, month)
             map_file = self.map_gen.save_map_svg(
                 map_location_data,
                 f"{output_dir}/assets/map-{year}-{month:02d}.svg"
@@ -142,15 +147,15 @@ class CalendarBuilder:
             
             # Generate PDF if requested
             if generate_pdf:
-                # First generate a PDF-specific HTML with absolute paths
-                pdf_html_file = self.calendar_gen.generate_calendar_page(
+                # Generate a PDF-specific HTML with absolute paths using different filename
+                pdf_html_file = self.calendar_gen.generate_calendar_page_for_pdf(
                     year, month, None,
                     photo_dirs=[f"photos/{year}/{month:02d}"],
                     output_dir=output_dir,
                     use_absolute_paths=True
                 )
                 
-                pdf_file = await self._convert_to_pdf(pdf_html_file, output_dir)
+                pdf_file = await self._convert_to_pdf(pdf_html_file, output_dir, year, month)
                 if pdf_file:
                     result["pdf_file"] = pdf_file
                     print(f"✅ Generated PDF: {pdf_file}")
@@ -164,20 +169,23 @@ class CalendarBuilder:
             
             return result
             
+        except (FileNotFoundError, ValueError) as e:
+            # Location data errors - already handled above, but catch any others
+            print(f"❌ Location data error for {year}-{month:02d}: {e}")
+            return {"success": False, "reason": f"location_data_error: {e}"}
         except Exception as e:
             print(f"❌ Error building calendar for {year}-{month:02d}: {e}")
             import traceback
             traceback.print_exc()
             return {"success": False, "reason": str(e)}
     
-    async def _convert_to_pdf(self, html_file: str, output_dir: str) -> str:
+    async def _convert_to_pdf(self, html_file: str, output_dir: str, year: int, month: int) -> str:
         """Convert HTML to PDF"""
         try:
             converter = HTMLToPDFConverter("auto")
             
-            # Generate PDF filename
-            html_path = Path(html_file)
-            pdf_filename = html_path.stem + ".pdf"
+            # Generate PDF filename from year and month (not HTML filename)
+            pdf_filename = f"{year}{month:02d}.pdf"
             pdf_path = Path(output_dir) / "print-ready" / pdf_filename
             
             # Convert to PDF
@@ -188,7 +196,7 @@ class CalendarBuilder:
             print(f"⚠️  PDF conversion failed: {e}")
             return None
     
-    async def build_year(self, year: int, locations_file: str = None,
+    async def build_year(self, year: int,
                         output_dir: str = "output", 
                         months: list = None, generate_pdf: bool = True) -> dict:
         """Build calendar for entire year or specified months"""
@@ -208,7 +216,7 @@ class CalendarBuilder:
         
         for month in months:
             month_result = await self.build_month(
-                year, month, locations_file, output_dir, generate_pdf
+                year, month, output_dir, generate_pdf
             )
             
             if month_result["success"]:
@@ -272,7 +280,6 @@ def main():
     parser.add_argument('--month', type=int, help="Specific month to build (1-12)")
     parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3')")
     parser.add_argument('--config', help="Path to calendar configuration file")
-    parser.add_argument('--locations', help="Location data file")
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
     parser.add_argument('--check-photos', action='store_true', help="Only check photo availability")
@@ -334,7 +341,7 @@ def main():
             if months_to_build and len(months_to_build) == 1:
                 # Single month build
                 result = await builder.build_month(
-                    args.year, months_to_build[0], args.locations, 
+                    args.year, months_to_build[0], 
                     args.output, not args.no_pdf
                 )
                 
@@ -348,7 +355,7 @@ def main():
             else:
                 # Multiple months or full year
                 results = await builder.build_year(
-                    args.year, args.locations, args.output, 
+                    args.year, args.output, 
                     months_to_build, not args.no_pdf
                 )
                 

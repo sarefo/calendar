@@ -100,12 +100,13 @@ class CalendarGenerator:
         readme_path = Path(f"photos/{year}/{month:02d}/README.md")
         
         if not readme_path.exists():
-            return {
-                "location": "Unknown Location",
-                "country": "",
-                "coordinates": "0°N, 0°E",
-                "location_display": "Unknown Location"
-            }
+            print(f"❌ Error: README.md not found at {readme_path}")
+            print(f"   Please create {readme_path} with location data:")
+            print(f"   + location: [City, Country]")
+            print(f"   + coordinates: [Lat°N/S, Long°E/W]")
+            print(f"   + country: [Country]")
+            print(f"   + year: {year}")
+            raise FileNotFoundError(f"Location data required: {readme_path} not found")
         
         location_data = {}
         
@@ -122,16 +123,41 @@ class CalendarGenerator:
             elif line.startswith('+ country:'):
                 location_data['country'] = line.replace('+ country:', '').strip()
         
-        # Fallback values if not found
-        if 'location' not in location_data:
-            location_data['location'] = "Unknown Location"
-        if 'coordinates' not in location_data:
-            location_data['coordinates'] = "0°N, 0°E"
-        if 'country' not in location_data:
-            location_data['country'] = ""
+        # Validate required location data - no fallback values!
+        missing_data = []
+        placeholder_data = []
         
-        # Create display format: "Location, Country"
-        if location_data['country'] and location_data['location']:
+        # Check for missing fields
+        if 'location' not in location_data or not location_data.get('location').strip():
+            missing_data.append('location')
+        elif '[Location needed]' in location_data.get('location', ''):
+            placeholder_data.append('location')
+            
+        if 'coordinates' not in location_data or not location_data.get('coordinates').strip():
+            missing_data.append('coordinates')
+        elif '[Coordinates needed]' in location_data.get('coordinates', ''):
+            placeholder_data.append('coordinates')
+            
+        if 'country' not in location_data or not location_data.get('country').strip():
+            missing_data.append('country')
+        elif '[Country needed]' in location_data.get('country', ''):
+            placeholder_data.append('country')
+        
+        # Fail fast if data is missing or has placeholders
+        if missing_data or placeholder_data:
+            error_msg = []
+            if missing_data:
+                error_msg.append(f"Missing: {', '.join(missing_data)}")
+            if placeholder_data:
+                error_msg.append(f"Has placeholders: {', '.join(placeholder_data)}")
+                
+            print(f"❌ Error: Incomplete location data in {readme_path}")
+            print(f"   {'; '.join(error_msg)}")
+            print(f"   Please update the file with actual location information.")
+            raise ValueError(f"Incomplete location data in {readme_path}: {'; '.join(error_msg)}")
+        
+        # Create display format: "Location, Country" if country not already in location
+        if location_data['country'] and location_data['country'] not in location_data['location']:
             location_data['location_display'] = f"{location_data['location']}, {location_data['country']}"
         else:
             location_data['location_display'] = location_data['location']
@@ -336,6 +362,23 @@ class CalendarGenerator:
         
         # Save to file
         output_filename = f"{year}{month:02d}.html"
+        output_path = Path(output_dir) / output_filename
+        self.save_calendar_html(html_content, output_path)
+        
+        return str(output_path)
+    
+    def generate_calendar_page_for_pdf(self, year: int, month: int, location_data: Dict = None, 
+                                      photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = True) -> str:
+        """Generate a calendar page specifically for PDF conversion with different filename"""
+        
+        # Generate calendar data
+        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths)
+        
+        # Render HTML
+        html_content = self.render_calendar_html(calendar_data)
+        
+        # Save to file with PDF-specific filename
+        output_filename = f"{year}{month:02d}_pdf.html"
         output_path = Path(output_dir) / output_filename
         self.save_calendar_html(html_content, output_path)
         

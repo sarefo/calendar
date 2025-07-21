@@ -1,0 +1,4 @@
+* location: 
+* coordinates: 
+* country: 
+* year: 

@@ -40,8 +40,7 @@ calendar/
 │   │   └── print_styles.css      # CMYK print-optimized styles
 │   ├── data/                     # Configuration & content
 │   │   ├── calendar_config.json  # Calendar settings
-│   │   └── locations.json        # Monthly location data
-│   ├── output/                   # Generated files
+││   ├── output/                   # Generated files
 │   │   ├── print-ready/          # Final PDFs
 │   │   └── previews/             # HTML previews
 │   ├── photos/                   # Photo repository (consolidated location)
@@ -111,17 +110,18 @@ calendar/
 - **PDF**: PDF/X-1a compliant with embedded fonts
 
 #### 4. **Smart QR & Location Integration**
-- **Auto-location reading**: From `photos/YYYY/MM/README.md` files
+- **Required location data**: From `photos/YYYY/MM/README.md` files (no fallbacks)
 - **QR codes**: Link to `https://sarefo.github.io/calendar/#YYYYMM` with hash parameters
 - **Landing page**: Automatic date picker setting based on QR code month
 - **World maps**: Simplified SVG with location markers in streamlined header
+- **Data validation**: System stops if location data is missing or has placeholders
 
-#### 5. **Enhanced Web Integration**
-- **Smart Landing Page**: Hash parameter support (e.g., `#202601`) for automatic date setting
-- **iNaturalist Integration**: Date selection opens corresponding observation URLs
-- **Calendar Navigation**: Direct links to `YYYYMM.html` format
-- **Auto-Update**: Observation IDs sync automatically with `photo_information.txt`
-- **Responsive Design**: Fresh green color scheme (#74ac00) with portioid credit
+#### 5. **Streamlined Location Data System**
+- **Single Source**: Location data stored only in `README.md` files with photos
+- **No Fallbacks**: System fails fast if location data is missing or incomplete
+- **Auto-Validation**: Checks for placeholder values and missing required fields
+- **Simple Maintenance**: Location data co-located with photos for easy management
+- **Smart Error Messages**: Clear instructions when location data needs to be added
 
 ---
 
@@ -134,9 +134,11 @@ calendar/
    # Create month directory
    mkdir -p calendar-production/photos/2026/01
    
-   # Create README.md with location info (auto-read by system)
+   # Create README.md with complete location info (required - no fallbacks!)
    echo "+ location: Tulamben, Bali" > calendar-production/photos/2026/01/README.md
    echo "+ coordinates: 8°017'03\"S 115°035'021\"E" >> calendar-production/photos/2026/01/README.md
+   echo "+ country: Indonesia" >> calendar-production/photos/2026/01/README.md
+   echo "+ year: 2026" >> calendar-production/photos/2026/01/README.md
    
    # Update calendar-production/photos/photo_information.txt with photo order
    # Format: month\tfilename\tobservation_id (tab-separated)
@@ -171,7 +173,7 @@ calendar/
 
 3. **Generate Full Year**
    ```bash
-   python3 scripts/build_calendar.py --year 2026 --locations data/locations.json
+   python3 scripts/build_calendar.py --year 2026
    ```
 
 ### Phase 3: Print Production
@@ -183,7 +185,7 @@ calendar/
 
 2. **Generate Print-Ready PDFs**
    ```bash
-   python3 scripts/build_calendar.py --year 2026 --locations data/locations.json
+   python3 scripts/build_calendar.py --year 2026
    ```
 
 3. **Create Print Package**
@@ -216,17 +218,22 @@ Core calendar settings:
 }
 ```
 
-### `data/locations.json`
-Monthly location themes:
-```json
-{
-  "2026-01": {
-    "location": "Vilcabamba, Ecuador",
-    "coordinates": "4.25°S, 79.23°W",
-    "website_url": "https://sarefo.github.io/calendar-stories/?month=2026-01",
-    "photographer_name": "Your Name"
-  }
-}
+### Photo Directory Location Data
+Each photo month directory contains location information in `README.md`:
+```
+calendar-production/photos/YYYY/MM/README.md:
++ location: [City, Country/Region]
++ coordinates: [Lat°N/S, Long°E/W]
++ country: [Country]
++ year: [YYYY]
+```
+
+Example:
+```
++ location: Bali, Indonesia
++ coordinates: 8°017′03″S 115°035′021″E
++ country: Indonesia
++ year: 2026
 ```
 
 ---
@@ -272,7 +279,7 @@ python3 scripts/build_calendar.py --year 2026 --month 1
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3"
 
 # Build full year with print package
-python3 scripts/build_calendar.py --year 2026 --locations data/locations.json
+python3 scripts/build_calendar.py --year 2026
 
 # Skip PDF generation (HTML only)
 python3 scripts/build_calendar.py --year 2026 --no-pdf
@@ -290,9 +297,9 @@ python3 scripts/photoshop_specs.py --input-dir photos/2026/01 --output specs.jso
 python3 scripts/qr_generator.py --year 2026 --month 1 --base-url "https://sarefo.github.io/calendar/"
 ```
 
-**World Map Generation**:
+**World Map Generation** (for individual locations):
 ```bash
-python3 scripts/world_map_generator.py --locations data/locations.json --output output/maps
+python3 scripts/world_map_generator.py --coordinates "8°017′03″S 115°035′021″E" --location "Bali, Indonesia" --output output/map.svg
 ```
 
 **Week Number Calculation**:
