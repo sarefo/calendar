@@ -44,14 +44,14 @@ calendar/
 │   ├── output/                   # Generated files
 │   │   ├── print-ready/          # Final PDFs
 │   │   └── previews/             # HTML previews
+│   ├── photos/                   # Photo repository (consolidated location)
+│   │   ├── photo_information.txt # Photo ordering file (month\tfilename\tobservation_id)
+│   │   └── YYYY/                 # Year directory
+│   │       └── MM/               # Month directory (01-12)
+│   │           ├── photo1.jpg    # Photos listed in photo_information.txt
+│   │           ├── photo2.jpg    # Order determined by file, not filename
+│   │           └── ...           # etc.
 │   └── website/                  # GitHub.io companion site (future)
-└── photos/                       # Photo repository
-    ├── photo_information.txt     # Photo ordering file (month\tfilename\tobservation_id)
-    └── YYYY/                     # Year directory
-        └── MM/                   # Month directory (01-12)
-            ├── photo1.jpg        # Photos listed in photo_information.txt
-            ├── photo2.jpg        # Order determined by file, not filename
-            └── ...               # etc.
 ```
 
 ---
@@ -61,8 +61,8 @@ calendar/
 ### Core Components
 
 #### 1. **Photo Management**
-- **Structure**: `photos/YYYY/MM/` (e.g., `photos/2026/01/`)
-- **Ordering**: Controlled by `photos/photo_information.txt` (tab-separated format)
+- **Structure**: `calendar-production/photos/YYYY/MM/` (e.g., `calendar-production/photos/2026/01/`)
+- **Ordering**: Controlled by `calendar-production/photos/photo_information.txt` (tab-separated format)
 - **Format**: `.jpg` files, square crop recommended
 - **Processing**: Photoshop batch processing with provided specs
 
@@ -92,9 +92,9 @@ calendar/
 1. **Organize Photos**
    ```bash
    # Create month directory
-   mkdir -p photos/2026/01
+   mkdir -p calendar-production/photos/2026/01
    
-   # Update photos/photo_information.txt with photo order
+   # Update calendar-production/photos/photo_information.txt with photo order
    # Format: month\tfilename\tobservation_id (tab-separated)
    # Example: 01\tIMG_8477\t149640464
    ```
@@ -102,7 +102,7 @@ calendar/
 2. **Generate Crop Specifications**
    ```bash
    cd calendar-production
-   python3 scripts/photoshop_specs.py --input-dir ../photos/2026/01 --output photoshop_specs.json
+   python3 scripts/photoshop_specs.py --input-dir photos/2026/01 --output photoshop_specs.json
    ```
 
 3. **Photoshop Batch Processing**
@@ -235,7 +235,7 @@ python3 scripts/build_calendar.py --year 2026 --no-pdf
 
 **Photo Specifications**:
 ```bash
-python3 scripts/photoshop_specs.py --input-dir ../photos/2026/01 --output specs.json
+python3 scripts/photoshop_specs.py --input-dir photos/2026/01 --output specs.json
 ```
 
 **QR Code Generation**:
@@ -346,9 +346,9 @@ python3 scripts/build_calendar.py --install-deps
 ```
 
 **"No photos found for month"**
-- Check photo directory structure: `photos/YYYY/MM/`
-- Ensure photos have `.jpg` extension
-- Verify `photos/photo_information.txt` has entries for the month
+- Check photo directory structure: `calendar-production/photos/YYYY/MM/`
+- Ensure photos have `.jpg` extension  
+- Verify `calendar-production/photos/photo_information.txt` has entries for the month
 - Run: `python3 scripts/build_calendar.py --check-photos --year YYYY --month MM`
 
 **"PDF conversion failed"**
