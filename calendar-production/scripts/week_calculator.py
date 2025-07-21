@@ -134,23 +134,31 @@ class WeekCalculator:
         total_cells_needed = first_weekday + days_in_month
         rows_needed = (total_cells_needed + 6) // 7  # Ceiling division
         
-        # Define layout constants
-        total_grid_height = 240  # mm - keep consistent
+        # Define layout constants with increased available space
+        total_grid_height = 245  # mm - increased from 240mm (5mm more space)
         header_row_height = 8    # mm - weekday headers
-        available_height = total_grid_height - header_row_height  # 232mm
+        available_height = total_grid_height - header_row_height  # 237mm
         
         # Calculate optimal row height based on actual rows needed
         row_height = available_height / rows_needed
         # Optimize photo height - leave less margin for better space utilization
-        photo_height = row_height - 4  # Reduced margin for better photo visibility
+        photo_height = row_height - 3  # Reduced margin from 4mm to 3mm for even larger photos
         layout_type = f"{rows_needed}-row"
+        
+        # Calculate optimal photo width with equal padding
+        # A3 width: 420mm, padding: 20mm total (10mm each side), available: 400mm
+        # 7 weekday columns only (week numbers are now outside table in left margin)
+        # Border spacing: 2mm × 6 gaps between 7 columns = 12mm
+        # Available for 7 photos: 400 - 12 = 388mm
+        photo_width = 388 / 7  # Approximately 55.4mm, round to 55mm
+        photo_width = round(photo_width)  # 55mm - even wider!
         
         return {
             "rows_needed": rows_needed,
             "layout_type": layout_type,
             "row_height": round(row_height, 1),
             "photo_height": round(photo_height, 1),
-            "photo_width": 54,  # Keep width constant
+            "photo_width": photo_width,  # Dynamic width calculation
             "first_weekday": first_weekday,
             "days_in_month": days_in_month,
             "has_overflow": rows_needed > 5

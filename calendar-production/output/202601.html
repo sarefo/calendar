@@ -123,10 +123,11 @@
         
         
         /* Main calendar grid - Dynamic 5-row layout */
-        /* Photo dimensions: 54mm × 42.4mm */
+        /* Photo dimensions: 55mm × 44.4mm */
         .calendar-container {
-            height: 240mm;
-            padding: 8mm 10mm;
+            height: 245mm;
+            padding: 3mm 10mm 3mm 10mm;
+            position: relative;
         }
         
         .calendar-table {
@@ -136,13 +137,23 @@
             border-spacing: 2mm;
         }
         
-        .week-number-col {
-            width: 15mm;
-            text-align: center;
+        .week-number-overlay {
+            position: absolute;
+            left: 2mm;
+            top: calc(3mm + 8mm + 2mm);
+            width: 8mm;
             font-size: 8pt;
             font-weight: 500;
             color: #7F8C8D;
-            vertical-align: middle;
+            pointer-events: none;
+        }
+        
+        .week-number-item {
+            height: 47.4mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2mm;
         }
         
         .weekday-header-row {
@@ -161,12 +172,12 @@
         }
         
         .calendar-week-row {
-            height: 46.4mm;
+            height: 47.4mm;
         }
         
         .calendar-day {
-            width: 54mm;
-            height: 46.4mm;
+            width: 55mm;
+            height: 47.4mm;
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
@@ -182,7 +193,7 @@
         
         .day-image {
             width: 100%;
-            height: 42.4mm;
+            height: 44.4mm;
             object-fit: cover;
             object-position: center;
             border-radius: 3mm;
@@ -221,8 +232,8 @@
             }
             
             .day-image {
-                width: 54mm !important;
-                height: 42.4mm !important;
+                width: 55mm !important;
+                height: 44.4mm !important;
                 object-fit: cover !important;
                 object-position: center !important;
                 border-radius: 3mm !important;
@@ -230,8 +241,8 @@
             }
             
             .calendar-day {
-                width: 54mm !important;
-                height: 46.4mm !important;
+                width: 55mm !important;
+                height: 47.4mm !important;
             }
         }
         
@@ -356,10 +367,24 @@
         
         <!-- Main calendar grid -->
         <main class="calendar-container">
+            <!-- Week numbers positioned outside table -->
+            <div class="week-number-overlay">
+                
+                <div class="week-number-item">1</div>
+                
+                <div class="week-number-item">2</div>
+                
+                <div class="week-number-item">3</div>
+                
+                <div class="week-number-item">4</div>
+                
+                <div class="week-number-item">5</div>
+                
+            </div>
+            
             <table class="calendar-table">
                 <!-- Weekday headers -->
                 <tr class="weekday-header-row">
-                    <td class="week-number-col">WK</td>
                     
                     <td class="weekday-header">Mon</td>
                     
@@ -380,7 +405,6 @@
                 <!-- Calendar weeks -->
                 
                 <tr class="calendar-week-row">
-                    <td class="week-number-col">1</td>
                     
                     <td class="calendar-day previous-month">
                         
@@ -445,7 +469,6 @@
                 </tr>
                 
                 <tr class="calendar-week-row">
-                    <td class="week-number-col">2</td>
                     
                     <td class="calendar-day ">
                         
@@ -513,7 +536,6 @@
                 </tr>
                 
                 <tr class="calendar-week-row">
-                    <td class="week-number-col">3</td>
                     
                     <td class="calendar-day ">
                         
@@ -581,7 +603,6 @@
                 </tr>
                 
                 <tr class="calendar-week-row">
-                    <td class="week-number-col">4</td>
                     
                     <td class="calendar-day ">
                         
@@ -649,7 +670,6 @@
                 </tr>
                 
                 <tr class="calendar-week-row">
-                    <td class="week-number-col">5</td>
                     
                     <td class="calendar-day ">
                         

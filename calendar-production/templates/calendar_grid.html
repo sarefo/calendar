@@ -125,8 +125,9 @@
         /* Main calendar grid - Dynamic {{ layout.layout_type }} layout */
         /* Photo dimensions: {{ layout.photo_width }}mm × {{ layout.photo_height }}mm */
         .calendar-container {
-            height: 240mm;
-            padding: 8mm 10mm;
+            height: 245mm;
+            padding: 3mm 10mm 3mm 10mm;
+            position: relative;
         }
         
         .calendar-table {
@@ -136,13 +137,23 @@
             border-spacing: 2mm;
         }
         
-        .week-number-col {
-            width: 15mm;
-            text-align: center;
+        .week-number-overlay {
+            position: absolute;
+            left: 2mm;
+            top: calc(3mm + 8mm + 2mm);
+            width: 8mm;
             font-size: 8pt;
             font-weight: 500;
             color: #7F8C8D;
-            vertical-align: middle;
+            pointer-events: none;
+        }
+        
+        .week-number-item {
+            height: {{ layout.row_height }}mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2mm;
         }
         
         .weekday-header-row {
@@ -315,10 +326,16 @@
         
         <!-- Main calendar grid -->
         <main class="calendar-container">
+            <!-- Week numbers positioned outside table -->
+            <div class="week-number-overlay">
+                {% for week in weeks %}
+                <div class="week-number-item">{{ week.week_number }}</div>
+                {% endfor %}
+            </div>
+            
             <table class="calendar-table">
                 <!-- Weekday headers -->
                 <tr class="weekday-header-row">
-                    <td class="week-number-col">WK</td>
                     {% for weekday in weekday_headers %}
                     <td class="weekday-header">{{ weekday[:3] }}</td>
                     {% endfor %}
@@ -327,7 +344,6 @@
                 <!-- Calendar weeks -->
                 {% for week in weeks %}
                 <tr class="calendar-week-row">
-                    <td class="week-number-col">{{ week.week_number }}</td>
                     {% for day in week.dates %}
                     <td class="calendar-day {% if day.is_previous_month %}previous-month{% elif day.is_next_month %}next-month{% endif %}">
                         {% if day.image_path %}
