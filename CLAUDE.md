@@ -67,10 +67,11 @@ calendar/
 - **Processing**: Photoshop batch processing with provided specs
 
 #### 2. **Calendar Generation**
-- **Grid**: 7 columns (Mon-Sun) with ISO week numbers
+- **Grid**: 7 columns (Mon-Sun) with ISO week numbers using HTML table layout
 - **Overflow**: Previous/next month photos at 50% opacity
 - **Typography**: Inter font family, CMYK-safe colors
-- **Layout**: 45mm header, flexible calendar, 25mm footer
+- **Layout**: 45mm header, table-based calendar grid, 25mm footer
+- **PDF Compatibility**: Table-based CSS layout ensures proper rendering in WeasyPrint
 
 #### 3. **Print Optimization**
 - **Format**: A3 landscape (420×297mm) with 3mm bleed
@@ -370,15 +371,18 @@ python3 scripts/build_calendar.py --install-deps
 ## 📞 Support & Development
 
 ### Current Status
-✅ **Core workflow implemented and tested**  
-✅ **January 2026 photos verified (31 photos)**  
-🔄 **Ready for production testing**  
+✅ **Core workflow implemented and fully tested**  
+✅ **January & February 2026 calendars generated successfully**  
+✅ **PDF image embedding issue resolved**  
+✅ **Table-based layout ensures WeasyPrint compatibility**  
+✅ **Print-ready PDFs generated (18MB & 22MB respectively)**  
+🔄 **Photo consolidation in progress**  
 ⏳ **GitHub.io website planned for future session**  
 
 ### Next Steps
-1. **Test full month generation** with your January 2026 photos
-2. **Generate first prototype** for print testing
-3. **Iterate on design** based on print results
+1. ✅ **Generated working PDFs** for January and February 2026
+2. ✅ **Resolved PDF image embedding** with table-based CSS layout
+3. 🔄 **Consolidate photo storage** to eliminate triplication
 4. **Plan GitHub.io website** in separate session
 
 ### Contact

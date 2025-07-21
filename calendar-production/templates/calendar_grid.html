@@ -19,8 +19,6 @@
             position: relative;
             background: white;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
@@ -30,13 +28,12 @@
             padding: 8mm 10mm;
             background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            position: relative;
         }
         
         .title-section {
-            flex: 1;
+            width: 320mm;
+            float: left;
         }
         
         .month-title {
@@ -58,94 +55,62 @@
             height: 30mm;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            float: right;
             font-size: 10pt;
             text-align: center;
+            line-height: 30mm;
         }
         
         /* Main calendar grid */
         .calendar-container {
-            flex: 1;
+            height: 200mm;
             padding: 5mm 10mm;
-            display: flex;
         }
         
-        .week-numbers {
+        .calendar-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: separate;
+            border-spacing: 2mm;
+        }
+        
+        .week-number-col {
             width: 15mm;
-            display: flex;
-            flex-direction: column;
-            margin-right: 3mm;
-        }
-        
-        .week-number-header {
-            height: 8mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8pt;
-            font-weight: 600;
-            color: #7F8C8D;
-            border-bottom: 1px solid #BDC3C7;
-        }
-        
-        .week-number {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
             font-size: 8pt;
             font-weight: 500;
             color: #7F8C8D;
-            border-bottom: 1px solid #ECF0F1;
+            vertical-align: middle;
         }
         
-        .calendar-grid {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .weekday-headers {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
+        .weekday-header-row {
             height: 8mm;
-            border-bottom: 2px solid #2C3E50;
         }
         
         .weekday-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
             font-size: 10pt;
             font-weight: 600;
             color: #2C3E50;
             text-transform: uppercase;
             letter-spacing: 0.5mm;
+            border-bottom: 2px solid #2C3E50;
+            vertical-align: middle;
         }
         
-        .calendar-weeks {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .calendar-week {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2mm;
-            margin-bottom: 2mm;
+        .calendar-week-row {
+            height: 30mm;
         }
         
         .calendar-day {
+            width: 50mm;
+            height: 30mm;
             position: relative;
-            aspect-ratio: 1;
             border-radius: 2mm;
             overflow: hidden;
             background: #F8F9FA;
             border: 1px solid #E9ECEF;
+            padding: 0;
         }
         
         .calendar-day.previous-month,
@@ -193,15 +158,11 @@
             padding: 5mm 10mm;
             background: #F8F9FA;
             border-top: 1px solid #E9ECEF;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            position: relative;
         }
         
         .qr-section {
-            display: flex;
-            align-items: center;
-            gap: 5mm;
+            float: left;
         }
         
         .qr-code {
@@ -209,24 +170,28 @@
             height: 15mm;
             background: #2C3E50;
             border-radius: 2mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            float: left;
             color: white;
             font-size: 8pt;
             text-align: center;
+            line-height: 15mm;
+            margin-right: 5mm;
         }
         
         .qr-text {
             font-size: 9pt;
             color: #7F8C8D;
             line-height: 1.3;
+            float: left;
+            margin-top: 2mm;
         }
         
         .branding {
+            float: right;
             text-align: right;
             font-size: 9pt;
             color: #7F8C8D;
+            margin-top: 2mm;
         }
         
         /* Print optimizations */
@@ -310,42 +275,33 @@
         
         <!-- Main calendar grid -->
         <main class="calendar-container">
-            <!-- Week numbers column -->
-            <div class="week-numbers">
-                <div class="week-number-header">WK</div>
-                {% for week in weeks %}
-                <div class="week-number">{{ week.week_number }}</div>
-                {% endfor %}
-            </div>
-            
-            <!-- Calendar grid -->
-            <div class="calendar-grid">
+            <table class="calendar-table">
                 <!-- Weekday headers -->
-                <div class="weekday-headers">
+                <tr class="weekday-header-row">
+                    <td class="week-number-col">WK</td>
                     {% for weekday in weekday_headers %}
-                    <div class="weekday-header">{{ weekday[:3] }}</div>
+                    <td class="weekday-header">{{ weekday[:3] }}</td>
                     {% endfor %}
-                </div>
+                </tr>
                 
                 <!-- Calendar weeks -->
-                <div class="calendar-weeks">
-                    {% for week in weeks %}
-                    <div class="calendar-week">
-                        {% for day in week.dates %}
-                        <div class="calendar-day {% if day.is_previous_month %}previous-month{% elif day.is_next_month %}next-month{% endif %}">
-                            {% if day.image_path %}
-                            <img src="{{ day.image_path }}" alt="Photo for {{ day.date }}" class="day-image">
-                            {% endif %}
-                            <div class="day-overlay">
-                                <div class="day-weekday">{{ weekday_headers[day.weekday][:3] }}</div>
-                                <div class="day-number">{{ day.day }}</div>
-                            </div>
+                {% for week in weeks %}
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">{{ week.week_number }}</td>
+                    {% for day in week.dates %}
+                    <td class="calendar-day {% if day.is_previous_month %}previous-month{% elif day.is_next_month %}next-month{% endif %}">
+                        {% if day.image_path %}
+                        <img src="{{ day.image_path }}" alt="Photo for {{ day.date }}" class="day-image">
+                        {% endif %}
+                        <div class="day-overlay">
+                            <div class="day-weekday">{{ weekday_headers[day.weekday][:3] }}</div>
+                            <div class="day-number">{{ day.day }}</div>
                         </div>
-                        {% endfor %}
-                    </div>
+                    </td>
                     {% endfor %}
-                </div>
-            </div>
+                </tr>
+                {% endfor %}
+            </table>
         </main>
         
         <!-- Footer with QR code and branding -->

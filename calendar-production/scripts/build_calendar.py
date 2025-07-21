@@ -121,11 +121,12 @@ class CalendarBuilder:
             )
             print(f"✅ Generated world map: {map_file}")
             
-            # Generate calendar HTML
+            # Generate calendar HTML (using source photos directly)
             html_file = self.calendar_gen.generate_calendar_page(
                 year, month, location_data,
                 photo_dirs=[f"photos/{year}/{month:02d}"],
-                output_dir=output_dir
+                output_dir=output_dir,
+                use_absolute_paths=False
             )
             print(f"✅ Generated HTML: {html_file}")
             

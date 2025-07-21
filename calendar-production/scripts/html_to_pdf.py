@@ -200,6 +200,81 @@ class HTMLToPDFConverter:
             'printBackground': True,
         }
     
+    def _preprocess_html_for_pdf(self, html_file: str) -> str:
+        """Preprocess HTML file by copying images to temp directory and updating paths"""
+        import shutil
+        import re
+        
+        html_path = Path(html_file)
+        html_content = html_path.read_text(encoding='utf-8')
+        base_path = html_path.parent.resolve()
+        
+        # Create temporary directory for images
+        temp_dir = html_path.parent / "temp_images_pdf"
+        temp_dir.mkdir(exist_ok=True)
+        
+        converted_count = 0
+        
+        def replace_relative_path(match):
+            nonlocal converted_count
+            src_path = match.group(1)
+            
+            # Skip data URLs and absolute URLs
+            if src_path.startswith(('data:', 'http:', 'https:', 'file:')):
+                print(f"  Skipping {src_path[:50]}... (data/absolute URL)")
+                return match.group(0)
+            
+            # Resolve the source image path
+            if src_path.startswith('../'):
+                relative_path = src_path[3:]  # Remove '../'
+                source_path = (base_path.parent / relative_path).resolve()
+            else:
+                source_path = (base_path / src_path).resolve()
+            
+            print(f"  Processing: {src_path}")
+            print(f"    Source: {source_path}")
+            print(f"    Exists: {source_path.exists()}")
+            
+            if source_path.exists():
+                # Copy image to temp directory
+                image_name = source_path.name
+                temp_image_path = temp_dir / image_name
+                
+                # Handle duplicate names by adding counter
+                counter = 1
+                while temp_image_path.exists():
+                    name_parts = source_path.stem, counter, source_path.suffix
+                    temp_image_path = temp_dir / f"{name_parts[0]}_{name_parts[1]}{name_parts[2]}"
+                    counter += 1
+                
+                shutil.copy2(source_path, temp_image_path)
+                converted_count += 1
+                
+                # Return relative path from HTML file to temp image
+                relative_temp_path = f"temp_images_pdf/{temp_image_path.name}"
+                print(f"    Copied to: {temp_image_path}")
+                print(f"    New path: {relative_temp_path}")
+                return f'src="{relative_temp_path}"'
+            else:
+                print(f"    WARNING: File not found, keeping original path")
+                return match.group(0)
+        
+        print(f"Preprocessing HTML for PDF conversion...")
+        print(f"Base path: {base_path}")
+        print(f"Temp dir: {temp_dir}")
+        
+        # Replace all img src attributes
+        updated_content = re.sub(r'src="([^"]+)"', replace_relative_path, html_content)
+        
+        print(f"Converted {converted_count} image paths and copied to temp directory")
+        
+        # Create temporary file with updated content
+        temp_file = html_path.parent / f"{html_path.stem}_pdf_temp.html"
+        temp_file.write_text(updated_content, encoding='utf-8')
+        
+        print(f"Created temporary HTML file: {temp_file}")
+        return str(temp_file)
+
     async def convert_html_to_pdf(self, html_file: str, pdf_file: str,
                                 print_options: dict = None) -> str:
         """Convert HTML file to PDF using the selected method"""
@@ -207,16 +282,41 @@ class HTMLToPDFConverter:
         if not Path(html_file).exists():
             raise FileNotFoundError(f"HTML file not found: {html_file}")
         
-        print(f"Converting {html_file} to PDF using {self.method}...")
+        # Preprocess HTML to fix image paths for PDF conversion
+        processed_html = self._preprocess_html_for_pdf(html_file)
         
-        if self.method == "playwright":
-            return await self.convert_with_playwright(html_file, pdf_file, print_options)
-        elif self.method == "pyppeteer":
-            return await self.convert_with_pyppeteer(html_file, pdf_file, print_options)
-        elif self.method == "weasyprint":
-            return self.convert_with_weasyprint(html_file, pdf_file, print_options)
-        else:
-            raise ValueError(f"Unknown conversion method: {self.method}")
+        try:
+            print(f"Converting {html_file} to PDF using {self.method}...")
+            
+            if self.method == "playwright":
+                result = await self.convert_with_playwright(processed_html, pdf_file, print_options)
+            elif self.method == "pyppeteer":
+                result = await self.convert_with_pyppeteer(processed_html, pdf_file, print_options)
+            elif self.method == "weasyprint":
+                result = self.convert_with_weasyprint(processed_html, pdf_file, print_options)
+            else:
+                raise ValueError(f"Unknown conversion method: {self.method}")
+            
+            return result
+            
+        finally:
+            # Clean up temporary files
+            try:
+                import shutil
+                html_path = Path(html_file)
+                temp_dir = html_path.parent / "temp_images_pdf"
+                if temp_dir.exists():
+                    shutil.rmtree(temp_dir)
+                    print(f"✅ Cleaned up temporary files: {temp_dir}")
+                
+                # Clean up temporary HTML file
+                if 'processed_html' in locals():
+                    temp_html = Path(processed_html)
+                    if temp_html.exists() and "_pdf_temp.html" in temp_html.name:
+                        temp_html.unlink()
+                        print(f"✅ Cleaned up temporary HTML: {temp_html}")
+            except Exception as e:
+                print(f"⚠️ Cleanup warning: {e}")
     
     async def convert_multiple_files(self, html_files: List[str], 
                                    output_dir: str = "output/print-ready",

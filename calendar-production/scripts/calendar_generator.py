@@ -93,10 +93,15 @@ class CalendarGenerator:
         
         return photo_info
 
-    def find_photo_for_date(self, target_date: date, photo_dirs: List[str]) -> Optional[str]:
+    def find_photo_for_date(self, target_date: date, photo_dirs: List[str], use_absolute_paths: bool = False) -> Optional[str]:
         """
         Find photo for a specific date from photo directories
         Uses order from photo_information.txt: first photo = day 1, second = day 2, etc.
+        
+        Args:
+            target_date: The date to find a photo for
+            photo_dirs: List of photo directories to search
+            use_absolute_paths: If True, return absolute file:// URLs instead of relative paths
         """
         # Load photo information if not already loaded
         if not hasattr(self, '_photo_info'):
@@ -117,8 +122,12 @@ class CalendarGenerator:
                 for photo_dir in photo_dirs:
                     photo_path = Path(photo_dir) / f"{filename}.jpg"
                     if photo_path.exists():
-                        # Return relative path from output directory: photos/ -> ../photos/
-                        return str(photo_path).replace("photos/", "../photos/")
+                        if use_absolute_paths:
+                            # Return absolute file:// URL for PDF conversion
+                            return photo_path.resolve().as_uri()
+                        else:
+                            # Return relative path from output directory to source photos
+                            return f"../{photo_path}"
         
         # Fallback to old behavior if photo_information.txt doesn't have entry
         for photo_dir in photo_dirs:
@@ -138,7 +147,12 @@ class CalendarGenerator:
             
             if photo_index < len(jpg_files):
                 photo_file = jpg_files[photo_index]
-                return str(photo_file).replace("photos/", "../photos/")
+                if use_absolute_paths:
+                    # Return absolute file:// URL for PDF conversion
+                    return photo_file.resolve().as_uri()
+                else:
+                    # Return relative path from output directory to source photos
+                    return f"../{photo_file}"
         
         return None
     
@@ -172,7 +186,7 @@ class CalendarGenerator:
         
         return None
     
-    def generate_month_data(self, year: int, month: int, location_data: Dict = None, photo_dirs: List[str] = None) -> Dict:
+    def generate_month_data(self, year: int, month: int, location_data: Dict = None, photo_dirs: List[str] = None, use_absolute_paths: bool = False) -> Dict:
         """Generate all data needed for a month's calendar"""
         
         # Get calendar grid from week calculator
@@ -203,14 +217,14 @@ class CalendarGenerator:
                 
                 if current_month == month and current_year == year:
                     # Current month - use main photo directories
-                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], photo_dirs)
+                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], photo_dirs, use_absolute_paths)
                 else:
                     # Previous/next month - look in respective directories
                     overflow_dirs = [
                         f"photos/{current_year}/{current_month:02d}",
                         f"photos/{current_year}/{current_month:02d}-processed"
                     ]
-                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs)
+                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths)
                 
                 # Add placeholder if no photo found
                 if not day_info['image_path']:
@@ -239,11 +253,11 @@ class CalendarGenerator:
             f.write(html_content)
     
     def generate_calendar_page(self, year: int, month: int, location_data: Dict = None, 
-                             photo_dirs: List[str] = None, output_dir: str = "output") -> str:
+                             photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = False) -> str:
         """Generate a complete calendar page for one month"""
         
         # Generate calendar data
-        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs)
+        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths)
         
         # Render HTML
         html_content = self.render_calendar_html(calendar_data)
