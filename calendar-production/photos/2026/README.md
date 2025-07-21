@@ -2,12 +2,12 @@
 + 02: Su-ngai Kolok, Thailand
 + 03: Sumatra, Indonesia
 + 04: Northern India
-05: Colombia
++ 05: Colombia
 06: Koh Tao, Thailand
 07: Hong Kong
-08: Borneo, Malaysia
-09: Ecuador
-10: Heupelzen, Germany
+08: Ecuador
++ 09: Germany
++ 10: Borneo, Malaysia
 11: Sulawesi, Indonesia
 12: Costa Rica
 
