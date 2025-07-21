@@ -23,4 +23,5 @@
 
 ## Photos
 + add 3 pictures from previous year :)
-+ add photos for 03-12
++ add photos for 06-12
++ not sure photo order from file works
