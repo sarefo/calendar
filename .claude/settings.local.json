@@ -15,7 +15,9 @@
       "Bash(grep:*)",
       "Bash(cp:*)",
       "mcp__puppeteer__puppeteer_screenshot",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "mcp__puppeteer__puppeteer_click",
+      "mcp__puppeteer__puppeteer_evaluate"
     ],
     "deny": []
   }

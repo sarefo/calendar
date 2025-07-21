@@ -41,7 +41,7 @@
             font-size: 1.1em;
         }
 
-        .date-selector {
+        .date-display {
             background: #f8f9fa;
             border-radius: 8px;
             padding: 30px;
@@ -49,20 +49,61 @@
             border: 2px solid #e9ecef;
         }
 
-        .date-selector h2 {
+        .date-display h2 {
             color: #2C3E50;
             margin-bottom: 20px;
             font-size: 1.8em;
         }
 
-        .date-input {
-            font-size: 1.5em;
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
+        .current-date {
+            font-size: 1.8em;
+            padding: 20px;
+            background: linear-gradient(135deg, #74ac00, #8bc34a);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 15px;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .current-date:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(116, 172, 0, 0.4);
+        }
+
+        .date-help {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .pick-date-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
             border-radius: 6px;
-            background: white;
-            color: #2C3E50;
+            cursor: pointer;
+            font-size: 1em;
             font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .pick-date-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .date-input {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
         }
 
         .calendar-section {
@@ -152,8 +193,15 @@
         <h1>Macro Calendar</h1>
         <p class="subtitle">A daily journey through macro photography from around the world</p>
 
-        <div class="date-selector">
-            <h2>Whats on the photo?</h2>
+        <div class="date-display">
+            <h2>What's on the photo?</h2>
+            <div class="current-date" id="currentDateDisplay" title="Click to view this photo's observation on iNaturalist">
+                <!-- Date will be set by JavaScript -->
+            </div>
+            <div class="date-help">
+                👆 Click the date above to see detailed info about that day's photo
+            </div>
+            <button class="pick-date-btn" id="pickDateBtn">Pick Other Date</button>
             <input type="date" class="date-input" id="todayDate">
         </div>
 
@@ -198,8 +246,48 @@
             '2026-02-01': '149616613', '2026-02-02': '149640464', '2026-02-03': '149641766', '2026-02-04': '149641771', '2026-02-05': '149640485', '2026-02-06': '149640503', '2026-02-07': '149643539', '2026-02-08': '149643537', '2026-02-09': '149643532', '2026-02-10': '149642505', '2026-02-11': '149642499', '2026-02-12': '149642479', '2026-02-13': '149641803', '2026-02-14': '149641779', '2026-02-15': '149641778', '2026-02-16': '149823164', '2026-02-17': '149823161', '2026-02-18': '149823125', '2026-02-19': '149823123', '2026-02-20': '149823070', '2026-02-21': '149810570', '2026-02-22': '149712428', '2026-02-23': '149643583', '2026-02-24': '149643586', '2026-02-25': '149643569', '2026-02-26': '149643561', '2026-02-27': '149823083', '2026-02-28': '149612276',
         };
 
-        // Set today's date or date from hash parameter
+        // DOM elements
         const todayInput = document.getElementById('todayDate');
+        const currentDateDisplay = document.getElementById('currentDateDisplay');
+        const pickDateBtn = document.getElementById('pickDateBtn');
+        
+        let currentDate = new Date();
+        
+        // Format date for display
+        function formatDateForDisplay(date) {
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Format date for observation lookup (YYYY-MM-DD)
+        function formatDateForLookup(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Update the displayed date
+        function updateDateDisplay(date) {
+            currentDate = date;
+            currentDateDisplay.textContent = formatDateForDisplay(date);
+            todayInput.valueAsDate = date;
+        }
+        
+        // Open observation for current date
+        function openCurrentObservation() {
+            const dateString = formatDateForLookup(currentDate);
+            const observationId = photoObservations[dateString];
+
+            if (observationId) {
+                const url = `https://www.inaturalist.org/observations/${observationId}`;
+                window.open(url, '_blank');
+            } else {
+                alert('No observation available for this date yet. Photos for this date may not be added to the calendar.');
+            }
+        }
         
         // Check for hash parameter like #202601
         function setDateFromHash() {
@@ -224,32 +312,64 @@
                         targetDate = new Date(year, month - 1, 1);
                     }
                     
-                    todayInput.valueAsDate = targetDate;
+                    updateDateDisplay(targetDate);
                     return true;
                 }
             }
             return false;
         }
         
-        // Try to set from hash, otherwise use today's date
+        // Initialize date
         if (!setDateFromHash()) {
-            todayInput.valueAsDate = new Date();
+            updateDateDisplay(new Date());
         }
         
         // Listen for hash changes
         window.addEventListener('hashchange', setDateFromHash);
-
-        // Add event listener for date changes
-        todayInput.addEventListener('change', function () {
-            const selectedDate = this.value; // Format: YYYY-MM-DD
-            const observationId = photoObservations[selectedDate];
-
-            if (observationId) {
-                const url = `https://www.inaturalist.org/observations/${observationId}`;
-                window.open(url, '_blank');
-            } else {
-                alert('No observation available for this date yet. Photos for this date may not be added to the calendar.');
+        
+        // Event listeners
+        currentDateDisplay.addEventListener('click', openCurrentObservation);
+        
+        pickDateBtn.addEventListener('click', function() {
+            // Show the input temporarily
+            todayInput.style.position = 'static';
+            todayInput.style.left = '0';
+            todayInput.style.opacity = '1';
+            todayInput.style.width = '200px';
+            todayInput.style.height = '40px';
+            todayInput.style.marginLeft = '10px';
+            
+            // Hide the button temporarily
+            pickDateBtn.style.display = 'none';
+            
+            // Focus and open picker
+            todayInput.focus();
+            if (typeof todayInput.showPicker === 'function') {
+                todayInput.showPicker();
             }
+        });
+        
+        // Function to hide input and show button
+        function hideInputShowButton() {
+            todayInput.style.position = 'absolute';
+            todayInput.style.left = '-9999px';
+            todayInput.style.opacity = '0';
+            pickDateBtn.style.display = 'inline-block';
+        }
+        
+        // Handle date selection
+        todayInput.addEventListener('change', function() {
+            const selectedDate = this.valueAsDate;
+            if (selectedDate) {
+                updateDateDisplay(selectedDate);
+                hideInputShowButton();
+                openCurrentObservation();
+            }
+        });
+        
+        // Hide input when user clicks away
+        todayInput.addEventListener('blur', function() {
+            setTimeout(hideInputShowButton, 200); // Small delay to allow date picker interaction
         });
     </script>
 </body>
