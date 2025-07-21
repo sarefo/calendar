@@ -18,6 +18,7 @@ import subprocess
 
 # Import our custom modules
 from calendar_generator import CalendarGenerator
+from update_landing_page import update_landing_page
 from qr_generator import QRGenerator
 from world_map_generator import WorldMapGenerator
 from html_to_pdf import HTMLToPDFConverter
@@ -325,6 +326,8 @@ def main():
                 
                 if result["success"]:
                     print(f"\\n🎉 Successfully built calendar for {args.year}-{months_to_build[0]:02d}")
+                    # Update landing page with latest observation IDs
+                    update_landing_page()
                 else:
                     print(f"\\n❌ Failed to build calendar: {result.get('reason', 'unknown error')}")
                     return 1
@@ -343,6 +346,8 @@ def main():
                     return 1
                 else:
                     print(f"\\n🎉 Successfully built calendar for {args.year}")
+                    # Update landing page with latest observation IDs
+                    update_landing_page()
             
             return 0
             

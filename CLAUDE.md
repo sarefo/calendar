@@ -84,6 +84,13 @@ calendar/
 - **QR codes**: Link to photo stories website
 - **Theming**: Monthly location data in JSON format
 
+#### 5. **Landing Page & Web Integration**
+- **Landing Page**: `index.html` with date picker and calendar navigation
+- **iNaturalist Integration**: Date selection opens corresponding observation URLs
+- **HTML Naming**: Simplified format `YYYYMM.html` (e.g., `202601.html`)
+- **Auto-Update**: Observation IDs sync automatically with `photo_information.txt`
+- **Design**: Fresh green color scheme (#74ac00) with portioid credit linking to iNaturalist profile
+
 ---
 
 ## 🚀 Production Workflow
@@ -259,6 +266,11 @@ python3 scripts/week_calculator.py --year 2026 --month 1 --output week_data.json
 python3 scripts/html_to_pdf.py --input output/calendar.html --output output/print-ready/
 ```
 
+**Landing Page Update**:
+```bash
+python3 scripts/update_landing_page.py
+```
+
 ---
 
 ## 🖨️ Print Shop Instructions
@@ -376,14 +388,18 @@ python3 scripts/build_calendar.py --install-deps
 ✅ **PDF image embedding issue resolved**  
 ✅ **Table-based layout ensures WeasyPrint compatibility**  
 ✅ **Print-ready PDFs generated (18MB & 22MB respectively)**  
-🔄 **Photo consolidation in progress**  
-⏳ **GitHub.io website planned for future session**  
+✅ **Photo consolidation completed**  
+✅ **Landing page with iNaturalist integration implemented**  
+✅ **Simplified HTML naming scheme (YYYYMM.html)**  
+✅ **Auto-update system for observation IDs**  
 
 ### Next Steps
 1. ✅ **Generated working PDFs** for January and February 2026
 2. ✅ **Resolved PDF image embedding** with table-based CSS layout
-3. 🔄 **Consolidate photo storage** to eliminate triplication
-4. **Plan GitHub.io website** in separate session
+3. ✅ **Consolidated photo storage** to single location
+4. ✅ **Created landing page** with date picker and iNaturalist integration
+5. ⏳ **Generate remaining months** for 2026 calendar
+6. ⏳ **Deploy to GitHub Pages** for public access
 
 ### Contact
 - **Project Repository**: This calendar system

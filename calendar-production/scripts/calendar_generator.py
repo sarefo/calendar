@@ -263,7 +263,7 @@ class CalendarGenerator:
         html_content = self.render_calendar_html(calendar_data)
         
         # Save to file
-        output_filename = f"{year}-{month:02d}-{calendar_data['location'].lower().replace(' ', '-')}.html"
+        output_filename = f"{year}{month:02d}.html"
         output_path = Path(output_dir) / output_filename
         self.save_calendar_html(html_content, output_path)
         

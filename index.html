@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Photography Calendar</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #74ac00 0%, #8bc34a 50%, #a5d6a7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #2C3E50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .date-selector {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #e9ecef;
+        }
+        
+        .date-selector h2 {
+            color: #2C3E50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .date-input {
+            font-size: 1.5em;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            background: white;
+            color: #2C3E50;
+            font-weight: 500;
+        }
+        
+        .calendar-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .calendar-section h3 {
+            color: #2C3E50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .calendar-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .year-label {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2C3E50;
+            background: #e9ecef;
+            padding: 15px 25px;
+            border-radius: 8px;
+        }
+        
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .month-link {
+            display: block;
+            padding: 12px 8px;
+            background: white;
+            color: #2C3E50;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 2px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+        
+        .month-link:hover {
+            background: #74ac00;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(116, 172, 0, 0.3);
+        }
+        
+        .footer {
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .calendar-grid {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .months-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📷 Macro Photography Calendar</h1>
+        <p class="subtitle">A daily journey through macro photography from around the world</p>
+        
+        <div class="date-selector">
+            <h2>🔍 Get Day Info</h2>
+            <input type="date" class="date-input" id="todayDate">
+        </div>
+        
+        <div class="calendar-section">
+            <h3>📅 View Calendar Pages</h3>
+            <div class="calendar-grid">
+                <div class="year-label">2026</div>
+                <div class="months-grid">
+                    <a href="calendar-production/output/202601.html" class="month-link">1</a>
+                    <a href="calendar-production/output/202602.html" class="month-link">2</a>
+                    <a href="calendar-production/output/202603.html" class="month-link">3</a>
+                    <a href="calendar-production/output/202604.html" class="month-link">4</a>
+                    <a href="calendar-production/output/202605.html" class="month-link">5</a>
+                    <a href="calendar-production/output/202606.html" class="month-link">6</a>
+                    <a href="calendar-production/output/202607.html" class="month-link">7</a>
+                    <a href="calendar-production/output/202608.html" class="month-link">8</a>
+                    <a href="calendar-production/output/202609.html" class="month-link">9</a>
+                    <a href="calendar-production/output/202610.html" class="month-link">10</a>
+                    <a href="calendar-production/output/202611.html" class="month-link">11</a>
+                    <a href="calendar-production/output/202612.html" class="month-link">12</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Explore the beauty of macro photography through our A3 landscape calendar featuring daily photos from locations around the world.<br>
+            All photos by <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> on iNaturalist.
+        </div>
+    </div>
+    
+    <script>
+        // Photo observation data mapping
+        const photoObservations = {
+            // January 2026
+            '2026-01-01': '197216916', '2026-01-02': '197229939', '2026-01-03': '197229950', '2026-01-04': '197230077', '2026-01-05': '197230195', '2026-01-06': '253852510', '2026-01-07': '197441528', '2026-01-08': '197671124', '2026-01-09': '197374651', '2026-01-10': '197374655', '2026-01-11': '197374667', '2026-01-12': '197441473', '2026-01-13': '197441482', '2026-01-14': '197441493', '2026-01-15': '197441500', '2026-01-16': '197441510', '2026-01-17': '197441529', '2026-01-18': '197449012', '2026-01-19': '197449017', '2026-01-20': '197449023', '2026-01-21': '197449085', '2026-01-22': '197671078', '2026-01-23': '197671094', '2026-01-24': '197765784', '2026-01-25': '197765806', '2026-01-26': '197765809', '2026-01-27': '197765864', '2026-01-28': '197765829', '2026-01-29': '197679332', '2026-01-30': '197765888', '2026-01-31': '197679413',
+
+            // February 2026
+            '2026-02-01': '149616613', '2026-02-02': '149640464', '2026-02-03': '149641766', '2026-02-04': '149641771', '2026-02-05': '149640485', '2026-02-06': '149640503', '2026-02-07': '149643539', '2026-02-08': '149643537', '2026-02-09': '149643532', '2026-02-10': '149642505', '2026-02-11': '149642499', '2026-02-12': '149642479', '2026-02-13': '149641803', '2026-02-14': '149641779', '2026-02-15': '149641778', '2026-02-16': '149823164', '2026-02-17': '149823161', '2026-02-18': '149823125', '2026-02-19': '149823123', '2026-02-20': '149823070', '2026-02-21': '149810570', '2026-02-22': '149712428', '2026-02-23': '149643583', '2026-02-24': '149643586', '2026-02-25': '149643569', '2026-02-26': '149643561', '2026-02-27': '149823083', '2026-02-28': '149612276',
+        };
+        
+        // Set today's date
+        const todayInput = document.getElementById('todayDate');
+        todayInput.valueAsDate = new Date();
+        
+        // Add event listener for date changes
+        todayInput.addEventListener('change', function() {
+            const selectedDate = this.value; // Format: YYYY-MM-DD
+            const observationId = photoObservations[selectedDate];
+            
+            if (observationId) {
+                const url = `https://www.inaturalist.org/observations/${observationId}`;
+                window.open(url, '_blank');
+            } else {
+                alert('No observation available for this date yet. Photos for this date may not be added to the calendar.');
+            }
+        });
+    </script>
+</body>
+</html>
