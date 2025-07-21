@@ -403,9 +403,5 @@ python3 scripts/build_calendar.py --install-deps
 
 ### Contact
 - **Project Repository**: This calendar system
-- **Documentation**: This file (`A3_CALENDAR_WORKFLOW.md`)
+- **Documentation**: This file (`CLAUDE.md`)
 - **Issue Tracking**: Document issues encountered during testing
-
----
-
-**🎉 The A3 landscape calendar production workflow is ready for prototype testing!**

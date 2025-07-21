@@ -13,7 +13,8 @@
       "Bash(PYTHONPATH=/mnt/c/Users/stefa/OneDrive/Documents/GitHub/sarefo.github.io/calendar/calendar-production/scripts python3 scripts/build_calendar.py --year 2026 --month 1)",
       "mcp__puppeteer__puppeteer_navigate",
       "Bash(grep:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "mcp__puppeteer__puppeteer_screenshot"
     ],
     "deny": []
   }

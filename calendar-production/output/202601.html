@@ -22,18 +22,20 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
-        /* Header section with title and world map */
+        /* Header section with title, world map, QR code and branding */
         .header {
-            height: 45mm;
-            padding: 8mm 10mm;
+            height: 35mm;
+            padding: 6mm 10mm;
             background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
             color: white;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
         .title-section {
-            width: 320mm;
-            float: left;
+            flex: 1;
         }
         
         .month-title {
@@ -50,21 +52,60 @@
             opacity: 0.9;
         }
         
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8mm;
+        }
+        
         .world-map-container {
-            width: 80mm;
-            height: 30mm;
+            width: 60mm;
+            height: 20mm;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 4mm;
-            float: right;
-            font-size: 10pt;
+            border-radius: 3mm;
+            font-size: 9pt;
             text-align: center;
-            line-height: 30mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 4mm;
+        }
+        
+        .qr-code {
+            width: 18mm;
+            height: 18mm;
+            background: white;
+            border-radius: 2mm;
+            color: #2C3E50;
+            font-size: 6pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-text {
+            font-size: 8pt;
+            color: white;
+            line-height: 1.2;
+        }
+        
+        .branding {
+            text-align: right;
+            font-size: 8pt;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.2;
         }
         
         /* Main calendar grid */
         .calendar-container {
-            height: 200mm;
-            padding: 5mm 10mm;
+            height: 240mm;
+            padding: 8mm 10mm;
         }
         
         .calendar-table {
@@ -99,14 +140,14 @@
         }
         
         .calendar-week-row {
-            height: 30mm;
+            height: 38mm;
         }
         
         .calendar-day {
-            width: 50mm;
-            height: 30mm;
+            width: 54mm;
+            height: 38mm;
             position: relative;
-            border-radius: 2mm;
+            border-radius: 3mm;
             overflow: hidden;
             background: #F8F9FA;
             border: 1px solid #E9ECEF;
@@ -122,7 +163,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 2mm;
+            object-position: center;
+            border-radius: 3mm;
         }
         
         .day-overlay {
@@ -134,65 +176,16 @@
             color: white;
             padding: 2mm;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: flex-end;
         }
         
         .day-number {
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: 700;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
         }
         
-        .day-weekday {
-            font-size: 7pt;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 0.3mm;
-            opacity: 0.9;
-        }
-        
-        /* Footer section */
-        .footer {
-            height: 25mm;
-            padding: 5mm 10mm;
-            background: #F8F9FA;
-            border-top: 1px solid #E9ECEF;
-            position: relative;
-        }
-        
-        .qr-section {
-            float: left;
-        }
-        
-        .qr-code {
-            width: 15mm;
-            height: 15mm;
-            background: #2C3E50;
-            border-radius: 2mm;
-            float: left;
-            color: white;
-            font-size: 8pt;
-            text-align: center;
-            line-height: 15mm;
-            margin-right: 5mm;
-        }
-        
-        .qr-text {
-            font-size: 9pt;
-            color: #7F8C8D;
-            line-height: 1.3;
-            float: left;
-            margin-top: 2mm;
-        }
-        
-        .branding {
-            float: right;
-            text-align: right;
-            font-size: 9pt;
-            color: #7F8C8D;
-            margin-top: 2mm;
-        }
         
         /* Print optimizations */
         @media print {
@@ -264,11 +257,29 @@
                 <h1 class="month-title">January 2026</h1>
                 <p class="location-subtitle">Month 1, 2026</p>
             </div>
-            <div class="world-map-container">
-                <!-- World map SVG will be inserted here -->
-                <div class="map-placeholder">
-                    📍 Month 1, 2026<br>
-                    <small>0°N, 0°E</small>
+            <div class="header-right">
+                <div class="world-map-container">
+                    <!-- World map SVG will be inserted here -->
+                    <div class="map-placeholder">
+                        📍 Month 1, 2026<br>
+                        <small>0°N, 0°E</small>
+                    </div>
+                </div>
+                
+                <div class="qr-section">
+                    <div class="qr-code">
+                        <!-- QR code will be generated and inserted here -->
+                        QR
+                    </div>
+                    <div class="qr-text">
+                        Scan for stories<br>
+                        <strong>https://example.com</strong>
+                    </div>
+                </div>
+                
+                <div class="branding">
+                    <strong>Photographer</strong><br>
+                    Macro Photography 2026
                 </div>
             </div>
         </header>
@@ -306,7 +317,6 @@
                         <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==" alt="Photo for 2025-12-29" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Mon</div>
                             <div class="day-number">29</div>
                         </div>
                     </td>
@@ -316,7 +326,6 @@
                         <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==" alt="Photo for 2025-12-30" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Tue</div>
                             <div class="day-number">30</div>
                         </div>
                     </td>
@@ -326,7 +335,6 @@
                         <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==" alt="Photo for 2025-12-31" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Wed</div>
                             <div class="day-number">31</div>
                         </div>
                     </td>
@@ -336,7 +344,6 @@
                         <img src="../photos/2026/01/P1210046.jpg" alt="Photo for 2026-01-01" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Thu</div>
                             <div class="day-number">1</div>
                         </div>
                     </td>
@@ -346,7 +353,6 @@
                         <img src="../photos/2026/01/P1210181.jpg" alt="Photo for 2026-01-02" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Fri</div>
                             <div class="day-number">2</div>
                         </div>
                     </td>
@@ -356,7 +362,6 @@
                         <img src="../photos/2026/01/P1210191.jpg" alt="Photo for 2026-01-03" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sat</div>
                             <div class="day-number">3</div>
                         </div>
                     </td>
@@ -366,7 +371,6 @@
                         <img src="../photos/2026/01/P1210220.jpg" alt="Photo for 2026-01-04" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sun</div>
                             <div class="day-number">4</div>
                         </div>
                     </td>
@@ -381,7 +385,6 @@
                         <img src="../photos/2026/01/P1210320.jpg" alt="Photo for 2026-01-05" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Mon</div>
                             <div class="day-number">5</div>
                         </div>
                     </td>
@@ -391,7 +394,6 @@
                         <img src="../photos/2026/01/P1230043.jpg" alt="Photo for 2026-01-06" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Tue</div>
                             <div class="day-number">6</div>
                         </div>
                     </td>
@@ -401,7 +403,6 @@
                         <img src="../photos/2026/01/P1230064.jpg" alt="Photo for 2026-01-07" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Wed</div>
                             <div class="day-number">7</div>
                         </div>
                     </td>
@@ -411,7 +412,6 @@
                         <img src="../photos/2026/01/P1230070.jpg" alt="Photo for 2026-01-08" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Thu</div>
                             <div class="day-number">8</div>
                         </div>
                     </td>
@@ -421,7 +421,6 @@
                         <img src="../photos/2026/01/P1230130.jpg" alt="Photo for 2026-01-09" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Fri</div>
                             <div class="day-number">9</div>
                         </div>
                     </td>
@@ -431,7 +430,6 @@
                         <img src="../photos/2026/01/P1230139.jpg" alt="Photo for 2026-01-10" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sat</div>
                             <div class="day-number">10</div>
                         </div>
                     </td>
@@ -441,7 +439,6 @@
                         <img src="../photos/2026/01/P1230165.jpg" alt="Photo for 2026-01-11" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sun</div>
                             <div class="day-number">11</div>
                         </div>
                     </td>
@@ -456,7 +453,6 @@
                         <img src="../photos/2026/01/P1230203.jpg" alt="Photo for 2026-01-12" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Mon</div>
                             <div class="day-number">12</div>
                         </div>
                     </td>
@@ -466,7 +462,6 @@
                         <img src="../photos/2026/01/P1230223.jpg" alt="Photo for 2026-01-13" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Tue</div>
                             <div class="day-number">13</div>
                         </div>
                     </td>
@@ -476,7 +471,6 @@
                         <img src="../photos/2026/01/P1230233.jpg" alt="Photo for 2026-01-14" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Wed</div>
                             <div class="day-number">14</div>
                         </div>
                     </td>
@@ -486,7 +480,6 @@
                         <img src="../photos/2026/01/P1230245.jpg" alt="Photo for 2026-01-15" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Thu</div>
                             <div class="day-number">15</div>
                         </div>
                     </td>
@@ -496,7 +489,6 @@
                         <img src="../photos/2026/01/P1230268.jpg" alt="Photo for 2026-01-16" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Fri</div>
                             <div class="day-number">16</div>
                         </div>
                     </td>
@@ -506,7 +498,6 @@
                         <img src="../photos/2026/01/P1230305.jpg" alt="Photo for 2026-01-17" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sat</div>
                             <div class="day-number">17</div>
                         </div>
                     </td>
@@ -516,7 +507,6 @@
                         <img src="../photos/2026/01/P1230360.jpg" alt="Photo for 2026-01-18" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sun</div>
                             <div class="day-number">18</div>
                         </div>
                     </td>
@@ -531,7 +521,6 @@
                         <img src="../photos/2026/01/P1230374.jpg" alt="Photo for 2026-01-19" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Mon</div>
                             <div class="day-number">19</div>
                         </div>
                     </td>
@@ -541,7 +530,6 @@
                         <img src="../photos/2026/01/P1230398.jpg" alt="Photo for 2026-01-20" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Tue</div>
                             <div class="day-number">20</div>
                         </div>
                     </td>
@@ -551,7 +539,6 @@
                         <img src="../photos/2026/01/P1230515.jpg" alt="Photo for 2026-01-21" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Wed</div>
                             <div class="day-number">21</div>
                         </div>
                     </td>
@@ -561,7 +548,6 @@
                         <img src="../photos/2026/01/P1250008.jpg" alt="Photo for 2026-01-22" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Thu</div>
                             <div class="day-number">22</div>
                         </div>
                     </td>
@@ -571,7 +557,6 @@
                         <img src="../photos/2026/01/P1250026.jpg" alt="Photo for 2026-01-23" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Fri</div>
                             <div class="day-number">23</div>
                         </div>
                     </td>
@@ -581,7 +566,6 @@
                         <img src="../photos/2026/01/P1250037.jpg" alt="Photo for 2026-01-24" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sat</div>
                             <div class="day-number">24</div>
                         </div>
                     </td>
@@ -591,7 +575,6 @@
                         <img src="../photos/2026/01/P1250087.jpg" alt="Photo for 2026-01-25" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sun</div>
                             <div class="day-number">25</div>
                         </div>
                     </td>
@@ -606,7 +589,6 @@
                         <img src="../photos/2026/01/P1250097.jpg" alt="Photo for 2026-01-26" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Mon</div>
                             <div class="day-number">26</div>
                         </div>
                     </td>
@@ -616,7 +598,6 @@
                         <img src="../photos/2026/01/P1250102.jpg" alt="Photo for 2026-01-27" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Tue</div>
                             <div class="day-number">27</div>
                         </div>
                     </td>
@@ -626,7 +607,6 @@
                         <img src="../photos/2026/01/P1250122.jpg" alt="Photo for 2026-01-28" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Wed</div>
                             <div class="day-number">28</div>
                         </div>
                     </td>
@@ -636,7 +616,6 @@
                         <img src="../photos/2026/01/P1250142.jpg" alt="Photo for 2026-01-29" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Thu</div>
                             <div class="day-number">29</div>
                         </div>
                     </td>
@@ -646,7 +625,6 @@
                         <img src="../photos/2026/01/P1250215.jpg" alt="Photo for 2026-01-30" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Fri</div>
                             <div class="day-number">30</div>
                         </div>
                     </td>
@@ -656,7 +634,6 @@
                         <img src="../photos/2026/01/P1250263.jpg" alt="Photo for 2026-01-31" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sat</div>
                             <div class="day-number">31</div>
                         </div>
                     </td>
@@ -666,7 +643,6 @@
                         <img src="../photos/2026/02/cows.jpg" alt="Photo for 2026-02-01" class="day-image">
                         
                         <div class="day-overlay">
-                            <div class="day-weekday">Sun</div>
                             <div class="day-number">1</div>
                         </div>
                     </td>
@@ -676,23 +652,6 @@
             </table>
         </main>
         
-        <!-- Footer with QR code and branding -->
-        <footer class="footer">
-            <div class="qr-section">
-                <div class="qr-code">
-                    <!-- QR code will be generated and inserted here -->
-                    QR
-                </div>
-                <div class="qr-text">
-                    Scan for photo stories<br>
-                    <strong>https://example.com</strong>
-                </div>
-            </div>
-            <div class="branding">
-                <strong>Photographer</strong><br>
-                Macro Photography Calendar 2026
-            </div>
-        </footer>
     </div>
 </body>
 </html>
