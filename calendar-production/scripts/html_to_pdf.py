@@ -38,9 +38,9 @@ class HTMLToPDFConverter:
         except ImportError:
             pass
         
-        # Check Playwright
+        # Check Playwright (proper check)
         try:
-            import playwright
+            from playwright.async_api import async_playwright
             methods.append("playwright")
         except ImportError:
             pass
@@ -82,42 +82,64 @@ class HTMLToPDFConverter:
     
     async def convert_with_playwright(self, html_file: str, pdf_file: str, 
                                     print_options: dict = None) -> str:
-        """Convert HTML to PDF using Playwright"""
+        """Convert HTML to PDF using Playwright with image optimization"""
         from playwright.async_api import async_playwright
+        import shutil
         
         if not print_options:
             print_options = self._get_default_print_options()
         
-        async with async_playwright() as p:
-            browser = await p.chromium.launch()
-            page = await browser.new_page()
-            
-            # Navigate to HTML file
-            html_path = Path(html_file).resolve()
-            await page.goto(f"file://{html_path}")
-            
-            # Wait for any dynamic content
-            await page.wait_for_timeout(2000)
-            
-            # Generate PDF
-            pdf_path = Path(pdf_file)
-            pdf_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            await page.pdf(
-                path=str(pdf_path),
-                format='A3',
-                landscape=True,
-                print_background=True,
-                margin={
-                    'top': '0mm',
-                    'right': '0mm', 
-                    'bottom': '0mm',
-                    'left': '0mm'
-                },
-                **print_options
-            )
-            
-            await browser.close()
+        # Create optimized version of HTML with smaller images
+        optimized_html = self._create_optimized_html_for_pdf(html_file)
+        
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch()
+                page = await browser.new_page()
+                
+                # Navigate to optimized HTML file
+                html_path = Path(optimized_html).resolve()
+                try:
+                    await page.goto(f"file://{html_path}", wait_until="networkidle")
+                except Exception as e:
+                    print(f"Warning: Page load issue: {e}")
+                    await page.goto(f"file://{html_path}")
+                
+                # Wait for any dynamic content
+                await page.wait_for_timeout(1000)
+                
+                # Generate PDF
+                pdf_path = Path(pdf_file)
+                pdf_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                try:
+                    await page.pdf(
+                        path=str(pdf_path),
+                        format='A3',
+                        landscape=True,
+                        print_background=True,
+                        margin={
+                            'top': '0mm',
+                            'right': '0mm', 
+                            'bottom': '0mm',
+                            'left': '0mm'
+                        },
+                        prefer_css_page_size=True
+                    )
+                except Exception as e:
+                    print(f"PDF generation error: {e}")
+                    # Try with simpler options
+                    await page.pdf(
+                        path=str(pdf_path),
+                        format='A3',
+                        landscape=True,
+                        print_background=True
+                    )
+                
+                await browser.close()
+        finally:
+            # Clean up optimized files
+            self._cleanup_optimized_files(html_file, optimized_html)
         
         return str(pdf_path)
     
@@ -166,15 +188,49 @@ class HTMLToPDFConverter:
         import weasyprint
         from weasyprint import HTML, CSS
         
-        # Additional CSS for WeasyPrint
+        # Additional CSS for WeasyPrint with better PDF compatibility
         css_string = """
         @page {
             size: A3 landscape;
             margin: 0;
-            bleed: 3mm;
         }
         * {
             print-color-adjust: exact !important;
+            -webkit-print-color-adjust: exact !important;
+        }
+        .calendar-page {
+            width: 420mm !important;
+            height: 297mm !important;
+        }
+        .world-map-svg {
+            display: block !important;
+            visibility: visible !important;
+        }
+        .qr-code img {
+            display: block !important;
+            visibility: visible !important;
+            image-rendering: auto !important;
+        }
+        .calendar-container {
+            height: 252mm !important;
+            overflow: visible !important;
+            padding-bottom: 5mm !important;
+        }
+        .calendar-table {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .day-image {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 3mm 3mm 0 0 !important;
+            object-fit: cover !important;
+        }
+        .calendar-week-row {
+            page-break-inside: avoid !important;
         }
         """
         
@@ -185,19 +241,28 @@ class HTMLToPDFConverter:
         html_path = Path(html_file).resolve()
         base_url = html_path.parent.as_uri() + "/"
         
-        html_doc = HTML(filename=str(html_path), base_url=base_url)
-        css_doc = CSS(string=css_string)
-        
-        html_doc.write_pdf(str(pdf_path), stylesheets=[css_doc])
+        try:
+            html_doc = HTML(filename=str(html_path), base_url=base_url)
+            css_doc = CSS(string=css_string)
+            
+            html_doc.write_pdf(str(pdf_path), stylesheets=[css_doc])
+        except Exception as e:
+            print(f"WeasyPrint error: {e}")
+            # Try alternative approach
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            html_doc = HTML(string=html_content, base_url=base_url)
+            css_doc = CSS(string=css_string)
+            html_doc.write_pdf(str(pdf_path), stylesheets=[css_doc])
         
         return str(pdf_path)
     
     def _get_default_print_options(self) -> dict:
         """Get default print options for high-quality output"""
         return {
-            'preferCSSPageSize': True,
-            'displayHeaderFooter': False,
-            'printBackground': True,
+            'prefer_css_page_size': True,
+            'display_header_footer': False,
+            'print_background': True,
         }
     
     def _preprocess_html_for_pdf(self, html_file: str) -> str:
@@ -219,13 +284,16 @@ class HTMLToPDFConverter:
             nonlocal converted_count
             src_path = match.group(1)
             
-            # Skip data URLs and absolute URLs
+            # Skip data URLs and absolute URLs (but not local absolute paths)
             if src_path.startswith(('data:', 'http:', 'https:', 'file:')):
                 print(f"  Skipping {src_path[:50]}... (data/absolute URL)")
                 return match.group(0)
             
             # Resolve the source image path
-            if src_path.startswith('../'):
+            if src_path.startswith('/'):
+                # Absolute path
+                source_path = Path(src_path).resolve()
+            elif src_path.startswith('../'):
                 relative_path = src_path[3:]  # Remove '../'
                 source_path = (base_path.parent / relative_path).resolve()
             else:
@@ -275,6 +343,103 @@ class HTMLToPDFConverter:
         print(f"Created temporary HTML file: {temp_file}")
         return str(temp_file)
 
+    def _create_optimized_html_for_pdf(self, html_file: str) -> str:
+        """Create optimized HTML with reduced image sizes for PDF generation"""
+        from PIL import Image
+        import shutil
+        import re
+        
+        html_path = Path(html_file)
+        html_content = html_path.read_text(encoding='utf-8')
+        base_path = html_path.parent.resolve()
+        
+        # Create temporary directory for optimized images
+        temp_dir = html_path.parent / "temp_pdf_optimized"
+        temp_dir.mkdir(exist_ok=True)
+        
+        optimized_count = 0
+        
+        def optimize_and_replace_image(match):
+            nonlocal optimized_count
+            src_path = match.group(1)
+            
+            # Skip data URLs and absolute URLs
+            if src_path.startswith(('data:', 'http:', 'https:')):
+                return match.group(0)
+            
+            # Resolve the source image path
+            if src_path.startswith('/'):
+                source_path = Path(src_path).resolve()
+            elif src_path.startswith('../'):
+                relative_path = src_path[3:]
+                source_path = (base_path.parent / relative_path).resolve()
+            else:
+                source_path = (base_path / src_path).resolve()
+            
+            if source_path.exists():
+                try:
+                    # Create optimized image name
+                    optimized_name = f"opt_{source_path.name}"
+                    optimized_path = temp_dir / optimized_name
+                    
+                    # Resize image to reasonable size for PDF (max 800px)
+                    with Image.open(source_path) as img:
+                        # Convert to RGB if needed
+                        if img.mode not in ['RGB', 'L']:
+                            img = img.convert('RGB')
+                        
+                        # Resize maintaining aspect ratio
+                        img.thumbnail((800, 800), Image.Resampling.LANCZOS)
+                        
+                        # Save with quality optimization
+                        img.save(optimized_path, 'JPEG', quality=85, optimize=True)
+                    
+                    optimized_count += 1
+                    
+                    # Return relative path from HTML file to optimized image
+                    relative_path = f"temp_pdf_optimized/{optimized_name}"
+                    print(f"  Optimized: {source_path.name} -> {relative_path}")
+                    return f'src="{relative_path}"'
+                    
+                except Exception as e:
+                    print(f"  Warning: Could not optimize {source_path}: {e}")
+                    return match.group(0)
+            else:
+                return match.group(0)
+        
+        print(f"Creating optimized HTML for PDF conversion...")
+        print(f"Temp dir: {temp_dir}")
+        
+        # Replace all img src attributes with optimized versions
+        updated_content = re.sub(r'src="([^"]+)"', optimize_and_replace_image, html_content)
+        
+        print(f"Optimized {optimized_count} images for PDF generation")
+        
+        # Create temporary file with updated content
+        temp_file = html_path.parent / f"{html_path.stem}_pdf_optimized.html"
+        temp_file.write_text(updated_content, encoding='utf-8')
+        
+        print(f"Created optimized HTML file: {temp_file}")
+        return str(temp_file)
+    
+    def _cleanup_optimized_files(self, original_html: str, optimized_html: str):
+        """Clean up optimized files"""
+        try:
+            import shutil
+            html_path = Path(original_html)
+            temp_dir = html_path.parent / "temp_pdf_optimized"
+            if temp_dir.exists():
+                shutil.rmtree(temp_dir)
+                print(f"✅ Cleaned up optimized images: {temp_dir}")
+            
+            # Clean up optimized HTML file
+            opt_html = Path(optimized_html)
+            if opt_html.exists() and "_pdf_optimized.html" in opt_html.name:
+                opt_html.unlink()
+                print(f"✅ Cleaned up optimized HTML: {opt_html}")
+        except Exception as e:
+            print(f"⚠️ Cleanup warning: {e}")
+
     async def convert_html_to_pdf(self, html_file: str, pdf_file: str,
                                 print_options: dict = None) -> str:
         """Convert HTML file to PDF using the selected method"""
@@ -282,41 +447,36 @@ class HTMLToPDFConverter:
         if not Path(html_file).exists():
             raise FileNotFoundError(f"HTML file not found: {html_file}")
         
-        # Preprocess HTML to fix image paths for PDF conversion
-        processed_html = self._preprocess_html_for_pdf(html_file)
+        print(f"Converting {html_file} to PDF using {self.method}...")
         
+        if self.method == "playwright":
+            result = await self.convert_with_playwright(html_file, pdf_file, print_options)
+        elif self.method == "weasyprint":
+            result = self.convert_with_weasyprint(html_file, pdf_file, print_options)
+        elif self.method == "pyppeteer":
+            result = await self.convert_with_pyppeteer(html_file, pdf_file, print_options)
+        else:
+            raise ValueError(f"Unknown conversion method: {self.method}")
+        
+        return result
+    
+    def _cleanup_temp_files(self, original_html: str, processed_html: str):
+        """Clean up temporary files"""
         try:
-            print(f"Converting {html_file} to PDF using {self.method}...")
+            import shutil
+            html_path = Path(original_html)
+            temp_dir = html_path.parent / "temp_images_pdf"
+            if temp_dir.exists():
+                shutil.rmtree(temp_dir)
+                print(f"✅ Cleaned up temporary files: {temp_dir}")
             
-            if self.method == "playwright":
-                result = await self.convert_with_playwright(processed_html, pdf_file, print_options)
-            elif self.method == "pyppeteer":
-                result = await self.convert_with_pyppeteer(processed_html, pdf_file, print_options)
-            elif self.method == "weasyprint":
-                result = self.convert_with_weasyprint(processed_html, pdf_file, print_options)
-            else:
-                raise ValueError(f"Unknown conversion method: {self.method}")
-            
-            return result
-            
-        finally:
-            # Clean up temporary files
-            try:
-                import shutil
-                html_path = Path(html_file)
-                temp_dir = html_path.parent / "temp_images_pdf"
-                if temp_dir.exists():
-                    shutil.rmtree(temp_dir)
-                    print(f"✅ Cleaned up temporary files: {temp_dir}")
-                
-                # Clean up temporary HTML file
-                if 'processed_html' in locals():
-                    temp_html = Path(processed_html)
-                    if temp_html.exists() and "_pdf_temp.html" in temp_html.name:
-                        temp_html.unlink()
-                        print(f"✅ Cleaned up temporary HTML: {temp_html}")
-            except Exception as e:
-                print(f"⚠️ Cleanup warning: {e}")
+            # Clean up temporary HTML file
+            temp_html = Path(processed_html)
+            if temp_html.exists() and "_pdf_temp.html" in temp_html.name:
+                temp_html.unlink()
+                print(f"✅ Cleaned up temporary HTML: {temp_html}")
+        except Exception as e:
+            print(f"⚠️ Cleanup warning: {e}")
     
     async def convert_multiple_files(self, html_files: List[str], 
                                    output_dir: str = "output/print-ready",
