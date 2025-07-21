@@ -103,14 +103,14 @@ class CalendarBuilder:
                     location_data = all_locations.get(month_key, {
                         "location": f"Month {month}, {year}",
                         "coordinates": "0°N, 0°E",
-                        "website_url": "https://example.com",
+                        "website_url": "https://sarefo.github.io/calendar/",
                         "photographer_name": "Photographer"
                     })
             
             # Generate QR code
             qr_file = self.qr_gen.generate_calendar_qr(
                 year, month, 
-                location_data.get("website_url", "https://example.com"),
+                location_data.get("website_url", "https://sarefo.github.io/calendar/"),
                 f"{output_dir}/assets"
             )
             print(f"✅ Generated QR code: {qr_file}")

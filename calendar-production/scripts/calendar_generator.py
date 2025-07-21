@@ -92,6 +92,37 @@ class CalendarGenerator:
                 photo_info[month].append(filename)
         
         return photo_info
+    
+    def _load_location_from_readme(self, year: int, month: int) -> Dict[str, str]:
+        """Load location information from README.md in photo folder"""
+        readme_path = Path(f"photos/{year}/{month:02d}/README.md")
+        
+        if not readme_path.exists():
+            return {
+                "location": f"Month {month}, {year}",
+                "coordinates": "0°N, 0°E"
+            }
+        
+        location_data = {}
+        
+        with open(readme_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Parse the README content
+        for line in content.split('\n'):
+            line = line.strip()
+            if line.startswith('+ location:'):
+                location_data['location'] = line.replace('+ location:', '').strip()
+            elif line.startswith('+ coordinates:'):
+                location_data['coordinates'] = line.replace('+ coordinates:', '').strip()
+        
+        # Fallback values if not found
+        if 'location' not in location_data:
+            location_data['location'] = f"Month {month}, {year}"
+        if 'coordinates' not in location_data:
+            location_data['coordinates'] = "0°N, 0°E"
+        
+        return location_data
 
     def find_photo_for_date(self, target_date: date, photo_dirs: List[str], use_absolute_paths: bool = False) -> Optional[str]:
         """
@@ -192,12 +223,12 @@ class CalendarGenerator:
         # Get calendar grid from week calculator
         grid_data = self.week_calculator.generate_calendar_grid(year, month)
         
-        # Default location data
+        # Load location data from README.md if not provided
         if not location_data:
+            readme_location = self._load_location_from_readme(year, month)
             location_data = {
-                "location": f"Month {month}",
-                "coordinates": "0°N, 0°E",
-                "website_url": "example.com",
+                **readme_location,
+                "website_url": "https://sarefo.github.io/calendar/",
                 "photographer_name": "Photographer"
             }
         
@@ -226,9 +257,7 @@ class CalendarGenerator:
                     ]
                     day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths)
                 
-                # Add placeholder if no photo found
-                if not day_info['image_path']:
-                    day_info['image_path'] = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZjNzU3ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg=="
+                # Don't add placeholder for empty days
         
         # Combine all data
         calendar_data = {

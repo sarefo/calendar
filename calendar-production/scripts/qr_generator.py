@@ -28,7 +28,7 @@ from pathlib import Path
 
 class QRGenerator:
     def __init__(self):
-        self.default_base_url = "https://sarefo.github.io/calendar-stories"
+        self.default_base_url = "https://sarefo.github.io/calendar/"
         
     def generate_qr_code(self, url: str, output_path: str, size: int = 400, 
                         border: int = 2, style: str = "default") -> str:
@@ -95,8 +95,8 @@ class QRGenerator:
         if not base_url:
             base_url = self.default_base_url
             
-        # Construct URL for specific month
-        url = f"{base_url}/?year={year}&month={month:02d}"
+        # Construct URL for specific month with hash parameter
+        url = f"{base_url}#{year}{month:02d}"
         
         # Generate filename
         filename = f"qr-{year}-{month:02d}.png"
@@ -230,8 +230,8 @@ def main():
     parser.add_argument('--url', help="URL to encode")
     parser.add_argument('--year', type=int, help="Generate QR codes for specific year")
     parser.add_argument('--month', type=int, help="Generate QR code for specific month")
-    parser.add_argument('--base-url', default="https://sarefo.github.io/calendar-stories", 
-                       help="Base URL for calendar stories site")
+    parser.add_argument('--base-url', default="https://sarefo.github.io/calendar/", 
+                       help="Base URL for calendar site")
     parser.add_argument('--output', default="output/qr", help="Output directory")
     parser.add_argument('--style', choices=['default', 'rounded', 'gradient'], 
                        default='default', help="QR code style")

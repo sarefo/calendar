@@ -89,18 +89,6 @@
             justify-content: center;
         }
         
-        .qr-text {
-            font-size: 8pt;
-            color: white;
-            line-height: 1.2;
-        }
-        
-        .branding {
-            text-align: right;
-            font-size: 8pt;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.2;
-        }
         
         /* Main calendar grid */
         .calendar-container {
@@ -165,6 +153,7 @@
             object-fit: cover;
             object-position: center;
             border-radius: 3mm;
+            display: block;
         }
         
         .day-overlay {
@@ -196,6 +185,20 @@
             
             .calendar-page {
                 page-break-after: always;
+            }
+            
+            .day-image {
+                width: 54mm !important;
+                height: 38mm !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                border-radius: 3mm !important;
+                display: block !important;
+            }
+            
+            .calendar-day {
+                width: 54mm !important;
+                height: 38mm !important;
             }
         }
         
@@ -269,17 +272,8 @@
                 <div class="qr-section">
                     <div class="qr-code">
                         <!-- QR code will be generated and inserted here -->
-                        QR
+                        <img src="assets/qr-{{ year }}-{{ "%02d"|format(month) }}.png" alt="QR Code" style="width: 100%; height: 100%; border-radius: 2mm;">
                     </div>
-                    <div class="qr-text">
-                        Scan for stories<br>
-                        <strong>{{ website_url }}</strong>
-                    </div>
-                </div>
-                
-                <div class="branding">
-                    <strong>{{ photographer_name }}</strong><br>
-                    Macro Photography {{ year }}
                 </div>
             </div>
         </header>
@@ -303,10 +297,14 @@
                     <td class="calendar-day {% if day.is_previous_month %}previous-month{% elif day.is_next_month %}next-month{% endif %}">
                         {% if day.image_path %}
                         <img src="{{ day.image_path }}" alt="Photo for {{ day.date }}" class="day-image">
-                        {% endif %}
                         <div class="day-overlay">
                             <div class="day-number">{{ day.day }}</div>
                         </div>
+                        {% else %}
+                        <div class="day-overlay">
+                            <div class="day-number">{{ day.day }}</div>
+                        </div>
+                        {% endif %}
                     </td>
                     {% endfor %}
                 </tr>

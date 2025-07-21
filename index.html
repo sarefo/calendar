@@ -198,9 +198,46 @@
             '2026-02-01': '149616613', '2026-02-02': '149640464', '2026-02-03': '149641766', '2026-02-04': '149641771', '2026-02-05': '149640485', '2026-02-06': '149640503', '2026-02-07': '149643539', '2026-02-08': '149643537', '2026-02-09': '149643532', '2026-02-10': '149642505', '2026-02-11': '149642499', '2026-02-12': '149642479', '2026-02-13': '149641803', '2026-02-14': '149641779', '2026-02-15': '149641778', '2026-02-16': '149823164', '2026-02-17': '149823161', '2026-02-18': '149823125', '2026-02-19': '149823123', '2026-02-20': '149823070', '2026-02-21': '149810570', '2026-02-22': '149712428', '2026-02-23': '149643583', '2026-02-24': '149643586', '2026-02-25': '149643569', '2026-02-26': '149643561', '2026-02-27': '149823083', '2026-02-28': '149612276',
         };
 
-        // Set today's date
+        // Set today's date or date from hash parameter
         const todayInput = document.getElementById('todayDate');
-        todayInput.valueAsDate = new Date();
+        
+        // Check for hash parameter like #202601
+        function setDateFromHash() {
+            const hash = window.location.hash.substring(1); // Remove #
+            if (hash && hash.match(/^\d{6}$/)) {
+                // Parse YYYYMM format
+                const year = parseInt(hash.substring(0, 4));
+                const month = parseInt(hash.substring(4, 6));
+                
+                if (year >= 2000 && year <= 3000 && month >= 1 && month <= 12) {
+                    // Check if current date is within that month
+                    const now = new Date();
+                    const currentYear = now.getFullYear();
+                    const currentMonth = now.getMonth() + 1;
+                    
+                    let targetDate;
+                    if (currentYear === year && currentMonth === month) {
+                        // Use current date if we're in the target month
+                        targetDate = now;
+                    } else {
+                        // Use first day of the target month
+                        targetDate = new Date(year, month - 1, 1);
+                    }
+                    
+                    todayInput.valueAsDate = targetDate;
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Try to set from hash, otherwise use today's date
+        if (!setDateFromHash()) {
+            todayInput.valueAsDate = new Date();
+        }
+        
+        // Listen for hash changes
+        window.addEventListener('hashchange', setDateFromHash);
 
         // Add event listener for date changes
         todayInput.addEventListener('change', function () {
