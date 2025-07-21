@@ -1,0 +1,78 @@
+{
+  "calendar_settings": {
+    "week_start": "monday",
+    "week_numbering": "iso",
+    "language": "en",
+    "date_format": "YYYY-MM-DD",
+    "first_week_minimum_days": 4
+  },
+  "layout": {
+    "format": "A3_landscape",
+    "dimensions": {
+      "width_mm": 420,
+      "height_mm": 297,
+      "bleed_mm": 3
+    },
+    "grid": {
+      "columns": 7,
+      "photo_size_mm": 55,
+      "spacing_mm": 2,
+      "header_height_mm": 45,
+      "footer_height_mm": 25
+    }
+  },
+  "typography": {
+    "fonts": {
+      "title": "Inter",
+      "weekdays": "Inter",
+      "dates": "Inter",
+      "body": "Inter"
+    },
+    "sizes": {
+      "title": "24pt",
+      "weekdays": "10pt",
+      "dates": "14pt",
+      "week_numbers": "8pt"
+    }
+  },
+  "colors": {
+    "primary": "#2C3E50",
+    "secondary": "#34495E",
+    "accent": "#E74C3C",
+    "text_light": "#FFFFFF",
+    "text_dark": "#2C3E50",
+    "background": "#FFFFFF",
+    "grid_lines": "#BDC3C7",
+    "previous_month_opacity": 0.5
+  },
+  "print": {
+    "resolution_dpi": 300,
+    "color_profile": "CMYK_ISO_Coated_v2_300",
+    "pdf_standard": "PDF_X_1a",
+    "embed_fonts": true,
+    "include_bleed": true,
+    "crop_marks": true
+  },
+  "localization": {
+    "weekdays": {
+      "en": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "en_short": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "es": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+      "es_short": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+    },
+    "months": {
+      "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      "es": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    }
+  },
+  "alternative_configurations": {
+    "sunday_start": {
+      "week_start": "sunday",
+      "weekdays_order": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    },
+    "monday_start": {
+      "week_start": "monday", 
+      "weekdays_order": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    }
+  }
+}
