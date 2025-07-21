@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>March 2026 - Month 3</title>
+    <link rel="stylesheet" href="print_styles.css">
+    <style>
+        /* Print-specific styles for A3 landscape */
+        @page {
+            size: A3 landscape;
+            margin: 0;
+            bleed: 3mm;
+        }
+        
+        .calendar-page {
+            width: 420mm;
+            height: 297mm;
+            position: relative;
+            background: white;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        /* Header section with title, world map, QR code and branding */
+        .header {
+            height: 35mm;
+            padding: 6mm 10mm;
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            color: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .title-section {
+            flex: 1;
+        }
+        
+        .month-title {
+            font-size: 24pt;
+            font-weight: 600;
+            margin: 0 0 4mm 0;
+            letter-spacing: 0.5mm;
+        }
+        
+        .location-subtitle {
+            font-size: 14pt;
+            font-weight: 300;
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8mm;
+        }
+        
+        .world-map-container {
+            width: 60mm;
+            height: 20mm;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3mm;
+            font-size: 9pt;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 4mm;
+        }
+        
+        .qr-code {
+            width: 18mm;
+            height: 18mm;
+            background: white;
+            border-radius: 2mm;
+            color: #2C3E50;
+            font-size: 6pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        
+        /* Main calendar grid */
+        .calendar-container {
+            height: 240mm;
+            padding: 8mm 10mm;
+        }
+        
+        .calendar-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: separate;
+            border-spacing: 2mm;
+        }
+        
+        .week-number-col {
+            width: 15mm;
+            text-align: center;
+            font-size: 8pt;
+            font-weight: 500;
+            color: #7F8C8D;
+            vertical-align: middle;
+        }
+        
+        .weekday-header-row {
+            height: 8mm;
+        }
+        
+        .weekday-header {
+            text-align: center;
+            font-size: 10pt;
+            font-weight: 600;
+            color: #2C3E50;
+            text-transform: uppercase;
+            letter-spacing: 0.5mm;
+            border-bottom: 2px solid #2C3E50;
+            vertical-align: middle;
+        }
+        
+        .calendar-week-row {
+            height: 38mm;
+        }
+        
+        .calendar-day {
+            width: 54mm;
+            height: 38mm;
+            position: relative;
+            border-radius: 3mm;
+            overflow: hidden;
+            background: #F8F9FA;
+            border: 1px solid #E9ECEF;
+            padding: 0;
+        }
+        
+        .calendar-day.previous-month,
+        .calendar-day.next-month {
+            opacity: 0.5;
+        }
+        
+        .day-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 3mm;
+            display: block;
+        }
+        
+        .day-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 2mm;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+        
+        .day-number {
+            font-size: 16pt;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        
+        /* Print optimizations */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .calendar-page {
+                page-break-after: always;
+            }
+            
+            .day-image {
+                width: 54mm !important;
+                height: 38mm !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                border-radius: 3mm !important;
+                display: block !important;
+            }
+            
+            .calendar-day {
+                width: 54mm !important;
+                height: 38mm !important;
+            }
+        }
+        
+        /* Crop marks for professional printing */
+        .crop-marks {
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .crop-mark {
+            position: absolute;
+            background: #000;
+        }
+        
+        .crop-mark.horizontal {
+            height: 1px;
+            width: 5mm;
+        }
+        
+        .crop-mark.vertical {
+            width: 1px;
+            height: 5mm;
+        }
+        
+        /* Top-left crop marks */
+        .crop-mark.tl-h { top: -4mm; left: -2mm; }
+        .crop-mark.tl-v { top: -4mm; left: -2mm; }
+        
+        /* Top-right crop marks */
+        .crop-mark.tr-h { top: -4mm; right: -2mm; }
+        .crop-mark.tr-v { top: -4mm; right: -2mm; }
+        
+        /* Bottom-left crop marks */
+        .crop-mark.bl-h { bottom: -4mm; left: -2mm; }
+        .crop-mark.bl-v { bottom: -4mm; left: -2mm; }
+        
+        /* Bottom-right crop marks */
+        .crop-mark.br-h { bottom: -4mm; right: -2mm; }
+        .crop-mark.br-v { bottom: -4mm; right: -2mm; }
+    </style>
+</head>
+<body>
+    <div class="calendar-page">
+        <!-- Crop marks for professional printing -->
+        <div class="crop-marks">
+            <div class="crop-mark horizontal tl-h"></div>
+            <div class="crop-mark vertical tl-v"></div>
+            <div class="crop-mark horizontal tr-h"></div>
+            <div class="crop-mark vertical tr-v"></div>
+            <div class="crop-mark horizontal bl-h"></div>
+            <div class="crop-mark vertical bl-v"></div>
+            <div class="crop-mark horizontal br-h"></div>
+            <div class="crop-mark vertical br-v"></div>
+        </div>
+        
+        <!-- Header with title and world map -->
+        <header class="header">
+            <div class="title-section">
+                <h1 class="month-title">March 2026</h1>
+                <p class="location-subtitle">Month 3</p>
+            </div>
+            <div class="header-right">
+                <div class="world-map-container">
+                    <!-- World map SVG will be inserted here -->
+                    <div class="map-placeholder">
+                        📍 Month 3<br>
+                        <small>0°N, 0°E</small>
+                    </div>
+                </div>
+                
+                <div class="qr-section">
+                    <div class="qr-code">
+                        <!-- QR code will be generated and inserted here -->
+                        <img src="assets/qr-2026-03.png" alt="QR Code" style="width: 100%; height: 100%; border-radius: 2mm;">
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main calendar grid -->
+        <main class="calendar-container">
+            <table class="calendar-table">
+                <!-- Weekday headers -->
+                <tr class="weekday-header-row">
+                    <td class="week-number-col">WK</td>
+                    
+                    <td class="weekday-header">Mon</td>
+                    
+                    <td class="weekday-header">Tue</td>
+                    
+                    <td class="weekday-header">Wed</td>
+                    
+                    <td class="weekday-header">Thu</td>
+                    
+                    <td class="weekday-header">Fri</td>
+                    
+                    <td class="weekday-header">Sat</td>
+                    
+                    <td class="weekday-header">Sun</td>
+                    
+                </tr>
+                
+                <!-- Calendar weeks -->
+                
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">9</td>
+                    
+                    <td class="calendar-day previous-month">
+                        
+                        <img src="../photos/2026/02/IMG_8687.jpg" alt="Photo for 2026-02-23" class="day-image">
+                        <div class="day-overlay">
+                            <div class="day-number">23</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day previous-month">
+                        
+                        <img src="../photos/2026/02/IMG_8715.jpg" alt="Photo for 2026-02-24" class="day-image">
+                        <div class="day-overlay">
+                            <div class="day-number">24</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day previous-month">
+                        
+                        <img src="../photos/2026/02/IMG_8686.jpg" alt="Photo for 2026-02-25" class="day-image">
+                        <div class="day-overlay">
+                            <div class="day-number">25</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day previous-month">
+                        
+                        <img src="../photos/2026/02/IMG_8559.jpg" alt="Photo for 2026-02-26" class="day-image">
+                        <div class="day-overlay">
+                            <div class="day-number">26</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day previous-month">
+                        
+                        <img src="../photos/2026/02/IMG_8808.jpg" alt="Photo for 2026-02-27" class="day-image">
+                        <div class="day-overlay">
+                            <div class="day-number">27</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day previous-month">
+                        
+                        <img src="../photos/2026/02/myna.jpg" alt="Photo for 2026-02-28" class="day-image">
+                        <div class="day-overlay">
+                            <div class="day-number">28</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">1</div>
+                        </div>
+                        
+                    </td>
+                    
+                </tr>
+                
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">10</td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">2</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">3</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">4</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">5</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">6</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">7</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">8</div>
+                        </div>
+                        
+                    </td>
+                    
+                </tr>
+                
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">11</td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">9</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">10</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">11</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">12</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">13</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">14</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">15</div>
+                        </div>
+                        
+                    </td>
+                    
+                </tr>
+                
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">12</td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">16</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">17</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">18</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">19</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">20</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">21</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">22</div>
+                        </div>
+                        
+                    </td>
+                    
+                </tr>
+                
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">13</td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">23</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">24</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">25</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">26</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">27</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">28</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">29</div>
+                        </div>
+                        
+                    </td>
+                    
+                </tr>
+                
+                <tr class="calendar-week-row">
+                    <td class="week-number-col">14</td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">30</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day ">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">31</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day next-month">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">1</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day next-month">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">2</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day next-month">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">3</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day next-month">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">4</div>
+                        </div>
+                        
+                    </td>
+                    
+                    <td class="calendar-day next-month">
+                        
+                        <div class="day-overlay">
+                            <div class="day-number">5</div>
+                        </div>
+                        
+                    </td>
+                    
+                </tr>
+                
+            </table>
+        </main>
+        
+    </div>
+</body>
+</html>

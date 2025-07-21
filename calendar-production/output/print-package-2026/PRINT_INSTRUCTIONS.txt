@@ -1,0 +1,52 @@
+PROFESSIONAL CALENDAR PRINTING INSTRUCTIONS
+==========================================
+
+Package Contents: 1 PDF files
+Format: A3 Landscape (420mm × 297mm)
+Print Specification: PDF/X compliant
+
+PRINTER REQUIREMENTS:
+- A3 paper support (minimum)
+- Color printing capability
+- 300 DPI minimum resolution
+- CMYK color space support
+
+PRINT SETTINGS:
+- Paper Size: A3 (420mm × 297mm)
+- Orientation: Landscape
+- Quality: Highest/Best available
+- Color Mode: CMYK
+- Scaling: None (100% / Actual Size)
+- Margins: None (Full bleed)
+
+PAPER RECOMMENDATIONS:
+- Weight: 200-300 GSM
+- Finish: Matte or Semi-gloss
+- Type: Photo paper or high-quality cardstock
+
+BINDING OPTIONS:
+- Spiral binding (recommended)
+- Saddle stitching
+- Perfect binding
+- Ring binding
+
+QUALITY CHECK:
+1. Verify all photos are sharp and well-exposed
+2. Check that text is clearly readable
+3. Ensure colors are vibrant but not oversaturated
+4. Confirm crop marks are visible (if enabled)
+
+PROFESSIONAL PRINT SHOPS:
+These files are compatible with:
+- Local print shops
+- Online printing services (VistaPrint, etc.)
+- Professional offset printers
+- Large format printers
+
+TROUBLESHOOTING:
+- If colors appear different, ask for CMYK color matching
+- If text appears blurry, ensure 300 DPI output
+- If layout is cut off, verify "fit to page" is disabled
+
+Generated: /mnt/c/Users/stefa/OneDrive/Documents/GitHub/sarefo.github.io/calendar/calendar-production
+Contact: [Your contact information]
