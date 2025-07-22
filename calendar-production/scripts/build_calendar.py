@@ -15,6 +15,18 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 import subprocess
+PDF_MERGER_AVAILABLE = False
+PDF_IMPORT_ERROR = ""
+try:
+    from pypdf import PdfWriter, PdfReader
+    PDF_MERGER_AVAILABLE = True
+except ImportError as e1:
+    PDF_IMPORT_ERROR += f"pypdf: {e1}; "
+    try:
+        from PyPDF2 import PdfWriter, PdfReader
+        PDF_MERGER_AVAILABLE = True
+    except ImportError as e2:
+        PDF_IMPORT_ERROR += f"PyPDF2: {e2}"
 
 # Import our custom modules
 from calendar_generator import CalendarGenerator
@@ -198,7 +210,8 @@ class CalendarBuilder:
     
     async def build_year(self, year: int,
                         output_dir: str = "output", 
-                        months: list = None, generate_pdf: bool = True) -> dict:
+                        months: list = None, generate_pdf: bool = True,
+                        bind_pdf: bool = False) -> dict:
         """Build calendar for entire year or specified months"""
         
         if not months:
@@ -249,8 +262,83 @@ class CalendarBuilder:
                     print(f"📦 Print package created: {package_dir}")
                 except Exception as e:
                     print(f"⚠️  Print package creation failed: {e}")
+                
+                # Bind PDFs into single file if requested
+                if bind_pdf and len(pdf_files) > 1:
+                    try:
+                        bound_pdf_file = f"{output_dir}/print-ready/{year}_calendar_complete.pdf"
+                        bound_pdf = self.bind_pdfs_to_single_file(pdf_files, bound_pdf_file)
+                        results["bound_pdf"] = bound_pdf
+                        print(f"📚 Complete calendar PDF created: {bound_pdf}")
+                    except Exception as e:
+                        print(f"❌ PDF binding failed: {e}")
+                        if not PDF_MERGER_AVAILABLE:
+                            print("   Install PyPDF2: pip install PyPDF2")
         
         return results
+    
+    def bind_pdfs_to_single_file(self, pdf_files: list, output_file: str) -> str:
+        """Bind multiple PDFs into a single PDF file"""
+        if not PDF_MERGER_AVAILABLE:
+            raise ImportError("PDF merger not available. Install PyPDF2 or pypdf: pip install PyPDF2")
+        
+        if not pdf_files:
+            raise ValueError("No PDF files provided for binding")
+        
+        # Filter out None values and ensure files exist
+        valid_pdf_files = []
+        for pdf_file in pdf_files:
+            if pdf_file and Path(pdf_file).exists():
+                valid_pdf_files.append(pdf_file)
+            elif pdf_file:
+                print(f"⚠️  Warning: PDF file not found: {pdf_file}")
+        
+        if not valid_pdf_files:
+            raise ValueError("No valid PDF files found for binding")
+        
+        # Sort PDF files by month (assuming filename format YYYYMM.pdf)
+        def get_month_from_filename(filename):
+            try:
+                basename = Path(filename).stem
+                if len(basename) >= 6 and basename[:6].isdigit():
+                    return int(basename[4:6])  # Extract month from YYYYMM
+                return 0
+            except:
+                return 0
+        
+        valid_pdf_files.sort(key=get_month_from_filename)
+        
+        print(f"📄 Binding {len(valid_pdf_files)} PDFs into single file...")
+        for i, pdf_file in enumerate(valid_pdf_files, 1):
+            month = get_month_from_filename(pdf_file)
+            print(f"   {i:2d}. Month {month:2d}: {Path(pdf_file).name}")
+        
+        # Create output directory if needed
+        output_path = Path(output_file)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Merge PDFs
+        pdf_writer = PdfWriter()
+        
+        for pdf_file in valid_pdf_files:
+            try:
+                with open(pdf_file, 'rb') as file:
+                    pdf_reader = PdfReader(file)
+                    for page in pdf_reader.pages:
+                        pdf_writer.add_page(page)
+                print(f"✅ Added: {Path(pdf_file).name}")
+            except Exception as e:
+                print(f"❌ Error adding {pdf_file}: {e}")
+                continue
+        
+        # Write combined PDF
+        with open(output_path, 'wb') as output_pdf:
+            pdf_writer.write(output_pdf)
+        
+        print(f"📚 Combined PDF created: {output_path}")
+        print(f"   Total pages: {len(pdf_writer.pages)}")
+        
+        return str(output_path)
     
     def create_build_report(self, build_results: dict, output_file: str = None):
         """Create detailed build report"""
@@ -282,6 +370,8 @@ def main():
     parser.add_argument('--config', help="Path to calendar configuration file")
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
+    parser.add_argument('--bind-pdf', action='store_true', help="Bind all monthly PDFs into single file")
+    parser.add_argument('--bind-existing', action='store_true', help="Only bind existing PDFs without regenerating")
     parser.add_argument('--check-photos', action='store_true', help="Only check photo availability")
     parser.add_argument('--install-deps', action='store_true', help="Install required dependencies")
     
@@ -289,7 +379,7 @@ def main():
     
     if args.install_deps:
         print("Installing dependencies...")
-        deps = ["jinja2", "qrcode[pil]", "playwright"]
+        deps = ["jinja2", "qrcode[pil]", "playwright", "PyPDF2"]
         for dep in deps:
             try:
                 subprocess.check_call([sys.executable, "-m", "pip", "install", dep])
@@ -326,6 +416,45 @@ def main():
             builder.validate_photos_for_month(args.year, month)
         return 0
     
+    # Handle bind-existing mode
+    if args.bind_existing:
+        if not PDF_MERGER_AVAILABLE:
+            print("❌ PDF merger not available.")
+            print(f"Import errors: {PDF_IMPORT_ERROR}")
+            print("Try installing: pip install pypdf")
+            return 1
+        
+        print(f"🔗 Binding existing PDFs for {args.year}")
+        
+        # Look for existing PDFs in the print-ready directory
+        pdf_dir = Path(args.output) / "print-ready"
+        if not pdf_dir.exists():
+            print(f"❌ PDF directory not found: {pdf_dir}")
+            return 1
+        
+        # Find PDF files that match the year pattern (YYYYMM.pdf)
+        year_pattern = f"{args.year}*.pdf"
+        existing_pdfs = sorted(pdf_dir.glob(year_pattern))
+        
+        if not existing_pdfs:
+            print(f"❌ No PDF files found for {args.year} in {pdf_dir}")
+            print(f"   Looking for pattern: {year_pattern}")
+            return 1
+        
+        print(f"📄 Found {len(existing_pdfs)} PDF files:")
+        for pdf in existing_pdfs:
+            print(f"   - {pdf.name}")
+        
+        # Bind them
+        try:
+            bound_pdf_file = f"{args.output}/print-ready/{args.year}_calendar_complete.pdf"
+            bound_pdf = builder.bind_pdfs_to_single_file([str(p) for p in existing_pdfs], bound_pdf_file)
+            print(f"\\n🎉 Successfully created bound calendar: {bound_pdf}")
+            return 0
+        except Exception as e:
+            print(f"❌ Failed to bind PDFs: {e}")
+            return 1
+    
     # Determine months to build
     months_to_build = []
     if args.month:
@@ -356,7 +485,7 @@ def main():
                 # Multiple months or full year
                 results = await builder.build_year(
                     args.year, args.output, 
-                    months_to_build, not args.no_pdf
+                    months_to_build, not args.no_pdf, args.bind_pdf
                 )
                 
                 # Save build report

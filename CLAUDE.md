@@ -283,6 +283,12 @@ python3 scripts/build_calendar.py --year 2026 --months "1,2,3"
 # Build full year with print package
 python3 scripts/build_calendar.py --year 2026
 
+# Build full year and bind into single 12-page PDF
+python3 scripts/build_calendar.py --year 2026 --bind-pdf
+
+# Bind existing monthly PDFs without regenerating (fastest)
+python3 scripts/build_calendar.py --year 2026 --bind-existing
+
 # Skip PDF generation (HTML only)
 python3 scripts/build_calendar.py --year 2026 --no-pdf
 ```
@@ -426,6 +432,12 @@ python3 scripts/build_calendar.py --install-deps
 - Test QR codes at actual print size
 - Verify URL is accessible
 
+**"PDF binding failed"**
+- Install PDF merger: `python3 -m pip install pypdf`
+- Alternative: `pip install PyPDF2`
+- Check existing PDFs are in `output/print-ready/` directory
+- Ensure PDF files follow `YYYYMM.pdf` naming convention
+
 ---
 
 ## 📞 Support & Development
@@ -441,6 +453,7 @@ python3 scripts/build_calendar.py --install-deps
 ✅ **Landing page with hash parameter support implemented**  
 ✅ **Clean header design with integrated elements**  
 ✅ **Enhanced print media CSS for PDF consistency**  
+✅ **PDF binding system: combine all 12 months into single document**  
 
 ### Next Steps
 1. ✅ **Dynamic calendar layout system - NO MORE EMPTY ROWS!**
