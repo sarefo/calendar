@@ -5,8 +5,9 @@
 + improve QR code UX: user should know they can get more info about the photos there
 + consider moving title bar to bottom
 
-## World map
-+ coordinates are sometimes off, needed to tweak them to the right for some maps
+## PDF version
++ cut marks no longer showing (3mm bleed)
++ leave space for top binding
 
 ## Landing page
 + "pick other date" problems:
@@ -18,8 +19,7 @@
 + click on image opens observation
 + able to navigate to next/previous month
 
-## PDF version
-+ cut marks no longer showing (3mm bleed)
-+ leave space for top binding
-
 ## Photos
+
+## World map
++ coordinates are sometimes off, needed to tweak them to the right for some maps
