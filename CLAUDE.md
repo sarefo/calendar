@@ -132,11 +132,11 @@ calendar/
 
 The system generates three PDF formats optimized for different use cases:
 
-| Format | File Size (per month) | Total (12 months) | Image Size | Quality | Use Case |
-|--------|----------------------|-------------------|------------|---------|----------|
-| **Print** | 33-34MB | ~400MB | 800px | 85% | Professional printing, CMYK, 300 DPI |
-| **Web** | 9-10MB | ~110MB | 400px | 65% | Monitor viewing, web sharing |
-| **Ultra** | 2.5-3MB | **~30MB** | 200px | 45% | Email sharing, mobile viewing |
+| Format    | File Size (per month) | Total (12 months) | Image Size | Quality | Use Case                             |
+| --------- | --------------------- | ----------------- | ---------- | ------- | ------------------------------------ |
+| **Print** | 33-34MB               | ~400MB            | 800px      | 85%     | Professional printing, CMYK, 300 DPI |
+| **Web**   | 9-10MB                | ~110MB            | 400px      | 65%     | Monitor viewing, web sharing         |
+| **Ultra** | 2.5-3MB               | **~30MB**         | 200px      | 45%     | Email sharing, mobile viewing        |
 
 **Size Reduction Comparison:**
 - **Web vs Print**: 72% smaller
@@ -167,9 +167,9 @@ The system generates three PDF formats optimized for different use cases:
 #### **Multi-Language Location Data**
 - **README.md Format**: 
   ```
-  + location_en: Tulamben, Bali, Indonesia
-  + location_de: Tulamben, Bali, Indonesien  
-  + location_es: Tulamben, Bali, Indonesia
+  + location_en: Indonesia
+  + location_de: Indonesien  
+  + location_es: Indonesia
   + coordinates: 8°017′03″S 115°035′021″E
   ```
 - **Smart Fallbacks**: German calendar uses German location, falls back to English if missing
