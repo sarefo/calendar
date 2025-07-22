@@ -1,14 +1,12 @@
-+ 01: Bali, Indonesia
-+ 02: Su-ngai Kolok, Thailand
-+ 03: Sumatra, Indonesia
++ 01: Bali
++ 02: Thailand
++ 03: Sumatra
 + 04: Northern India
 + 05: Colombia
-+ 06: Koh Tao, Thailand
++ 06: Gulf of Thailand
 07: Hong Kong
 + 08: Ecuador
 + 09: Germany
-+ 10: Borneo, Malaysia
++ 10: Borneo
 + 11: Philippines
 + 12: Costa Rica
-
-Spain?
