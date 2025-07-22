@@ -44,11 +44,12 @@ calendar/
 │   │   ├── print-ready/          # Final PDFs
 │   │   └── previews/             # HTML previews
 │   ├── photos/                   # Photo repository (consolidated location)
-│   │   ├── photo_information.txt # Photo ordering file (month\tfilename\tobservation_id)
+│   │   ├── photo_information.txt # Photo ordering file (YYYYMM\tfilename\tobservation_id)
 │   │   └── YYYY/                 # Year directory
 │   │       └── MM/               # Month directory (01-12)
 │   │           ├── photo1.jpg    # Photos listed in photo_information.txt
 │   │           ├── photo2.jpg    # Order determined by file, not filename
+│   │           ├── README.md     # Location data (required for all months)
 │   │           └── ...           # etc.
 │   └── website/                  # GitHub.io companion site (future)
 ```
@@ -71,6 +72,13 @@ calendar/
 - **A3 Optimization**: Enhanced 240mm calendar grid height for maximum photo visibility
 - **Enhanced Typography**: 16pt day numbers with improved text shadow for print clarity
 
+### **Cross-Year Photo Support** 🆕
+- **YYYYMM Format**: Photo information system upgraded from MM to YYYYMM format
+- **Seamless Overflow**: January calendars display December photos from previous year
+- **Future-Proof**: December calendars can display January photos from next year  
+- **Smart Mapping**: Automatic photo lookup across year boundaries
+- **Placeholder Support**: Partial months use placeholder entries for missing days
+
 ### **Smart QR Code Integration**
 - **Hash Parameters**: QR codes generate URLs with flexible hash formats:
   - `#YYYYMM` (e.g., `#202601`) for month navigation
@@ -91,9 +99,11 @@ calendar/
 
 #### 1. **Photo Management**
 - **Structure**: `calendar-production/photos/YYYY/MM/` (e.g., `calendar-production/photos/2026/01/`)
-- **Ordering**: Controlled by `calendar-production/photos/photo_information.txt` (tab-separated format)
+- **Ordering**: Controlled by `calendar-production/photos/photo_information.txt` (tab-separated YYYYMM format)
 - **Format**: `.jpg` files, square crop recommended
 - **Processing**: Photoshop batch processing with provided specs
+- **Cross-Year Support**: ✅ January calendars can show December photos from previous year
+- **Location Data**: Each month directory must contain `README.md` with location information
 
 #### 2. **Calendar Generation**
 - **Grid**: 7 columns (Mon-Sun) with ISO week numbers using HTML table layout
@@ -145,8 +155,9 @@ calendar/
    echo "+ year: 2026" >> calendar-production/photos/2026/01/README.md
    
    # Update calendar-production/photos/photo_information.txt with photo order
-   # Format: month\tfilename\tobservation_id (tab-separated)
-   # Example: 01\tIMG_8477\t149640464
+   # Format: YYYYMM\tfilename\tobservation_id (tab-separated)
+   # Example: 202601\tIMG_8477\t149640464
+   # Note: For partial months, use placeholder entries for missing days
    ```
 
 2. **Generate Crop Specifications**
@@ -415,7 +426,10 @@ python3 scripts/build_calendar.py --install-deps
 **"No photos found for month"**
 - Check photo directory structure: `calendar-production/photos/YYYY/MM/`
 - Ensure photos have `.jpg` extension  
-- Verify `calendar-production/photos/photo_information.txt` has entries for the month
+- Verify `calendar-production/photos/photo_information.txt` has entries in YYYYMM format
+- Ensure tab-separated format: `YYYYMM\tfilename\tobservation_id`
+- For partial months, add placeholder entries for missing days
+- Check that `README.md` exists in photo directory with location data
 - Run: `python3 scripts/build_calendar.py --check-photos --year YYYY --month MM`
 
 **"PDF conversion failed"**
@@ -454,14 +468,16 @@ python3 scripts/build_calendar.py --install-deps
 ✅ **Clean header design with integrated elements**  
 ✅ **Enhanced print media CSS for PDF consistency**  
 ✅ **PDF binding system: combine all 12 months into single document**  
+✅ **Cross-year photo support: YYYYMM format with seamless overflow**
 
 ### Next Steps
 1. ✅ **Dynamic calendar layout system - NO MORE EMPTY ROWS!**
 2. ✅ **Enhanced QR code integration with smart landing page**
 3. ✅ **Optimized photo sizing - 10% larger photos in 75% of months**
 4. ✅ **Auto-location reading and hash parameter support**
-5. ⏳ **Generate remaining months for 2026 calendar**
-6. ⏳ **Deploy optimized system to GitHub Pages**
+5. ✅ **Cross-year photo overflow - January shows December photos**
+6. ⏳ **Generate remaining months for 2026 calendar**
+7. ⏳ **Deploy optimized system to GitHub Pages**
 
 ### Contact
 - **Project Repository**: This calendar system

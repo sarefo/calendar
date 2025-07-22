@@ -85,13 +85,13 @@ class CalendarGenerator:
         # Skip header line
         for line in lines[1:]:
             parts = line.strip().split('\t')
-            if len(parts) >= 2 and parts[1].strip():  # month and filename exist
-                month = parts[0].strip()
+            if len(parts) >= 2 and parts[1].strip():  # YYYYMM and filename exist
+                yyyymm = parts[0].strip()
                 filename = parts[1].strip()
                 
-                if month not in photo_info:
-                    photo_info[month] = []
-                photo_info[month].append(filename)
+                if yyyymm not in photo_info:
+                    photo_info[yyyymm] = []
+                photo_info[yyyymm].append(filename)
         
         return photo_info
     
@@ -193,7 +193,7 @@ class CalendarGenerator:
         if not hasattr(self, '_photo_info'):
             self._photo_info = self._load_photo_information()
         
-        month_key = f"{target_date.month:02d}"
+        month_key = f"{target_date.year}{target_date.month:02d}"
         day_of_month = target_date.day
         
         # Check if we have photo info for this month

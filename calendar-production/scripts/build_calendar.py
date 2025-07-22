@@ -317,6 +317,11 @@ class CalendarBuilder:
         output_path = Path(output_file)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
+        # Remove existing file if it exists to ensure replacement (not appending)
+        if output_path.exists():
+            output_path.unlink()
+            print(f"🗑️  Removed existing file: {output_path.name}")
+        
         # Merge PDFs
         pdf_writer = PdfWriter()
         
@@ -331,7 +336,7 @@ class CalendarBuilder:
                 print(f"❌ Error adding {pdf_file}: {e}")
                 continue
         
-        # Write combined PDF
+        # Write combined PDF (create new file)
         with open(output_path, 'wb') as output_pdf:
             pdf_writer.write(output_pdf)
         

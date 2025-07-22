@@ -26,29 +26,35 @@ def read_photo_information():
         
         parts = line.split('\t')
         if len(parts) >= 3:
-            month = parts[0].strip()
+            yyyymm = parts[0].strip()
             observation_id = parts[2].strip()
             
-            if month and observation_id:
-                if month not in observations:
-                    observations[month] = []
-                observations[month].append(observation_id)
+            if yyyymm and observation_id:
+                if yyyymm not in observations:
+                    observations[yyyymm] = []
+                observations[yyyymm].append(observation_id)
     
     return observations
 
-def generate_js_mapping(observations, year=2026):
+def generate_js_mapping(observations):
     """Generate JavaScript mapping for observation IDs"""
     js_lines = []
     
-    for month_str, obs_list in observations.items():
-        if not month_str.isdigit():
+    # Sort months by YYYYMM
+    sorted_months = sorted(observations.keys())
+    
+    for i, yyyymm_str in enumerate(sorted_months):
+        if len(yyyymm_str) != 6 or not yyyymm_str.isdigit():
             continue
             
-        month_num = int(month_str)
+        year = int(yyyymm_str[:4])
+        month_num = int(yyyymm_str[4:6])
         month_name = [
             "", "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ][month_num]
+        
+        obs_list = observations[yyyymm_str]
         
         js_lines.append(f"            // {month_name} {year}")
         
@@ -58,7 +64,9 @@ def generate_js_mapping(observations, year=2026):
             date_str = f"'{year}-{month_num:02d}-{day:02d}'"
             day_mappings.append(f"{date_str}: '{obs_id}'")
         
-        js_lines.append("            " + ", ".join(day_mappings) + ("," if month_num < 12 else ""))
+        # Add comma if not the last month
+        comma = "," if i < len(sorted_months) - 1 else ""
+        js_lines.append("            " + ", ".join(day_mappings) + comma)
         js_lines.append("")  # Empty line between months
     
     return "\n".join(js_lines)
