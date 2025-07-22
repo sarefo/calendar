@@ -237,6 +237,45 @@
     </div>
 
     <script>
+        // Localization data
+        const translations = {
+            en: {
+                title: "Macro Calendar",
+                subtitle: "A daily journey through macro photography from around the world",
+                dateQuestion: "What's on the photo?",
+                dateHelp: "👆 Click the date above to see detailed info about that day's photo",
+                pickDateBtn: "Pick Other Date",
+                viewCalendar: "View Calendar Pages",
+                footerText: "Explore the beauty of macro photography through our A3 landscape calendar featuring daily photos from locations around the world.<br>All photos by",
+                noObservation: "No observation available for this date yet. Photos for this date may not be added to the calendar.",
+                months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            },
+            de: {
+                title: "Makro-Kalender",
+                subtitle: "Eine tägliche Reise durch die Makrofotografie aus aller Welt",
+                dateQuestion: "Was ist auf dem Foto?",
+                dateHelp: "👆 Klicken Sie auf das Datum, um detaillierte Informationen zu diesem Foto zu sehen",
+                pickDateBtn: "Anderes Datum wählen",
+                viewCalendar: "Kalenderseiten ansehen",
+                footerText: "Entdecken Sie die Schönheit der Makrofotografie mit unserem A3-Querformat-Kalender mit täglich neuen Fotos aus aller Welt.<br>Alle Fotos von",
+                noObservation: "Für dieses Datum ist noch keine Beobachtung verfügbar. Fotos für dieses Datum wurden möglicherweise noch nicht zum Kalender hinzugefügt.",
+                months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
+            },
+            es: {
+                title: "Calendario Macro",
+                subtitle: "Un viaje diario a través de la fotografía macro de todo el mundo",
+                dateQuestion: "¿Qué hay en la foto?",
+                dateHelp: "👆 Haz clic en la fecha para ver información detallada sobre la foto de ese día",
+                pickDateBtn: "Elegir otra fecha",
+                viewCalendar: "Ver páginas del calendario",
+                footerText: "Explora la belleza de la fotografía macro con nuestro calendario A3 horizontal con fotos diarias de ubicaciones de todo el mundo.<br>Todas las fotos por",
+                noObservation: "Aún no hay observación disponible para esta fecha. Es posible que las fotos de esta fecha no se hayan agregado al calendario.",
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+            }
+        };
+        
+        let currentLanguage = 'en';
+        
         // Photo observation data mapping
         const photoObservations = {
             // December 2025
@@ -286,15 +325,42 @@
         
         let currentDate = new Date();
         
+        // Update UI language
+        function updateLanguage(language) {
+            currentLanguage = language;
+            document.documentElement.lang = language;
+            
+            const t = translations[language] || translations.en;
+            
+            // Update text content
+            document.querySelector('h1').textContent = t.title;
+            document.querySelector('.subtitle').textContent = t.subtitle;
+            document.querySelector('.date-display h2').textContent = t.dateQuestion;
+            document.querySelector('.date-help').textContent = t.dateHelp;
+            document.getElementById('pickDateBtn').textContent = t.pickDateBtn;
+            document.querySelector('.calendar-section h3').textContent = t.viewCalendar;
+            document.querySelector('.footer').innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> on iNaturalist.';
+            
+            // Update date display
+            updateDateDisplay(currentDate);
+        }
+        
         // Format date for display
         function formatDateForDisplay(date) {
+            const t = translations[currentLanguage] || translations.en;
             const options = { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
             };
-            return date.toLocaleDateString('en-US', options);
+            
+            // Use appropriate locale for date formatting
+            let locale = 'en-US';
+            if (currentLanguage === 'de') locale = 'de-DE';
+            else if (currentLanguage === 'es') locale = 'es-ES';
+            
+            return date.toLocaleDateString(locale, options);
         }
         
         // Format date for observation lookup (YYYY-MM-DD)
@@ -318,20 +384,36 @@
                 const url = `https://www.inaturalist.org/observations/${observationId}`;
                 window.open(url, '_blank');
             } else {
-                alert('No observation available for this date yet. Photos for this date may not be added to the calendar.');
+                const t = translations[currentLanguage] || translations.en;
+                alert(t.noObservation);
             }
         }
         
-        // Check for hash parameter like #202601 or #20260115
+        // Check for hash parameter like #202601 or #20260115 or #202601&lang=de
         function setDateFromHash() {
             const hash = window.location.hash.substring(1); // Remove #
             
+            // Parse hash to extract date and language parameters
+            let dateString = hash;
+            let language = 'en';
+            
+            if (hash.includes('&lang=')) {
+                const parts = hash.split('&lang=');
+                dateString = parts[0];
+                language = parts[1];
+                
+                // Validate language and update UI
+                if (['en', 'de', 'es'].includes(language)) {
+                    updateLanguage(language);
+                }
+            }
+            
             // Check for YYYYMMDD format (8 digits)
-            if (hash && hash.match(/^\d{8}$/)) {
+            if (dateString && dateString.match(/^\d{8}$/)) {
                 // Parse YYYYMMDD format
-                const year = parseInt(hash.substring(0, 4));
-                const month = parseInt(hash.substring(4, 6));
-                const day = parseInt(hash.substring(6, 8));
+                const year = parseInt(dateString.substring(0, 4));
+                const month = parseInt(dateString.substring(4, 6));
+                const day = parseInt(dateString.substring(6, 8));
                 
                 if (year >= 2000 && year <= 3000 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
                     const targetDate = new Date(year, month - 1, day);
@@ -345,10 +427,10 @@
                 }
             }
             // Check for YYYYMM format (6 digits)
-            else if (hash && hash.match(/^\d{6}$/)) {
+            else if (dateString && dateString.match(/^\d{6}$/)) {
                 // Parse YYYYMM format
-                const year = parseInt(hash.substring(0, 4));
-                const month = parseInt(hash.substring(4, 6));
+                const year = parseInt(dateString.substring(0, 4));
+                const month = parseInt(dateString.substring(4, 6));
                 
                 if (year >= 2000 && year <= 3000 && month >= 1 && month <= 12) {
                     // Check if current date is within that month

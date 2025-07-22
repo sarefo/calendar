@@ -3,7 +3,7 @@
 **Project**: Professional macro photography calendar with daily photos  
 **Format**: A3 Landscape (420mm × 297mm)  
 **Target**: Print-ready PDFs for professional printing  
-**Status**: ✅ Production-ready with complete build workflow and multi-format PDF generation  
+**Status**: ✅ Production-ready with complete build workflow, multi-format PDF generation, and full internationalization  
 **Date**: July 2025  
 
 ---
@@ -13,6 +13,7 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
+- ✅ **MAJOR**: Full internationalization support (German and Spanish)
 - ✅ Added ultra-compressed PDF generation (targets <40MB total file size)
 - ✅ Implemented complete build workflow (--complete option)
 - ✅ Added multi-format PDF support (print, web, ultra compression modes)
@@ -29,7 +30,8 @@ This system generates professional A3 landscape photo calendars featuring:
 - **Daily macro photography** (one photo per day, 28-31 per month)
 - **7-column grid layout** (Monday-Sunday) with ISO week numbering
 - **Monthly location themes** with world map integration
-- **Smart QR codes** with automatic date picker integration
+- **Smart QR codes** with automatic date picker integration and language detection
+- **Full internationalization** with German and Spanish support
 - **Multiple PDF formats** with intelligent compression:
   - **Print-ready** (CMYK, 300 DPI, PDF/X compliant): ~400MB total
   - **Web-optimized** (smaller file sizes): ~100MB total  
@@ -47,6 +49,7 @@ calendar/
 │   ├── scripts/                  # Python automation scripts
 │   │   ├── build_calendar.py     # 🚀 Master build script
 │   │   ├── calendar_generator.py # HTML calendar generation
+│   │   ├── localization_manager.py # 🌍 i18n support
 │   │   ├── week_calculator.py    # ISO week numbering
 │   │   ├── qr_generator.py       # QR code creation
 │   │   ├── world_map_generator.py # SVG world maps
@@ -144,6 +147,63 @@ The system generates three PDF formats optimized for different use cases:
 - `YYYY_calendar_print.pdf` - Full quality for printing (~400MB)
 - `YYYY_calendar_ultra.pdf` - Ultra-compressed for sharing (~30MB)
 
+### **Full Internationalization System** 🌍 **NEW**
+
+**Complete German and Spanish Support** with professional-quality localization:
+
+#### **Core Language Features**
+- **Supported Languages**: English (en), German (de), Spanish (es)
+- **LocalizationManager**: Centralized translation system with fallbacks
+- **Month Names**: Full localization (e.g., "März", "Febrero", "January")
+- **Weekday Names**: Both full and short forms (e.g., "Do"/"Donnerstag", "Jue"/"Jueves")
+- **Character Encoding**: Full UTF-8 support for special characters (ä, ö, ü, ß, é, á, í)
+
+#### **Smart QR Code Language Detection** 🆕
+- **Enhanced URLs**: QR codes include language parameters (`#202603&lang=de`)
+- **Automatic UI Switching**: Landing page detects language from QR scan
+- **Seamless Flow**: Scan German calendar → German interface automatically
+- **Backwards Compatible**: Existing English QR codes continue working
+
+#### **Multi-Language Location Data**
+- **README.md Format**: 
+  ```
+  + location_en: Tulamben, Bali, Indonesia
+  + location_de: Tulamben, Bali, Indonesien  
+  + location_es: Tulamben, Bali, Indonesia
+  + coordinates: 8°017′03″S 115°035′021″E
+  ```
+- **Smart Fallbacks**: German calendar uses German location, falls back to English if missing
+- **Legacy Support**: Old single-language locations still work
+
+#### **Build System Integration**
+- **Language Parameter**: `--language de/es/en` for all build commands
+- **Output Organization**: Language-specific QR codes and assets
+- **Template Localization**: HTML `lang` attributes automatically set
+- **Quality Assurance**: All special characters tested in production
+
+#### **Landing Page Localization**
+- **Dynamic Translation**: Complete UI translation based on QR parameters
+- **Date Formatting**: Locale-appropriate date display (German: "15. März 2026")
+- **Alert Messages**: Error messages in user's language
+- **Calendar Navigation**: Month names in selected language
+
+**Usage Examples:**
+```bash
+# German calendar with localized QR codes
+python3 scripts/build_calendar.py --year 2026 --month 3 --language de
+
+# Spanish calendar 
+python3 scripts/build_calendar.py --year 2026 --month 2 --language es
+
+# Complete German year with all PDF formats
+python3 scripts/build_calendar.py --year 2026 --language de --complete
+```
+
+**Output Files:**
+- HTML: `output/202603.html` with `lang="de"` and German month names
+- QR Codes: `output/assets/qr-2026-03-de.png` linking to German landing page
+- PDFs: All formats support German characters and layout
+
 ---
 
 ## 🔧 Technical Implementation
@@ -175,21 +235,24 @@ The system generates three PDF formats optimized for different use cases:
 - **PDF**: PDF/X-1a compliant with embedded fonts
 
 #### 4. **Smart QR & Location Integration**
-- **Required location data**: From `photos/YYYY/MM/README.md` files (no fallbacks)
-- **QR codes**: Link to `https://sarefo.github.io/calendar/#YYYYMM` or `#YYYYMMDD` with hash parameters
-- **Landing page**: Automatic date picker setting based on QR code (month or specific date)
-- **URL formats**: 
-  - `#YYYYMM` (e.g., `#202601`) → Sets to current day if in that month, or first day of month
-  - `#YYYYMMDD` (e.g., `#20260115`) → Sets to exact specified date
+- **Multi-language location data**: From `photos/YYYY/MM/README.md` files with language-specific entries
+- **Smart QR codes**: Link to `https://sarefo.github.io/calendar/` with language detection
+- **Enhanced URL formats**: 
+  - `#YYYYMM` (e.g., `#202601`) → English interface, current day if in that month
+  - `#YYYYMM&lang=de` (e.g., `#202603&lang=de`) → German interface with automatic translation
+  - `#YYYYMMDD&lang=es` (e.g., `#20260215&lang=es`) → Spanish interface with specific date
+- **Landing page**: Automatic UI language switching and date picker setting
+- **Location fallbacks**: German calendars use German locations, fall back to English if missing
 - **World maps**: Simplified SVG with location markers in streamlined header
 - **Data validation**: System stops if location data is missing or has placeholders
 
-#### 5. **Streamlined Location Data System**
-- **Single Source**: Location data stored only in `README.md` files with photos
-- **No Fallbacks**: System fails fast if location data is missing or incomplete
+#### 5. **Multi-Language Location Data System**
+- **Multi-language entries**: Location data stored in `README.md` files with `location_en`, `location_de`, `location_es`
+- **Smart fallbacks**: German calendars use German locations, fall back to English if German not available
+- **Legacy compatibility**: Old single `location:` entries still work for backwards compatibility
 - **Auto-Validation**: Checks for placeholder values and missing required fields
+- **Language-aware errors**: Clear instructions include multi-language format examples
 - **Simple Maintenance**: Location data co-located with photos for easy management
-- **Smart Error Messages**: Clear instructions when location data needs to be added
 
 ---
 
@@ -340,6 +403,12 @@ Example:
 # Complete build: HTML + Print PDFs + Ultra PDFs + Bind both versions + Update landing page
 python3 scripts/build_calendar.py --year 2026 --complete
 
+# Complete German calendar with all formats and localized QR codes
+python3 scripts/build_calendar.py --year 2026 --language de --complete
+
+# Complete Spanish calendar
+python3 scripts/build_calendar.py --year 2026 --language es --complete
+
 # Complete build for specific months
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --complete
 ```
@@ -352,8 +421,11 @@ python3 scripts/build_calendar.py --check-photos --year 2026 --month 1
 # Build single month (print quality)
 python3 scripts/build_calendar.py --year 2026 --month 1
 
-# Build specific months
-python3 scripts/build_calendar.py --year 2026 --months "1,2,3"
+# Build German calendar for specific month
+python3 scripts/build_calendar.py --year 2026 --month 3 --language de
+
+# Build Spanish calendar for specific months
+python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --language es
 
 # Build full year with print package
 python3 scripts/build_calendar.py --year 2026
@@ -530,6 +602,13 @@ python3 scripts/build_calendar.py --install-deps
 - Check existing PDFs are in `output/print-ready/` directory
 - Ensure PDF files follow `YYYYMM.pdf` naming convention
 
+**"Can't find output HTML or PDF files"**
+- **HTML Files**: Located at `calendar-production/output/YYYYMM.html` (e.g., `output/202609.html`)
+- **PDF Files**: Located at `calendar-production/output/print-ready/YYYYMM.pdf` (e.g., `output/print-ready/202609.pdf`)
+- **Language-specific assets**: QR codes include language suffix (e.g., `output/assets/qr-2026-09-de.png`)
+- **Check current directory**: Run commands from `calendar-production/` directory
+- **Verify build success**: Look for "✅ Generated HTML:" and "🎉 Successfully built" messages
+
 ---
 
 ## 📞 Support & Development
@@ -558,8 +637,9 @@ python3 scripts/build_calendar.py --install-deps
 5. ✅ **Cross-year photo overflow - January shows December photos**
 6. ✅ **Complete build workflow with multi-format PDF generation**
 7. ✅ **Ultra-compressed PDF mode achieving <40MB target**
-8. ⏳ **Generate remaining months for 2026 calendar**
-9. ⏳ **Deploy optimized system to GitHub Pages**
+8. ✅ **Full internationalization with German and Spanish support**
+9. ⏳ **Generate remaining months for 2026 calendar with multi-language support**
+10. ⏳ **Deploy optimized system to GitHub Pages with language detection**
 
 ### Contact
 - **Project Repository**: This calendar system
