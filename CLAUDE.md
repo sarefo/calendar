@@ -199,10 +199,12 @@ python3 scripts/build_calendar.py --year 2026 --month 2 --language es
 python3 scripts/build_calendar.py --year 2026 --language de --complete
 ```
 
-**Output Files:**
-- HTML: `output/202603.html` with `lang="de"` and German month names
-- QR Codes: `output/assets/qr-2026-03-de.png` linking to German landing page
-- PDFs: All formats support German characters and layout
+**Output Files (New Clean Structure):**
+- HTML: `output/2026/de/html/202603.html` with `lang="de"` and German month names
+- QR Codes: `output/2026/de/assets/qr/qr-2026-03-de.png` linking to German landing page  
+- PDFs: `output/2026/de/pdf/print/202603.pdf` (print quality)
+- PDFs: `output/2026/de/pdf/ultra/202603_ultra.pdf` (ultra compressed)
+- Assets: `output/2026/de/assets/maps/map-2026-03.svg` (world maps)
 
 ---
 

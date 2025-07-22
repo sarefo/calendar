@@ -23,9 +23,11 @@
         }
         
         /* Header section with title, world map, QR code and branding */
+        /* Added 8mm top margin for spiral binding */
         .header {
-            height: 35mm;
-            padding: 6mm 10mm;
+            height: 30mm;
+            margin-top: 8mm;
+            padding: 5mm 10mm;
             background: #74ac00;
             color: white;
             position: relative;
@@ -130,8 +132,9 @@
         
         /* Main calendar grid - Dynamic {{ layout.layout_type }} layout */
         /* Photo dimensions: {{ layout.photo_width }}mm × {{ layout.photo_height }}mm */
+        /* Reduced height to fit A3 with spiral binding margin */
         .calendar-container {
-            height: 245mm;
+            height: 235mm;
             padding: 3mm 10mm 7mm 10mm;
             position: relative;
             overflow: visible;
@@ -169,11 +172,11 @@
         
         .weekday-header {
             text-align: center;
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: 600;
             color: #2C3E50;
             text-transform: uppercase;
-            letter-spacing: 0.5mm;
+            letter-spacing: 0.3mm;
             border-bottom: 2px solid #2C3E50;
             vertical-align: middle;
         }
@@ -254,7 +257,7 @@
             }
             
             .calendar-container {
-                height: 252mm !important;
+                height: 235mm !important;
                 overflow: visible !important;
             }
             
@@ -352,7 +355,7 @@
                 <div class="qr-section">
                     <div class="qr-code">
                         <!-- QR code will be generated and inserted here -->
-                        <img src="assets/qr-{{ year }}-{{ "%02d"|format(month) }}.png" alt="QR Code" style="width: 100%; height: 100%; border-radius: 2mm;">
+                        <img src="../assets/qr/qr-{{ year }}-{{ "%02d"|format(month) }}{% if language != 'en' %}-{{ language }}{% endif %}.png" alt="QR Code" style="width: 100%; height: 100%; border-radius: 2mm;">
                     </div>
                 </div>
             </div>
@@ -371,7 +374,7 @@
                 <!-- Weekday headers -->
                 <tr class="weekday-header-row">
                     {% for weekday in weekday_headers %}
-                    <td class="weekday-header">{{ weekday[:3] }}</td>
+                    <td class="weekday-header">{{ weekday }}</td>
                     {% endfor %}
                 </tr>
                 
