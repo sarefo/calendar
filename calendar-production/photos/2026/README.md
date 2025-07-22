@@ -8,7 +8,7 @@
 08: Ecuador
 + 09: Germany
 + 10: Borneo, Malaysia
-11: Sulawesi, Indonesia
-12: Costa Rica
++ 11: Philippines
++ 12: Costa Rica
 
 Spain?
