@@ -8,6 +8,11 @@ __pycache__/
 calendar-production/test_*.html
 calendar-production/test_*.pdf
 
+# Generated calendar output
+calendar-production/output/print-ready/*.pdf
+calendar-production/output/print-package-*/*.pdf
+calendar-production/fonts/
+
 # IDE
 .vscode/
 .idea/
