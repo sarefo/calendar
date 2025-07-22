@@ -16,7 +16,9 @@
 - ✅ Added ultra-compressed PDF generation (targets <40MB total file size)
 - ✅ Implemented complete build workflow (--complete option)
 - ✅ Added multi-format PDF support (print, web, ultra compression modes)
-- ✅ Enhanced PDF binding with separate print and ultra versions  
+- ✅ Enhanced PDF binding with separate print and ultra versions
+- ✅ Updated --bind-existing to create both print and ultra bound PDFs
+- ✅ Removed unused font files and PDF files from git tracking  
 
 ---
 
@@ -359,7 +361,7 @@ python3 scripts/build_calendar.py --year 2026
 # Build full year and bind into single 12-page PDF
 python3 scripts/build_calendar.py --year 2026 --bind-pdf
 
-# Bind existing monthly PDFs without regenerating (fastest)
+# Bind existing monthly PDFs without regenerating - creates both print and ultra versions
 python3 scripts/build_calendar.py --year 2026 --bind-existing
 
 # Skip PDF generation (HTML only)

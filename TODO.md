@@ -1,15 +1,16 @@
+## General
++ add i18n (German)
+
 ## Title bar
-+ show location in title
++ improve QR code UX: user should know they can get more info about the photos there
 
 ## World map
 + coordinates are sometimes off, needed to tweak them to the right for some maps
 
 ## Landing page
-+ optionally expand url parameter to #YYYYMMDD (which then sets the exact date given in the date picker)
 + "pick other date" problems:
   + only first click works, afterwards closes directly after click
   + layout of date not nice
-+ add i18n (German)
 
 ## HTML version
 + website: make calendar html mobile ready
@@ -20,4 +21,3 @@
 + cut marks no longer showing (3mm bleed)
 
 ## Photos
-+ add 3 pictures from previous year :)

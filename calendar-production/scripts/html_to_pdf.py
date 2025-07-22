@@ -81,8 +81,16 @@ class HTMLToPDFConverter:
             subprocess.check_call([sys.executable, "-m", "pip", "install", "pyppeteer"])
     
     async def convert_with_playwright(self, html_file: str, pdf_file: str, 
-                                    print_options: dict = None) -> str:
-        """Convert HTML to PDF using Playwright with image optimization"""
+                                    print_options: dict = None, web_mode: bool = False, ultra_web: bool = False) -> str:
+        """Convert HTML to PDF using Playwright with image optimization
+        
+        Args:
+            html_file: Path to source HTML file
+            pdf_file: Output PDF file path
+            print_options: PDF generation options
+            web_mode: If True, creates web-optimized PDF (smaller file size)
+            ultra_web: If True, creates ultra-compressed PDF (minimal file size)
+        """
         from playwright.async_api import async_playwright
         import shutil
         
@@ -90,7 +98,7 @@ class HTMLToPDFConverter:
             print_options = self._get_default_print_options()
         
         # Create optimized version of HTML with smaller images
-        optimized_html = self._create_optimized_html_for_pdf(html_file)
+        optimized_html = self._create_optimized_html_for_pdf(html_file, web_mode=web_mode, ultra_web=ultra_web)
         
         try:
             async with async_playwright() as p:
@@ -105,8 +113,8 @@ class HTMLToPDFConverter:
                     print(f"Warning: Page load issue: {e}")
                     await page.goto(f"file://{html_path}")
                 
-                # Wait for any dynamic content
-                await page.wait_for_timeout(1000)
+                # Wait for fonts and dynamic content to load
+                await page.wait_for_timeout(5000)
                 
                 # Generate PDF
                 pdf_path = Path(pdf_file)
@@ -139,7 +147,7 @@ class HTMLToPDFConverter:
                 await browser.close()
         finally:
             # Clean up optimized files
-            self._cleanup_optimized_files(html_file, optimized_html)
+            self._cleanup_optimized_files(html_file, optimized_html, web_mode=web_mode, ultra_web=ultra_web)
         
         return str(pdf_path)
     
@@ -158,8 +166,8 @@ class HTMLToPDFConverter:
         html_path = Path(html_file).resolve()
         await page.goto(f"file://{html_path}")
         
-        # Wait for content to load
-        await page.waitFor(2000)
+        # Wait for fonts and content to load
+        await page.waitFor(5000)
         
         # Generate PDF
         pdf_path = Path(pdf_file)
@@ -343,8 +351,15 @@ class HTMLToPDFConverter:
         print(f"Created temporary HTML file: {temp_file}")
         return str(temp_file)
 
-    def _create_optimized_html_for_pdf(self, html_file: str) -> str:
-        """Create optimized HTML with reduced image sizes for PDF generation"""
+    def _create_optimized_html_for_pdf(self, html_file: str, web_mode: bool = False, ultra_web: bool = False) -> str:
+        """Create optimized HTML with reduced image sizes for PDF generation
+        
+        Args:
+            html_file: Path to the source HTML file
+            web_mode: If True, creates smaller images for web viewing (max 400px, quality 65)
+            ultra_web: If True, creates ultra-compressed images (max 200px, quality 45)
+                      If False, creates print-optimized images (max 800px, quality 85)
+        """
         from PIL import Image
         import shutil
         import re
@@ -354,10 +369,30 @@ class HTMLToPDFConverter:
         base_path = html_path.parent.resolve()
         
         # Create temporary directory for optimized images
-        temp_dir = html_path.parent / "temp_pdf_optimized"
+        if ultra_web:
+            suffix = "ultra_optimized"
+        elif web_mode:
+            suffix = "web_optimized"
+        else:
+            suffix = "pdf_optimized"
+        temp_dir = html_path.parent / f"temp_{suffix}"
         temp_dir.mkdir(exist_ok=True)
         
         optimized_count = 0
+        
+        # Set optimization parameters based on mode
+        if ultra_web:
+            max_size = 200  # Very small for ultra compression
+            quality = 45    # Very low quality for minimum file size
+            print(f"Creating ULTRA-WEB HTML for minimal file size...")
+        elif web_mode:
+            max_size = 400  # Much smaller for web viewing
+            quality = 65    # Lower quality for smaller file size
+            print(f"Creating WEB-OPTIMIZED HTML for monitor viewing...")
+        else:
+            max_size = 800  # Larger for print quality
+            quality = 85    # Higher quality for print
+            print(f"Creating PRINT-OPTIMIZED HTML for PDF conversion...")
         
         def optimize_and_replace_image(match):
             nonlocal optimized_count
@@ -379,26 +414,38 @@ class HTMLToPDFConverter:
             if source_path.exists():
                 try:
                     # Create optimized image name
-                    optimized_name = f"opt_{source_path.name}"
+                    if ultra_web:
+                        prefix = "ultra_"
+                    elif web_mode:
+                        prefix = "web_"
+                    else:
+                        prefix = "opt_"
+                    optimized_name = f"{prefix}{source_path.name}"
                     optimized_path = temp_dir / optimized_name
                     
-                    # Resize image to reasonable size for PDF (max 800px)
+                    # Resize image based on mode
                     with Image.open(source_path) as img:
                         # Convert to RGB if needed
                         if img.mode not in ['RGB', 'L']:
                             img = img.convert('RGB')
                         
                         # Resize maintaining aspect ratio
-                        img.thumbnail((800, 800), Image.Resampling.LANCZOS)
+                        img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
                         
                         # Save with quality optimization
-                        img.save(optimized_path, 'JPEG', quality=85, optimize=True)
+                        img.save(optimized_path, 'JPEG', quality=quality, optimize=True)
                     
                     optimized_count += 1
                     
                     # Return relative path from HTML file to optimized image
-                    relative_path = f"temp_pdf_optimized/{optimized_name}"
-                    print(f"  Optimized: {source_path.name} -> {relative_path}")
+                    relative_path = f"temp_{suffix}/{optimized_name}"
+                    if ultra_web:
+                        mode_label = "ULTRA"
+                    elif web_mode:
+                        mode_label = "WEB"
+                    else:
+                        mode_label = "PRINT"
+                    print(f"  {mode_label}: {source_path.name} -> {relative_path}")
                     return f'src="{relative_path}"'
                     
                 except Exception as e:
@@ -407,53 +454,90 @@ class HTMLToPDFConverter:
             else:
                 return match.group(0)
         
-        print(f"Creating optimized HTML for PDF conversion...")
         print(f"Temp dir: {temp_dir}")
+        print(f"Image size limit: {max_size}px, Quality: {quality}%")
         
         # Replace all img src attributes with optimized versions
         updated_content = re.sub(r'src="([^"]+)"', optimize_and_replace_image, html_content)
         
-        print(f"Optimized {optimized_count} images for PDF generation")
+        if ultra_web:
+            print(f"Optimized {optimized_count} images for ultra-compressed viewing")
+        elif web_mode:
+            print(f"Optimized {optimized_count} images for web viewing")
+        else:
+            print(f"Optimized {optimized_count} images for PDF generation")
         
         # Create temporary file with updated content
-        temp_file = html_path.parent / f"{html_path.stem}_pdf_optimized.html"
+        temp_file = html_path.parent / f"{html_path.stem}_{suffix}.html"
         temp_file.write_text(updated_content, encoding='utf-8')
         
         print(f"Created optimized HTML file: {temp_file}")
         return str(temp_file)
     
-    def _cleanup_optimized_files(self, original_html: str, optimized_html: str):
+    def _cleanup_optimized_files(self, original_html: str, optimized_html: str, web_mode: bool = False, ultra_web: bool = False):
         """Clean up optimized files"""
         try:
             import shutil
             html_path = Path(original_html)
-            temp_dir = html_path.parent / "temp_pdf_optimized"
+            
+            # Clean up appropriate temp directory based on mode
+            if ultra_web:
+                suffix = "ultra_optimized"
+                mode_label = "ULTRA-compressed"
+            elif web_mode:
+                suffix = "web_optimized"
+                mode_label = "WEB-optimized"
+            else:
+                suffix = "pdf_optimized"
+                mode_label = "PRINT-optimized"
+            
+            temp_dir = html_path.parent / f"temp_{suffix}"
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)
-                print(f"✅ Cleaned up optimized images: {temp_dir}")
+                print(f"✅ Cleaned up {mode_label} images: {temp_dir}")
             
             # Clean up optimized HTML file
             opt_html = Path(optimized_html)
-            if opt_html.exists() and "_pdf_optimized.html" in opt_html.name:
+            if opt_html.exists() and f"_{suffix}.html" in opt_html.name:
                 opt_html.unlink()
                 print(f"✅ Cleaned up optimized HTML: {opt_html}")
         except Exception as e:
             print(f"⚠️ Cleanup warning: {e}")
 
     async def convert_html_to_pdf(self, html_file: str, pdf_file: str,
-                                print_options: dict = None) -> str:
-        """Convert HTML file to PDF using the selected method"""
+                                print_options: dict = None, web_mode: bool = False, ultra_web: bool = False) -> str:
+        """Convert HTML file to PDF using the selected method
+        
+        Args:
+            html_file: Source HTML file path
+            pdf_file: Output PDF file path  
+            print_options: PDF generation options
+            web_mode: If True, creates web-optimized PDF (smaller file size)
+            ultra_web: If True, creates ultra-compressed PDF (minimal file size)
+        """
         
         if not Path(html_file).exists():
             raise FileNotFoundError(f"HTML file not found: {html_file}")
         
-        print(f"Converting {html_file} to PDF using {self.method}...")
+        if ultra_web:
+            mode_label = "ULTRA-compressed"
+        elif web_mode:
+            mode_label = "WEB-optimized"
+        else:
+            mode_label = "PRINT-ready"
+        print(f"Converting {html_file} to {mode_label} PDF using {self.method}...")
         
         if self.method == "playwright":
-            result = await self.convert_with_playwright(html_file, pdf_file, print_options)
+            result = await self.convert_with_playwright(html_file, pdf_file, print_options, web_mode, ultra_web)
         elif self.method == "weasyprint":
+            # Web/ultra modes not yet supported for WeasyPrint - use standard method
+            if web_mode or ultra_web:
+                print("⚠️ Web/ultra modes not yet supported for WeasyPrint, using standard optimization")
             result = self.convert_with_weasyprint(html_file, pdf_file, print_options)
         elif self.method == "pyppeteer":
+            # Web/ultra modes not yet supported for pyppeteer - use standard method
+            if web_mode or ultra_web:
+                print("⚠️ Web/ultra modes not yet supported for pyppeteer, using standard optimization")
             result = await self.convert_with_pyppeteer(html_file, pdf_file, print_options)
         else:
             raise ValueError(f"Unknown conversion method: {self.method}")
@@ -480,24 +564,44 @@ class HTMLToPDFConverter:
     
     async def convert_multiple_files(self, html_files: List[str], 
                                    output_dir: str = "output/print-ready",
-                                   print_options: dict = None) -> List[str]:
-        """Convert multiple HTML files to PDF"""
+                                   print_options: dict = None, web_mode: bool = False, ultra_web: bool = False) -> List[str]:
+        """Convert multiple HTML files to PDF
+        
+        Args:
+            html_files: List of HTML files to convert
+            output_dir: Directory to save PDFs
+            print_options: PDF generation options
+            web_mode: If True, creates web-optimized PDFs (smaller file sizes)
+            ultra_web: If True, creates ultra-compressed PDFs (minimal file sizes)
+        """
         
         converted_files = []
+        if ultra_web:
+            mode_suffix = "_ultra"
+        elif web_mode:
+            mode_suffix = "_web"
+        else:
+            mode_suffix = ""
         
         for html_file in html_files:
-            # Generate PDF filename
+            # Generate PDF filename with appropriate suffix
             html_path = Path(html_file)
-            pdf_filename = html_path.stem + ".pdf"
+            pdf_filename = html_path.stem + mode_suffix + ".pdf"
             pdf_path = Path(output_dir) / pdf_filename
             
             # Convert file
             try:
                 result_pdf = await self.convert_html_to_pdf(
-                    str(html_path), str(pdf_path), print_options
+                    str(html_path), str(pdf_path), print_options, web_mode, ultra_web
                 )
                 converted_files.append(result_pdf)
-                print(f"✓ Converted: {result_pdf}")
+                if ultra_web:
+                    mode_label = "ULTRA-compressed"
+                elif web_mode:
+                    mode_label = "WEB-optimized"
+                else:
+                    mode_label = "PRINT-ready"
+                print(f"✓ {mode_label}: {result_pdf}")
             except Exception as e:
                 print(f"✗ Failed to convert {html_file}: {e}")
         
@@ -607,6 +711,10 @@ def main():
     parser.add_argument('--package', action='store_true', help="Create complete print package")
     parser.add_argument('--quality', choices=['draft', 'standard', 'high'], default='high',
                        help="Print quality setting")
+    parser.add_argument('--web-mode', action='store_true', 
+                       help="Create web-optimized PDFs (smaller file sizes for monitor viewing)")
+    parser.add_argument('--ultra-mode', action='store_true', 
+                       help="Create ultra-compressed PDFs (minimal file sizes, lower quality)")
     
     args = parser.parse_args()
     
@@ -646,7 +754,7 @@ def main():
         # Convert files
         async def convert_all():
             pdf_files = await converter.convert_multiple_files(
-                html_files, args.output, print_options
+                html_files, args.output, print_options, web_mode=args.web_mode, ultra_web=args.ultra_mode
             )
             
             if args.package and pdf_files:
