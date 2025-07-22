@@ -17,12 +17,7 @@
 + able to navigate to next/previous month
 
 ## PDF version
-+ world map not showing
-+ QR code not showing
-+ images don't fill their frame
-+ last row not showing when six rows
++ cut marks no longer showing (3mm bleed)
 
 ## Photos
 + add 3 pictures from previous year :)
-+ add photos for 06-12
-+ not sure photo order from file works
