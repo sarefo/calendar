@@ -20,17 +20,31 @@
             background: white;
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            padding-bottom: 5mm; /* Ensure white margin at bottom */
         }
         
         /* Header section with title, world map, QR code and branding */
-        /* Added 8mm top margin for spiral binding */
+        /* Extended to top with bleed, content positioned for ring binding */
         .header {
-            height: 30mm;
-            margin-top: 8mm;
-            padding: 5mm 10mm;
+            height: 38mm; /* Total height including bleed and ring binding space */
+            padding: 0;
+            /* Extend beyond page boundary for bleed */
+            margin-left: -3mm;
+            margin-right: -3mm;
+            margin-top: -3mm;
+            width: calc(100% + 6mm);
             background: #74ac00;
             color: white;
             position: relative;
+        }
+        
+        /* Content within header positioned down for ring binding */
+        .header-content {
+            position: absolute;
+            bottom: 3mm; /* Position content at bottom of header */
+            left: 13mm; /* Account for bleed + normal padding */
+            right: 13mm;
+            height: 25mm;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -45,7 +59,7 @@
         }
         
         .year-title {
-            font-size: 48pt;
+            font-size: 40pt;
             font-weight: 700;
             margin: 0;
             letter-spacing: 1mm;
@@ -62,7 +76,7 @@
         }
         
         .month-name {
-            font-size: 48pt;
+            font-size: 40pt;
             font-weight: 600;
             margin: 0;
             color: white;
@@ -70,7 +84,7 @@
         }
         
         .location-text {
-            font-size: 36pt;
+            font-size: 30pt;
             font-weight: 400;
             margin: 0;
             color: rgba(255, 255, 255, 0.85);
@@ -132,10 +146,10 @@
         
         /* Main calendar grid - Dynamic {{ layout.layout_type }} layout */
         /* Photo dimensions: {{ layout.photo_width }}mm × {{ layout.photo_height }}mm */
-        /* Reduced height to fit A3 with spiral binding margin */
+        /* Optimized height to fit exactly in A3 with ring binding margin */
         .calendar-container {
-            height: 235mm;
-            padding: 3mm 10mm 7mm 10mm;
+            height: 208mm; /* Further reduced to ensure single page with margin */
+            padding: 0 10mm 0 10mm; /* Clean layout, no top/bottom padding */
             position: relative;
             overflow: visible;
         }
@@ -150,7 +164,7 @@
         .week-number-overlay {
             position: absolute;
             left: 2mm;
-            top: calc(3mm + 8mm + 2mm);
+            top: 8mm; /* Simplified since no top padding */
             width: 8mm;
             font-size: 8pt;
             font-weight: 500;
@@ -242,6 +256,10 @@
             
             .calendar-page {
                 page-break-after: always;
+                page-break-inside: avoid !important;
+                overflow: hidden !important; /* Prevent overflow to next page */
+                height: 297mm !important; /* Enforce A3 height limit */
+                box-sizing: border-box !important;
             }
             
             .day-image {
@@ -257,8 +275,13 @@
             }
             
             .calendar-container {
-                height: 235mm !important;
+                height: 208mm !important;
                 overflow: visible !important;
+            }
+            
+            /* Show crop marks in print/PDF */
+            .crop-marks {
+                display: block !important;
             }
             
             .world-map-svg {
@@ -283,10 +306,11 @@
             }
         }
         
-        /* Crop marks for professional printing */
+        /* Crop marks for professional printing - hidden in HTML, visible in PDF */
         .crop-marks {
             position: absolute;
             pointer-events: none;
+            display: none; /* Hidden by default in HTML */
         }
         
         .crop-mark {
@@ -337,25 +361,27 @@
         
         <!-- Header with title and world map -->
         <header class="header">
-            <div class="title-section">
-                <h1 class="year-title">{{ year }}</h1>
-                <div class="month-location-container">
-                    <h2 class="month-name">{{ month_name }}</h2>
-                    <p class="location-text">{{ location_display }}</p>
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="year-title">{{ year }}</h1>
+                    <div class="month-location-container">
+                        <h2 class="month-name">{{ month_name }}</h2>
+                        <p class="location-text">{{ location_display }}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="header-right">
-                <div class="world-map-container">
-                    <!-- World map SVG will be inserted here -->
-                    <svg class="world-map-svg" viewBox="200 0 1800 857" xmlns="http://www.w3.org/2000/svg">
-                        {{ world_map_svg|safe }}
-                    </svg>
-                </div>
-                
-                <div class="qr-section">
-                    <div class="qr-code">
-                        <!-- QR code will be generated and inserted here -->
-                        <img src="../assets/qr/qr-{{ year }}-{{ "%02d"|format(month) }}{% if language != 'en' %}-{{ language }}{% endif %}.png" alt="QR Code" style="width: 100%; height: 100%; border-radius: 2mm;">
+                <div class="header-right">
+                    <div class="world-map-container">
+                        <!-- World map SVG will be inserted here -->
+                        <svg class="world-map-svg" viewBox="200 0 1800 857" xmlns="http://www.w3.org/2000/svg">
+                            {{ world_map_svg|safe }}
+                        </svg>
+                    </div>
+                    
+                    <div class="qr-section">
+                        <div class="qr-code">
+                            <!-- QR code will be generated and inserted here -->
+                            <img src="../assets/qr/qr-{{ year }}-{{ "%02d"|format(month) }}{% if language != 'en' %}-{{ language }}{% endif %}.png" alt="QR Code" style="width: 100%; height: 100%; border-radius: 2mm;">
+                        </div>
                     </div>
                 </div>
             </div>

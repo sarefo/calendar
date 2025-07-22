@@ -259,7 +259,7 @@ class CalendarBuilder:
             if web_mode:
                 suffix = "_web"
             else:
-                suffix = ""
+                suffix = "_print"
             pdf_filename = f"{year}{month:02d}{suffix}.pdf"
             pdf_path = Path(output_dir) / pdf_filename
             
@@ -378,7 +378,7 @@ class CalendarBuilder:
         paths = self.get_output_paths(year)
         print_pdf_files = []
         for month in print_results["successful_months"]:
-            pdf_file = f"{paths['pdf_print_dir']}/{year}{month:02d}.pdf"
+            pdf_file = f"{paths['pdf_print_dir']}/{year}{month:02d}_print.pdf"
             if Path(pdf_file).exists():
                 print_pdf_files.append(pdf_file)
         
@@ -466,12 +466,17 @@ class CalendarBuilder:
         if not valid_pdf_files:
             raise ValueError("No valid PDF files found for binding")
         
-        # Sort PDF files by month (assuming filename format YYYYMM.pdf)
+        # Sort PDF files by month (assuming filename format YYYYMM_print.pdf or YYYYMM_web.pdf)
         def get_month_from_filename(filename):
             try:
                 basename = Path(filename).stem
-                if len(basename) >= 6 and basename[:6].isdigit():
-                    return int(basename[4:6])  # Extract month from YYYYMM
+                # Handle both YYYYMM_print and YYYYMM_web formats
+                if "_" in basename:
+                    year_month_part = basename.split("_")[0]
+                else:
+                    year_month_part = basename
+                if len(year_month_part) >= 6 and year_month_part[:6].isdigit():
+                    return int(year_month_part[4:6])  # Extract month from YYYYMM
                 return 0
             except:
                 return 0
@@ -620,10 +625,10 @@ def main():
         print_pdfs = []
         web_pdfs = []
         
-        # Look for monthly PDFs (YYYYMM.pdf and YYYYMM_web.pdf)
+        # Look for monthly PDFs (YYYYMM_print.pdf and YYYYMM_web.pdf)
         for month in range(1, 13):
             month_str = f"{month:02d}"
-            print_pdf = pdf_print_dir / f"{args.year}{month_str}.pdf"
+            print_pdf = pdf_print_dir / f"{args.year}{month_str}_print.pdf"
             web_pdf = pdf_web_dir / f"{args.year}{month_str}_web.pdf"
             
             if print_pdf.exists():
@@ -707,18 +712,44 @@ def main():
                     return 1
                     
             elif months_to_build and len(months_to_build) == 1:
-                # Single month build
-                result = await builder.build_month(
-                    args.year, months_to_build[0], 
-                    not args.no_pdf, args.web_pdf
-                )
+                # Single month build - generate both print and web PDFs unless specifically disabled
+                month = months_to_build[0]
+                success_count = 0
                 
-                if result["success"]:
-                    print(f"\\n🎉 Successfully built calendar for {args.year}-{months_to_build[0]:02d}")
+                if not args.no_pdf:
+                    # Build print version
+                    print_result = await builder.build_month(
+                        args.year, month, True, False  # generate_pdf=True, web_mode=False
+                    )
+                    if print_result["success"]:
+                        success_count += 1
+                        print(f"✅ Print PDF created for {args.year}-{month:02d}")
+                    else:
+                        print(f"❌ Print PDF failed: {print_result.get('reason', 'unknown error')}")
+                    
+                    # Build web version
+                    web_result = await builder.build_month(
+                        args.year, month, True, True  # generate_pdf=True, web_mode=True
+                    )
+                    if web_result["success"]:
+                        success_count += 1
+                        print(f"✅ Web PDF created for {args.year}-{month:02d}")
+                    else:
+                        print(f"❌ Web PDF failed: {web_result.get('reason', 'unknown error')}")
+                else:
+                    # HTML only
+                    result = await builder.build_month(
+                        args.year, month, False, False
+                    )
+                    if result["success"]:
+                        success_count = 1
+                
+                if success_count > 0:
+                    print(f"\\n🎉 Successfully built calendar for {args.year}-{month:02d}")
                     # Update landing page with latest observation IDs
                     update_landing_page()
                 else:
-                    print(f"\\n❌ Failed to build calendar: {result.get('reason', 'unknown error')}")
+                    print(f"\\n❌ Failed to build calendar")
                     return 1
             else:
                 # Multiple months or full year

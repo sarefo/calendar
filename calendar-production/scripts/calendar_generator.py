@@ -248,7 +248,8 @@ class CalendarGenerator:
                             return str(photo_path.resolve())
                         else:
                             # Return relative path from output directory to source photos
-                            return f"../{photo_path}"
+                            # Account for new nested structure: output/2026/de/html/ -> photos/
+                            return f"../../../../{photo_path}"
         
         # Fallback to old behavior if photo_information.txt doesn't have entry
         for photo_dir in photo_dirs:
@@ -273,7 +274,8 @@ class CalendarGenerator:
                     return str(photo_file.resolve())
                 else:
                     # Return relative path from output directory to source photos
-                    return f"../{photo_file}"
+                    # Account for new nested structure: output/2026/de/html/ -> photos/
+                    return f"../../../../{photo_file}"
         
         return None
     

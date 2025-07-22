@@ -16,6 +16,13 @@
 - ✅ **MAJOR**: Full internationalization support (German and Spanish)
 - ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
 - ✅ **MAJOR**: Simplified PDF generation - only print and web formats
+- ✅ **MAJOR**: Dual PDF generation - single commands now create both print and web PDFs
+- ✅ **MAJOR**: Optimized A3 layout - extended green header with bleed, added ring binding space
+- ✅ **MAJOR**: Consistent PDF naming - print files now use "_print" suffix like web files use "_web"
+- ✅ **FIXED**: Photo display paths corrected for new nested folder structure
+- ✅ **FIXED**: Calendar container height optimized to 208mm to ensure single-page output
+- ✅ **FIXED**: Removed calendar padding for cleaner layout and more photo space
+- ✅ **FIXED**: Crop marks only show in PDF, hidden in HTML preview
 - ✅ Implemented complete build workflow (--complete option)
 - ✅ Added dual-format PDF support (print and web compression modes)
 - ✅ Enhanced PDF binding with separate print and web versions
@@ -199,7 +206,7 @@ python3 scripts/build_calendar.py --year 2026 --language de --complete
 **Output Files (Clean Organized Structure):**
 - HTML: `output/2026/de/html/202603.html` with `lang="de"` and German month names
 - QR Codes: `output/2026/de/assets/qr/qr-2026-03-de.png` linking to German landing page  
-- PDFs: `output/2026/de/pdf/print/202603.pdf` (print quality)
+- PDFs: `output/2026/de/pdf/print/202603_print.pdf` (print quality)
 - PDFs: `output/2026/de/pdf/web/202603_web.pdf` (web optimized)
 - Assets: `output/2026/de/assets/maps/map-2026-03.svg` (world maps)
 
@@ -371,8 +378,9 @@ Example:
 ### Layout Dimensions (A3 Landscape)
 - **Total size**: 420mm × 297mm
 - **Bleed area**: 3mm all around
-- **Header section**: 35mm (title, location, QR code - all integrated)
-- **Calendar grid**: 240mm (optimized for photo visibility)
+- **Header section**: 38mm total (extends to top with 3mm bleed, content positioned 10mm from top for ring binding)
+- **Calendar grid**: 208mm (optimized for single-page output with clear white margin at bottom)
+- **Bottom margin**: 5mm clear white space ensuring professional appearance
 - **Photo cells**: Dynamic dimensions based on month requirements:
   - **5-row months**: 54mm × 42.4mm (Jan, Feb, Apr, May, Jun, Jul, Sep, Oct, Dec)
   - **6-row months**: 54mm × 34.7mm (Mar, Aug, Nov)
@@ -417,13 +425,13 @@ python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --complete
 # Check photos for specific month
 python3 scripts/build_calendar.py --check-photos --year 2026 --month 1
 
-# Build single month (print quality)
+# Build single month (creates both print and web PDFs automatically)
 python3 scripts/build_calendar.py --year 2026 --month 1
 
-# Build German calendar for specific month
+# Build German calendar for specific month (dual PDF generation)
 python3 scripts/build_calendar.py --year 2026 --month 3 --language de
 
-# Build Spanish calendar for specific months
+# Build Spanish calendar for specific months (dual PDF generation)
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --language es
 
 # Build full year with print package
