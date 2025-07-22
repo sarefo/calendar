@@ -21,3 +21,5 @@ calendar-production/fonts/
 # System
 .DS_Store
 Thumbs.db
+/calendar-production/output/qr
+/calendar-production/output/assets
