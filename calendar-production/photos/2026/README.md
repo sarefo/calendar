@@ -3,9 +3,9 @@
 + 03: Sumatra, Indonesia
 + 04: Northern India
 + 05: Colombia
-06: Koh Tao, Thailand
++ 06: Koh Tao, Thailand
 07: Hong Kong
-08: Ecuador
++ 08: Ecuador
 + 09: Germany
 + 10: Borneo, Malaysia
 + 11: Philippines
