@@ -44,9 +44,10 @@ except ImportError:
     from html_to_pdf import HTMLToPDFConverter
 
 class CalendarBuilder:
-    def __init__(self, config_file: str = None, language: str = "en"):
+    def __init__(self, config_file: str = None, language: str = "en", base_output_dir: str = "output"):
         self.config_file = config_file or "data/calendar_config.json"
         self.language = language
+        self.base_output_dir = base_output_dir
         self.config = self._load_config()
         
         # Initialize components
@@ -56,6 +57,23 @@ class CalendarBuilder:
         self.calendar_gen.jinja_env.auto_reload = True
         self.qr_gen = QRGenerator()
         self.map_gen = WorldMapGenerator()
+    
+    def get_output_paths(self, year: int) -> dict:
+        """Get organized output paths for a specific year and language"""
+        year_dir = f"{self.base_output_dir}/{year}"
+        lang_dir = f"{year_dir}/{self.language}"
+        
+        return {
+            "year_dir": year_dir,
+            "lang_dir": lang_dir,
+            "html_dir": f"{lang_dir}/html",
+            "pdf_dir": f"{lang_dir}/pdf",
+            "pdf_print_dir": f"{lang_dir}/pdf/print",
+            "pdf_web_dir": f"{lang_dir}/pdf/web",
+            "assets_dir": f"{lang_dir}/assets",
+            "qr_dir": f"{lang_dir}/assets/qr",
+            "maps_dir": f"{lang_dir}/assets/maps"
+        }
         
     def _load_config(self):
         """Load build configuration"""
@@ -107,7 +125,7 @@ class CalendarBuilder:
         return photo_status["photo_count"] > 0
     
     async def build_month(self, year: int, month: int,
-                         output_dir: str = "output", generate_pdf: bool = True, web_mode: bool = False, ultra_web: bool = False) -> dict:
+                         generate_pdf: bool = True, web_mode: bool = False) -> dict:
         """Build calendar for a single month
         
         Args:
@@ -116,10 +134,16 @@ class CalendarBuilder:
             output_dir: Base output directory
             generate_pdf: Whether to generate PDF files
             web_mode: If True, creates web-optimized PDFs (smaller file sizes)
-            ultra_web: If True, creates ultra-compressed PDFs (minimal file sizes)
         """
         
-        print(f"\\n📅 Building calendar for {year}-{month:02d}")
+        print(f"\\n📅 Building {self.language.upper()} calendar for {year}-{month:02d}")
+        
+        # Get organized output paths
+        paths = self.get_output_paths(year)
+        
+        # Create all necessary directories
+        for path in paths.values():
+            Path(path).mkdir(parents=True, exist_ok=True)
         
         # Validate photos
         if not self.validate_photos_for_month(year, month):
@@ -135,23 +159,23 @@ class CalendarBuilder:
                 print(f"❌ Cannot build calendar for {year}-{month:02d}: {e}")
                 return {"success": False, "reason": f"location_data_missing: {e}"}
             
-            # Generate QR code
+            # Generate QR code in language-specific directory
             base_url = "https://sarefo.github.io/calendar/"
             qr_file = self.qr_gen.generate_calendar_qr(
                 year, month, base_url,
-                f"{output_dir}/assets",
+                paths["qr_dir"],
                 language=self.language
             )
             print(f"✅ Generated QR code: {qr_file}")
             
-            # Generate world map
+            # Generate world map in language-specific directory
             map_file = self.map_gen.save_map_svg(
                 map_location_data,
-                f"{output_dir}/assets/map-{year}-{month:02d}.svg"
+                f"{paths['maps_dir']}/map-{year}-{month:02d}.svg"
             )
             print(f"✅ Generated world map: {map_file}")
             
-            # Generate calendar HTML (using source photos directly)
+            # Generate calendar HTML in language-specific directory
             # Clear template cache and reload template environment completely
             from jinja2 import Environment, FileSystemLoader, select_autoescape
             self.calendar_gen.jinja_env = Environment(
@@ -161,7 +185,7 @@ class CalendarBuilder:
             html_file = self.calendar_gen.generate_calendar_page(
                 year, month, None,
                 photo_dirs=[f"photos/{year}/{month:02d}"],
-                output_dir=output_dir,
+                output_dir=paths["html_dir"],
                 use_absolute_paths=False
             )
             print(f"✅ Generated HTML: {html_file}")
@@ -178,18 +202,26 @@ class CalendarBuilder:
             
             # Generate PDF if requested
             if generate_pdf:
+                # Determine PDF output directory based on mode
+                if web_mode:
+                    pdf_output_dir = paths["pdf_web_dir"]
+                    pdf_suffix = "_web"
+                else:
+                    pdf_output_dir = paths["pdf_print_dir"]
+                    pdf_suffix = ""
+                
                 # Generate a PDF-specific HTML with absolute paths using different filename
                 pdf_html_file = self.calendar_gen.generate_calendar_page_for_pdf(
                     year, month, None,
                     photo_dirs=[f"photos/{year}/{month:02d}"],
-                    output_dir=output_dir,
+                    output_dir=paths["html_dir"],
                     use_absolute_paths=True
                 )
                 
-                pdf_file = await self._convert_to_pdf(pdf_html_file, output_dir, year, month, web_mode, ultra_web)
+                pdf_file = await self._convert_to_pdf(pdf_html_file, pdf_output_dir, year, month, web_mode)
                 if pdf_file:
                     result["pdf_file"] = pdf_file
-                    print(f"✅ Generated PDF: {pdf_file}")
+                    print(f"✅ Generated {pdf_suffix.upper() or 'PRINT'} PDF: {pdf_file}")
                     
                 # Clean up the temporary PDF HTML file
                 try:
@@ -210,7 +242,7 @@ class CalendarBuilder:
             traceback.print_exc()
             return {"success": False, "reason": str(e)}
     
-    async def _convert_to_pdf(self, html_file: str, output_dir: str, year: int, month: int, web_mode: bool = False, ultra_web: bool = False) -> str:
+    async def _convert_to_pdf(self, html_file: str, output_dir: str, year: int, month: int, web_mode: bool = False) -> str:
         """Convert HTML to PDF
         
         Args:
@@ -219,23 +251,20 @@ class CalendarBuilder:
             year: Calendar year
             month: Calendar month
             web_mode: If True, creates web-optimized PDF (smaller file size)
-            ultra_web: If True, creates ultra-compressed PDF (minimal file size)
         """
         try:
             converter = HTMLToPDFConverter("auto")
             
             # Generate PDF filename from year and month with appropriate suffix
-            if ultra_web:
-                suffix = "_ultra"
-            elif web_mode:
+            if web_mode:
                 suffix = "_web"
             else:
                 suffix = ""
             pdf_filename = f"{year}{month:02d}{suffix}.pdf"
-            pdf_path = Path(output_dir) / "print-ready" / pdf_filename
+            pdf_path = Path(output_dir) / pdf_filename
             
             # Convert to PDF with compression mode options
-            pdf_file = await converter.convert_html_to_pdf(html_file, str(pdf_path), web_mode=web_mode, ultra_web=ultra_web)
+            pdf_file = await converter.convert_html_to_pdf(html_file, str(pdf_path), web_mode=web_mode)
             return pdf_file
             
         except Exception as e:
@@ -245,7 +274,7 @@ class CalendarBuilder:
     async def build_year(self, year: int,
                         output_dir: str = "output", 
                         months: list = None, generate_pdf: bool = True,
-                        bind_pdf: bool = False, web_mode: bool = False, ultra_web: bool = False) -> dict:
+                        bind_pdf: bool = False, web_mode: bool = False) -> dict:
         """Build calendar for entire year or specified months
         
         Args:
@@ -255,7 +284,6 @@ class CalendarBuilder:
             generate_pdf: Whether to generate PDF files
             bind_pdf: Whether to bind all PDFs into single file
             web_mode: If True, creates web-optimized PDFs (smaller file sizes)
-            ultra_web: If True, creates ultra-compressed PDFs (minimal file sizes)
         """
         
         if not months:
@@ -273,7 +301,7 @@ class CalendarBuilder:
         
         for month in months:
             month_result = await self.build_month(
-                year, month, output_dir, generate_pdf, web_mode, ultra_web
+                year, month, generate_pdf, web_mode
             )
             
             if month_result["success"]:
@@ -310,7 +338,8 @@ class CalendarBuilder:
                 # Bind PDFs into single file if requested
                 if bind_pdf and len(pdf_files) > 1:
                     try:
-                        bound_pdf_file = f"{output_dir}/print-ready/{year}_calendar_complete.pdf"
+                        paths = self.get_output_paths(year)
+                        bound_pdf_file = f"{paths['pdf_dir']}/{year}_calendar_complete.pdf"
                         bound_pdf = self.bind_pdfs_to_single_file(pdf_files, bound_pdf_file)
                         results["bound_pdf"] = bound_pdf
                         print(f"📚 Complete calendar PDF created: {bound_pdf}")
@@ -322,7 +351,7 @@ class CalendarBuilder:
         return results
     
     async def build_complete(self, year: int, output_dir: str = "output", months: list = None) -> dict:
-        """Complete build: HTML + both print and ultra PDFs + bind both versions
+        """Complete build: HTML + both print and web PDFs + bind both versions
         
         Args:
             year: Calendar year
@@ -334,26 +363,27 @@ class CalendarBuilder:
             months = list(range(1, 13))  # All months
         
         print(f"🚀 Starting COMPLETE build for {year}")
-        print(f"📅 Building {len(months)} months with HTML + Print PDFs + Ultra PDFs + Binds")
+        print(f"📅 Building {len(months)} months with HTML + Print PDFs + Web PDFs + Binds")
         
         # Step 1: Build all months with print PDFs
         print(f"\n=== STEP 1: Building Print-Quality PDFs ===")
-        print_results = await self.build_year(year, output_dir, months, generate_pdf=True, bind_pdf=False, web_mode=False, ultra_web=False)
+        print_results = await self.build_year(year, output_dir, months, generate_pdf=True, bind_pdf=False, web_mode=False)
         
-        # Step 2: Build all months with ultra PDFs (HTML already exists, so this is faster)
-        print(f"\n=== STEP 2: Building Ultra-Compressed PDFs ===")
-        ultra_results = await self.build_year(year, output_dir, months, generate_pdf=True, bind_pdf=False, web_mode=False, ultra_web=True)
+        # Step 2: Build all months with web PDFs (HTML already exists, so this is faster)
+        print(f"\n=== STEP 2: Building Web-Optimized PDFs ===")
+        web_results = await self.build_year(year, output_dir, months, generate_pdf=True, bind_pdf=False, web_mode=True)
         
         # Step 3: Bind print PDFs
         print(f"\n=== STEP 3: Binding Print PDFs ===")
+        paths = self.get_output_paths(year)
         print_pdf_files = []
         for month in print_results["successful_months"]:
-            pdf_file = f"{output_dir}/print-ready/{year}{month:02d}.pdf"
+            pdf_file = f"{paths['pdf_print_dir']}/{year}{month:02d}.pdf"
             if Path(pdf_file).exists():
                 print_pdf_files.append(pdf_file)
         
         if print_pdf_files:
-            print_bound_file = f"{output_dir}/print-ready/{year}_calendar_print.pdf"
+            print_bound_file = f"{paths['pdf_dir']}/{year}_calendar_print.pdf"
             try:
                 bound_print = self.bind_pdfs_to_single_file(print_pdf_files, print_bound_file)
                 print(f"✅ Print calendar bound: {bound_print}")
@@ -363,24 +393,24 @@ class CalendarBuilder:
         else:
             bound_print = None
             
-        # Step 4: Bind ultra PDFs  
-        print(f"\n=== STEP 4: Binding Ultra-Compressed PDFs ===")
-        ultra_pdf_files = []
-        for month in ultra_results["successful_months"]:
-            pdf_file = f"{output_dir}/print-ready/{year}{month:02d}_ultra.pdf"
+        # Step 4: Bind web PDFs  
+        print(f"\n=== STEP 4: Binding Web-Optimized PDFs ===")
+        web_pdf_files = []
+        for month in web_results["successful_months"]:
+            pdf_file = f"{paths['pdf_web_dir']}/{year}{month:02d}_web.pdf"
             if Path(pdf_file).exists():
-                ultra_pdf_files.append(pdf_file)
+                web_pdf_files.append(pdf_file)
                 
-        if ultra_pdf_files:
-            ultra_bound_file = f"{output_dir}/print-ready/{year}_calendar_ultra.pdf"
+        if web_pdf_files:
+            web_bound_file = f"{paths['pdf_dir']}/{year}_calendar_web.pdf"
             try:
-                bound_ultra = self.bind_pdfs_to_single_file(ultra_pdf_files, ultra_bound_file)
-                print(f"✅ Ultra calendar bound: {bound_ultra}")
+                bound_web = self.bind_pdfs_to_single_file(web_pdf_files, web_bound_file)
+                print(f"✅ Web calendar bound: {bound_web}")
             except Exception as e:
-                print(f"⚠️ Ultra PDF binding failed: {e}")
-                bound_ultra = None
+                print(f"⚠️ Web PDF binding failed: {e}")
+                bound_web = None
         else:
-            bound_ultra = None
+            bound_web = None
         
         # Step 5: Update landing page
         print(f"\n=== STEP 5: Updating Landing Page ===")
@@ -394,23 +424,23 @@ class CalendarBuilder:
         results = {
             "year": year,
             "months_built": len(months),
-            "successful_months": list(set(print_results["successful_months"] + ultra_results["successful_months"])),
-            "failed_months": list(set(print_results["failed_months"] + ultra_results["failed_months"])),
+            "successful_months": list(set(print_results["successful_months"] + web_results["successful_months"])),
+            "failed_months": list(set(print_results["failed_months"] + web_results["failed_months"])),
             "print_pdfs": len(print_pdf_files),
-            "ultra_pdfs": len(ultra_pdf_files), 
+            "web_pdfs": len(web_pdf_files), 
             "print_bound": bound_print,
-            "ultra_bound": bound_ultra,
+            "web_bound": bound_web,
         }
         
         # Final summary
         print(f"\n🎉 COMPLETE BUILD SUMMARY for {year}:")
         print(f"📄 HTML files: {len(results['successful_months'])} months")
         print(f"🖨️  Print PDFs: {results['print_pdfs']} files")
-        print(f"💾 Ultra PDFs: {results['ultra_pdfs']} files")
+        print(f"💻 Web PDFs: {results['web_pdfs']} files")
         if results['print_bound']:
             print(f"📚 Print bound: {Path(results['print_bound']).name}")
-        if results['ultra_bound']:
-            print(f"📘 Ultra bound: {Path(results['ultra_bound']).name}")
+        if results['web_bound']:
+            print(f"🌐 Web bound: {Path(results['web_bound']).name}")
         
         if results["failed_months"]:
             print(f"❌ Failed months: {results['failed_months']}")
@@ -517,8 +547,7 @@ def main():
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
     parser.add_argument('--web-pdf', action='store_true', help="Create web-optimized PDFs (smaller file sizes for monitor viewing)")
-    parser.add_argument('--ultra-pdf', action='store_true', help="Create ultra-compressed PDFs (minimal file sizes <40MB total)")
-    parser.add_argument('--complete', action='store_true', help="Complete build: generate HTML + both print and ultra PDFs + bind both versions")
+    parser.add_argument('--complete', action='store_true', help="Complete build: generate HTML + both print and web PDFs + bind both versions")
     parser.add_argument('--bind-pdf', action='store_true', help="Bind all monthly PDFs into single file")
     parser.add_argument('--bind-existing', action='store_true', help="Only bind existing PDFs without regenerating")
     parser.add_argument('--check-photos', action='store_true', help="Only check photo availability")
@@ -575,44 +604,50 @@ def main():
         
         print(f"🔗 Binding existing PDFs for {args.year}")
         
-        # Look for existing PDFs in the print-ready directory
-        pdf_dir = Path(args.output) / "print-ready"
-        if not pdf_dir.exists():
-            print(f"❌ PDF directory not found: {pdf_dir}")
+        # Get paths for current language
+        paths = builder.get_output_paths(args.year)
+        pdf_print_dir = Path(paths['pdf_print_dir'])
+        pdf_web_dir = Path(paths['pdf_web_dir'])
+        pdf_output_dir = Path(paths['pdf_dir'])
+        
+        if not pdf_print_dir.exists() and not pdf_web_dir.exists():
+            print(f"❌ No PDF directories found for language '{args.language}'")
+            print(f"   Checked: {pdf_print_dir}")
+            print(f"   Checked: {pdf_web_dir}")
             return 1
         
-        # Find print and ultra PDF files separately
+        # Find print and web PDF files separately
         print_pdfs = []
-        ultra_pdfs = []
+        web_pdfs = []
         
-        # Look for monthly PDFs (YYYYMM.pdf and YYYYMM_ultra.pdf)
+        # Look for monthly PDFs (YYYYMM.pdf and YYYYMM_web.pdf)
         for month in range(1, 13):
             month_str = f"{month:02d}"
-            print_pdf = pdf_dir / f"{args.year}{month_str}.pdf"
-            ultra_pdf = pdf_dir / f"{args.year}{month_str}_ultra.pdf"
+            print_pdf = pdf_print_dir / f"{args.year}{month_str}.pdf"
+            web_pdf = pdf_web_dir / f"{args.year}{month_str}_web.pdf"
             
             if print_pdf.exists():
                 print_pdfs.append(str(print_pdf))
-            if ultra_pdf.exists():
-                ultra_pdfs.append(str(ultra_pdf))
+            if web_pdf.exists():
+                web_pdfs.append(str(web_pdf))
         
-        print(f"📄 Found {len(print_pdfs)} print PDFs and {len(ultra_pdfs)} ultra PDFs")
+        print(f"📄 Found {len(print_pdfs)} print PDFs and {len(web_pdfs)} web PDFs")
         
-        if not print_pdfs and not ultra_pdfs:
+        if not print_pdfs and not web_pdfs:
             print(f"❌ No monthly PDF files found for {args.year}")
             return 1
         
         # Delete existing bound PDFs to ensure clean recreation
-        print_bound_path = pdf_dir / f"{args.year}_calendar_print.pdf"
-        ultra_bound_path = pdf_dir / f"{args.year}_calendar_ultra.pdf"
+        print_bound_path = pdf_output_dir / f"{args.year}_calendar_print.pdf"
+        web_bound_path = pdf_output_dir / f"{args.year}_calendar_web.pdf"
         
         if print_bound_path.exists():
             print_bound_path.unlink()
             print(f"🗑️  Removed existing print bound PDF: {print_bound_path.name}")
             
-        if ultra_bound_path.exists():
-            ultra_bound_path.unlink()
-            print(f"🗑️  Removed existing ultra bound PDF: {ultra_bound_path.name}")
+        if web_bound_path.exists():
+            web_bound_path.unlink()
+            print(f"🗑️  Removed existing web bound PDF: {web_bound_path.name}")
         
         # Bind print PDFs
         print_success = False
@@ -625,24 +660,24 @@ def main():
             except Exception as e:
                 print(f"❌ Failed to bind print PDFs: {e}")
         
-        # Bind ultra PDFs
-        ultra_success = False
-        if ultra_pdfs:
+        # Bind web PDFs
+        web_success = False
+        if web_pdfs:
             try:
-                print(f"\n📘 Binding {len(ultra_pdfs)} ultra PDFs...")
-                bound_ultra = builder.bind_pdfs_to_single_file(ultra_pdfs, str(ultra_bound_path))
-                print(f"✅ Ultra calendar created: {Path(bound_ultra).name}")
-                ultra_success = True
+                print(f"\n🌐 Binding {len(web_pdfs)} web PDFs...")
+                bound_web = builder.bind_pdfs_to_single_file(web_pdfs, str(web_bound_path))
+                print(f"✅ Web calendar created: {Path(bound_web).name}")
+                web_success = True
             except Exception as e:
-                print(f"❌ Failed to bind ultra PDFs: {e}")
+                print(f"❌ Failed to bind web PDFs: {e}")
         
         # Summary
-        if print_success or ultra_success:
+        if print_success or web_success:
             print(f"\n🎉 Bind-existing completed:")
             if print_success:
                 print(f"   📚 Print bound: {print_bound_path.name}")
-            if ultra_success:
-                print(f"   📘 Ultra bound: {ultra_bound_path.name}")
+            if web_success:
+                print(f"   🌐 Web bound: {web_bound_path.name}")
             return 0
         else:
             print(f"\n❌ No PDFs were successfully bound")
@@ -675,7 +710,7 @@ def main():
                 # Single month build
                 result = await builder.build_month(
                     args.year, months_to_build[0], 
-                    args.output, not args.no_pdf, args.web_pdf, args.ultra_pdf
+                    not args.no_pdf, args.web_pdf
                 )
                 
                 if result["success"]:
@@ -689,7 +724,7 @@ def main():
                 # Multiple months or full year
                 results = await builder.build_year(
                     args.year, args.output, 
-                    months_to_build, not args.no_pdf, args.bind_pdf, args.web_pdf, args.ultra_pdf
+                    months_to_build, not args.no_pdf, args.bind_pdf, args.web_pdf
                 )
                 
                 # Save build report
