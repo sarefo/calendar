@@ -2,6 +2,7 @@
 + show location in title
 
 ## World map
++ coordinates are sometimes off, needed to tweak them to the right for some maps
 
 ## Landing page
 + optionally expand url parameter to #YYYYMMDD (which then sets the exact date given in the date picker)

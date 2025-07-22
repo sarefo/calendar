@@ -1,3 +1,3 @@
 + location: Costa Rica
-+ coordinates: 10°N 84°W
++ coordinates: 10°25′19″N 84°00′54″W
 + year: 

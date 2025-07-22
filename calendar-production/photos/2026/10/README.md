@@ -1,3 +1,3 @@
 + location: Borneo
-+ coordinates: 4°29′00″N 118°37′00″E
++ coordinates: 4°25′00″N 115°37′00″E
 + year: 2024

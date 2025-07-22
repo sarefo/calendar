@@ -72,9 +72,11 @@ calendar/
 - **Enhanced Typography**: 16pt day numbers with improved text shadow for print clarity
 
 ### **Smart QR Code Integration**
-- **Hash Parameters**: QR codes generate URLs like `https://sarefo.github.io/calendar/#202601`
-- **Auto Date Picker**: Landing page automatically sets date based on QR code month
-- **Seamless Flow**: Scan printed calendar → auto-navigate to correct month online
+- **Hash Parameters**: QR codes generate URLs with flexible hash formats:
+  - `#YYYYMM` (e.g., `#202601`) for month navigation
+  - `#YYYYMMDD` (e.g., `#20260115`) for specific date navigation
+- **Auto Date Picker**: Landing page automatically sets date based on QR code (month or specific date)
+- **Seamless Flow**: Scan printed calendar → auto-navigate to correct month/date online
 
 ### **Automation Enhancements**
 - **Auto Location Reading**: System reads location data from `photos/YYYY/MM/README.md` files
@@ -111,8 +113,11 @@ calendar/
 
 #### 4. **Smart QR & Location Integration**
 - **Required location data**: From `photos/YYYY/MM/README.md` files (no fallbacks)
-- **QR codes**: Link to `https://sarefo.github.io/calendar/#YYYYMM` with hash parameters
-- **Landing page**: Automatic date picker setting based on QR code month
+- **QR codes**: Link to `https://sarefo.github.io/calendar/#YYYYMM` or `#YYYYMMDD` with hash parameters
+- **Landing page**: Automatic date picker setting based on QR code (month or specific date)
+- **URL formats**: 
+  - `#YYYYMM` (e.g., `#202601`) → Sets to current day if in that month, or first day of month
+  - `#YYYYMMDD` (e.g., `#20260115`) → Sets to exact specified date
 - **World maps**: Simplified SVG with location markers in streamlined header
 - **Data validation**: System stops if location data is missing or has placeholders
 
@@ -430,7 +435,7 @@ python3 scripts/build_calendar.py --install-deps
 ✅ **Dynamic row layout system - eliminates empty rows completely**  
 ✅ **Enhanced photo presentation: Variable dimensions (42.4mm vs 34.7mm height)**  
 ✅ **Streamlined design: removed weekday overlays and placeholders**  
-✅ **Smart QR integration: hash parameters for automatic date picker**  
+✅ **Smart QR integration: flexible hash parameters for month/date navigation**  
 ✅ **Auto-location reading from README.md files**  
 ✅ **Print-optimized PDFs generated with dynamic sizing**  
 ✅ **Landing page with hash parameter support implemented**  

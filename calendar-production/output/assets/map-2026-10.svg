@@ -33,16 +33,16 @@
     
     <!-- Location marker -->
     
-        <!-- Location marker for  at (4.4833, 118.6167) -->
+        <!-- Location marker for  at (4.4167, 115.6167) -->
         <g class="location-marker">
             <!-- Large outer glow for distance visibility -->
-            <circle cx="1660.03" cy="464.91" r="80" fill="#E74C3C" opacity="0.1"/>
+            <circle cx="1642.95" cy="465.34" r="80" fill="#E74C3C" opacity="0.1"/>
             <!-- Bold outer ring -->
-            <circle cx="1660.03" cy="464.91" r="60" fill="none" stroke="#E74C3C" stroke-width="8" opacity="0.8"/>
+            <circle cx="1642.95" cy="465.34" r="60" fill="none" stroke="#E74C3C" stroke-width="8" opacity="0.8"/>
             <!-- Prominent inner circle -->
-            <circle cx="1660.03" cy="464.91" r="30" fill="#E74C3C" opacity="0.95"/>
+            <circle cx="1642.95" cy="465.34" r="30" fill="#E74C3C" opacity="0.95"/>
             <!-- Large center highlight -->
-            <circle cx="1660.03" cy="464.91" r="15" fill="#FFFFFF" opacity="0.9"/>
+            <circle cx="1642.95" cy="465.34" r="15" fill="#FFFFFF" opacity="0.9"/>
         </g>
         
     

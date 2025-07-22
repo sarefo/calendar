@@ -4,7 +4,7 @@
 + 04: Northern India
 + 05: Colombia
 + 06: Gulf of Thailand
-07: Hong Kong
++ 07: Hong Kong
 + 08: Ecuador
 + 09: Germany
 + 10: Borneo
