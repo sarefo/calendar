@@ -89,7 +89,7 @@ class QRGenerator:
         return str(output_file)
     
     def generate_calendar_qr(self, year: int, month: int, base_url: str = None, 
-                           output_dir: str = "output/qr", style: str = "default") -> str:
+                           output_dir: str = "output/qr", style: str = "default", language: str = None) -> str:
         """Generate QR code for specific calendar month"""
         
         if not base_url:
@@ -98,20 +98,27 @@ class QRGenerator:
         # Construct URL for specific month with hash parameter
         url = f"{base_url}#{year}{month:02d}"
         
-        # Generate filename
-        filename = f"qr-{year}-{month:02d}.png"
+        # Add language parameter if specified
+        if language and language != "en":
+            url += f"&lang={language}"
+        
+        # Generate filename with language suffix if not English
+        filename = f"qr-{year}-{month:02d}"
+        if language and language != "en":
+            filename += f"-{language}"
+        filename += ".png"
         output_path = Path(output_dir) / filename
         
         return self.generate_qr_code(url, output_path, size=300, style=style)
     
     def generate_year_qr_codes(self, year: int, base_url: str = None, 
-                              output_dir: str = "output/qr", style: str = "default") -> list:
+                              output_dir: str = "output/qr", style: str = "default", language: str = None) -> list:
         """Generate QR codes for all months in a year"""
         
         generated_files = []
         
         for month in range(1, 13):
-            qr_file = self.generate_calendar_qr(year, month, base_url, output_dir, style)
+            qr_file = self.generate_calendar_qr(year, month, base_url, output_dir, style, language)
             generated_files.append(qr_file)
             print(f"✓ Generated QR code: {qr_file}")
         
@@ -235,6 +242,8 @@ def main():
     parser.add_argument('--output', default="output/qr", help="Output directory")
     parser.add_argument('--style', choices=['default', 'rounded', 'gradient'], 
                        default='default', help="QR code style")
+    parser.add_argument('--language', choices=['en', 'de', 'es'], 
+                       help="Language for QR code URL parameter")
     parser.add_argument('--size', type=int, default=400, help="QR code size in pixels")
     parser.add_argument('--branded', action='store_true', help="Create branded QR with text")
     parser.add_argument('--svg', action='store_true', help="Generate SVG format for print")
@@ -266,13 +275,13 @@ def main():
             if args.month:
                 # Generate for specific month
                 result = generator.generate_calendar_qr(
-                    args.year, args.month, args.base_url, args.output, args.style
+                    args.year, args.month, args.base_url, args.output, args.style, args.language
                 )
                 print(f"✓ Generated QR code: {result}")
             else:
                 # Generate for entire year
                 results = generator.generate_year_qr_codes(
-                    args.year, args.base_url, args.output, args.style
+                    args.year, args.base_url, args.output, args.style, args.language
                 )
                 print(f"✓ Generated {len(results)} QR codes for {args.year}")
         else:

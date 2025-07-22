@@ -13,9 +13,18 @@ import datetime
 from typing import Tuple, List, Dict
 import json
 
+# Handle import for both module usage and direct execution
+try:
+    from .localization_manager import LocalizationManager
+except ImportError:
+    from localization_manager import LocalizationManager
+
 class WeekCalculator:
-    def __init__(self, config_file=None):
+    def __init__(self, config_file=None, language="en"):
         self.config = self._load_config(config_file)
+        self.language = language
+        self.localization = LocalizationManager(config_file, default_language="en")
+        self.localization.set_language(language)
         
     def _load_config(self, config_file):
         """Load configuration or use defaults"""
@@ -171,8 +180,8 @@ class WeekCalculator:
         """
         weeks = self.get_month_weeks(year, month)
         
-        # Get month name
-        month_name = datetime.date(year, month, 1).strftime("%B")
+        # Get month name using localization
+        month_name = self.localization.get_month_name(month)
         
         # Calculate previous and next month
         if month == 1:
@@ -210,8 +219,8 @@ class WeekCalculator:
         return grid_data
     
     def _get_weekday_headers(self) -> List[str]:
-        """Get weekday headers based on configuration"""
-        weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        """Get weekday headers based on configuration and language"""
+        weekdays = self.localization.get_weekday_names()
         
         if self.config.get("week_start") == "sunday":
             # Rotate to start with Sunday
@@ -245,11 +254,12 @@ def main():
     parser.add_argument('--year', type=int, default=datetime.date.today().year, help="Year to calculate")
     parser.add_argument('--month', type=int, help="Specific month to calculate (1-12)")
     parser.add_argument('--config', help="Path to calendar configuration file")
+    parser.add_argument('--language', choices=['en', 'de', 'es'], default='en', help="Language for month/weekday names")
     parser.add_argument('--output', help="Output file for JSON data")
     
     args = parser.parse_args()
     
-    calculator = WeekCalculator(args.config)
+    calculator = WeekCalculator(args.config, args.language)
     
     if args.month:
         # Generate specific month

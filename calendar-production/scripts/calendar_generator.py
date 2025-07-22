@@ -20,8 +20,13 @@ from typing import Dict, List, Optional
 import re
 
 # Import our custom modules
-from week_calculator import WeekCalculator
-from world_map_generator import WorldMapGenerator
+# Handle import for both module usage and direct execution
+try:
+    from .week_calculator import WeekCalculator
+    from .world_map_generator import WorldMapGenerator
+except ImportError:
+    from week_calculator import WeekCalculator
+    from world_map_generator import WorldMapGenerator
 
 try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -31,11 +36,12 @@ except ImportError:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 class CalendarGenerator:
-    def __init__(self, config_file=None, template_dir=None):
+    def __init__(self, config_file=None, template_dir=None, language="en"):
         self.config_file = config_file or "data/calendar_config.json"
         self.template_dir = template_dir or "templates"
+        self.language = language
         self.config = self._load_config()
-        self.week_calculator = WeekCalculator(config_file)
+        self.week_calculator = WeekCalculator(config_file, language)
         self.world_map_generator = WorldMapGenerator()
         
         # Setup Jinja2 environment
@@ -102,7 +108,9 @@ class CalendarGenerator:
         if not readme_path.exists():
             print(f"❌ Error: README.md not found at {readme_path}")
             print(f"   Please create {readme_path} with location data:")
-            print(f"   + location: [City, Country]")
+            print(f"   + location_en: [City, Country]")
+            print(f"   + location_de: [Stadt, Land]") 
+            print(f"   + location_es: [Ciudad, País]")
             print(f"   + coordinates: [Lat°N/S, Long°E/W]")
             print(f"   + year: {year}")
             raise FileNotFoundError(f"Location data required: {readme_path} not found")
@@ -112,10 +120,18 @@ class CalendarGenerator:
         with open(readme_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Parse the README content
+        # Parse the README content - support both old and new format
         for line in content.split('\n'):
             line = line.strip()
-            if line.startswith('+ location:'):
+            # New multi-language format
+            if line.startswith('+ location_en:'):
+                location_data['location_en'] = line.replace('+ location_en:', '').strip()
+            elif line.startswith('+ location_de:'):
+                location_data['location_de'] = line.replace('+ location_de:', '').strip()
+            elif line.startswith('+ location_es:'):
+                location_data['location_es'] = line.replace('+ location_es:', '').strip()
+            # Legacy format (backwards compatibility)
+            elif line.startswith('+ location:'):
                 location_data['location'] = line.replace('+ location:', '').strip()
             elif line.startswith('+ coordinates:'):
                 location_data['coordinates'] = line.replace('+ coordinates:', '').strip()
@@ -124,12 +140,27 @@ class CalendarGenerator:
         missing_data = []
         placeholder_data = []
         
-        # Check for missing fields
-        if 'location' not in location_data or not location_data.get('location').strip():
-            missing_data.append('location')
-        elif '[Location needed]' in location_data.get('location', ''):
-            placeholder_data.append('location')
-            
+        # Determine which location format we're using
+        location_key = f'location_{self.language}'
+        if location_key not in location_data:
+            # Fall back to English if the requested language isn't available
+            if 'location_en' in location_data:
+                location_key = 'location_en'
+            elif 'location' in location_data:
+                # Legacy format compatibility
+                location_key = 'location'
+            else:
+                missing_data.append(f'location_{self.language} (or location_en)')
+        
+        # Check for missing location
+        if location_key in location_data:
+            location_value = location_data.get(location_key, '').strip()
+            if not location_value:
+                missing_data.append(location_key)
+            elif any(placeholder in location_value for placeholder in ['[Location needed]', '[Stadt benötigt]', '[Ubicación necesaria]']):
+                placeholder_data.append(location_key)
+        
+        # Check for missing coordinates
         if 'coordinates' not in location_data or not location_data.get('coordinates').strip():
             missing_data.append('coordinates')
         elif '[Coordinates needed]' in location_data.get('coordinates', ''):
@@ -148,8 +179,12 @@ class CalendarGenerator:
             print(f"   Please update the file with actual location information.")
             raise ValueError(f"Incomplete location data in {readme_path}: {'; '.join(error_msg)}")
         
-        # Use location directly as display format
-        location_data['location_display'] = location_data['location']
+        # Set the location display based on current language
+        location_data['location_display'] = location_data.get(location_key, location_data.get('location_en', location_data.get('location', 'Unknown Location')))
+        
+        # Also keep the location field for backwards compatibility
+        if 'location' not in location_data:
+            location_data['location'] = location_data['location_display']
         
         return location_data
     
@@ -321,6 +356,7 @@ class CalendarGenerator:
             **grid_data,
             **location_data,
             "config": self.config,
+            "language": self.language,
             "world_map_svg": world_map_svg
         }
         

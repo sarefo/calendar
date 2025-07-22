@@ -29,19 +29,28 @@ except ImportError as e1:
         PDF_IMPORT_ERROR += f"PyPDF2: {e2}"
 
 # Import our custom modules
-from calendar_generator import CalendarGenerator
-from update_landing_page import update_landing_page
-from qr_generator import QRGenerator
-from world_map_generator import WorldMapGenerator
-from html_to_pdf import HTMLToPDFConverter
+# Handle import for both module usage and direct execution
+try:
+    from .calendar_generator import CalendarGenerator
+    from .update_landing_page import update_landing_page
+    from .qr_generator import QRGenerator
+    from .world_map_generator import WorldMapGenerator
+    from .html_to_pdf import HTMLToPDFConverter
+except ImportError:
+    from calendar_generator import CalendarGenerator
+    from update_landing_page import update_landing_page
+    from qr_generator import QRGenerator
+    from world_map_generator import WorldMapGenerator
+    from html_to_pdf import HTMLToPDFConverter
 
 class CalendarBuilder:
-    def __init__(self, config_file: str = None):
+    def __init__(self, config_file: str = None, language: str = "en"):
         self.config_file = config_file or "data/calendar_config.json"
+        self.language = language
         self.config = self._load_config()
         
         # Initialize components
-        self.calendar_gen = CalendarGenerator(config_file)
+        self.calendar_gen = CalendarGenerator(config_file, language=language)
         # Clear any template cache to ensure fresh template loading
         self.calendar_gen.jinja_env.cache = {}
         self.calendar_gen.jinja_env.auto_reload = True
@@ -130,7 +139,8 @@ class CalendarBuilder:
             base_url = "https://sarefo.github.io/calendar/"
             qr_file = self.qr_gen.generate_calendar_qr(
                 year, month, base_url,
-                f"{output_dir}/assets"
+                f"{output_dir}/assets",
+                language=self.language
             )
             print(f"✅ Generated QR code: {qr_file}")
             
@@ -503,6 +513,7 @@ def main():
     parser.add_argument('--month', type=int, help="Specific month to build (1-12)")
     parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3')")
     parser.add_argument('--config', help="Path to calendar configuration file")
+    parser.add_argument('--language', choices=['en', 'de', 'es'], default='en', help="Language for calendar generation")
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
     parser.add_argument('--web-pdf', action='store_true', help="Create web-optimized PDFs (smaller file sizes for monitor viewing)")
@@ -534,7 +545,7 @@ def main():
     
     # Initialize builder
     try:
-        builder = CalendarBuilder(args.config)
+        builder = CalendarBuilder(args.config, args.language)
     except Exception as e:
         print(f"Failed to initialize builder: {e}")
         return 1

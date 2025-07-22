@@ -57,11 +57,14 @@
     "weekdays": {
       "en": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
       "en_short": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "de": ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
+      "de_short": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
       "es": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
       "es_short": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
     },
     "months": {
       "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      "de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
       "es": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     }
   },
