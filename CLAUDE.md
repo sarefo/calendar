@@ -14,11 +14,12 @@
 
 **Latest Updates (July 2025)**:
 - ✅ **MAJOR**: Full internationalization support (German and Spanish)
-- ✅ Added ultra-compressed PDF generation (targets <40MB total file size)
+- ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
+- ✅ **MAJOR**: Simplified PDF generation - only print and web formats
 - ✅ Implemented complete build workflow (--complete option)
-- ✅ Added multi-format PDF support (print, web, ultra compression modes)
-- ✅ Enhanced PDF binding with separate print and ultra versions
-- ✅ Updated --bind-existing to create both print and ultra bound PDFs
+- ✅ Added dual-format PDF support (print and web compression modes)
+- ✅ Enhanced PDF binding with separate print and web versions
+- ✅ Updated --bind-existing to create both print and web bound PDFs
 - ✅ Removed unused font files and PDF files from git tracking  
 
 ---
@@ -32,11 +33,10 @@ This system generates professional A3 landscape photo calendars featuring:
 - **Monthly location themes** with world map integration
 - **Smart QR codes** with automatic date picker integration and language detection
 - **Full internationalization** with German and Spanish support
-- **Multiple PDF formats** with intelligent compression:
+- **Dual PDF formats** with intelligent compression:
   - **Print-ready** (CMYK, 300 DPI, PDF/X compliant): ~400MB total
-  - **Web-optimized** (smaller file sizes): ~100MB total  
-  - **Ultra-compressed** (minimal file sizes): ~30MB total
-- **Complete build workflow** generates all formats in one command
+  - **Web-optimized** (minimal file sizes): ~30MB total
+- **Complete build workflow** generates both formats in one command
 - **Clean minimal design** optimized for A3 print production
 
 ---
@@ -81,15 +81,15 @@ calendar/
 
 ### **Complete Build Workflow** 🆕
 - **Single Command**: `--complete` option generates everything in one command
-- **Multi-Format PDFs**: Automatically creates print, ultra-compressed versions
-- **Dual PDF Binding**: Separate bound files for print quality and ultra compression
+- **Dual-Format PDFs**: Automatically creates print and web-optimized versions
+- **Dual PDF Binding**: Separate bound files for print quality and web compression
 - **Automatic Updates**: Landing page updated, all assets generated
 - **Smart Workflow**: HTML generated once, PDFs created in parallel for efficiency
 
-### **Ultra-Compressed PDF Mode** 🆕  
-- **Extreme Compression**: 200px images, 45% JPEG quality for minimal file sizes
-- **Target Achievement**: <40MB total file size for full 12-month calendar (~30MB actual)
-- **92% Size Reduction**: Compared to print version, 71% smaller than web version
+### **Web-Optimized PDF Mode** 🆕  
+- **Smart Compression**: 200px images, 45% JPEG quality for minimal file sizes
+- **Target Achievement**: ~30MB total file size for full 12-month calendar
+- **92% Size Reduction**: Compared to print version for easy digital sharing
 - **Maintains Usability**: Calendar layout and readability preserved for digital viewing
 - **Perfect for Sharing**: Ideal file size for email, cloud sharing, mobile viewing
 
@@ -135,17 +135,14 @@ The system generates three PDF formats optimized for different use cases:
 | Format    | File Size (per month) | Total (12 months) | Image Size | Quality | Use Case                             |
 | --------- | --------------------- | ----------------- | ---------- | ------- | ------------------------------------ |
 | **Print** | 33-34MB               | ~400MB            | 800px      | 85%     | Professional printing, CMYK, 300 DPI |
-| **Web**   | 9-10MB                | ~110MB            | 400px      | 65%     | Monitor viewing, web sharing         |
-| **Ultra** | 2.5-3MB               | **~30MB**         | 200px      | 45%     | Email sharing, mobile viewing        |
+| **Web**   | 2.5-3MB               | **~30MB**         | 200px      | 45%     | Email sharing, mobile viewing        |
 
-**Size Reduction Comparison:**
-- **Web vs Print**: 72% smaller
-- **Ultra vs Print**: 92% smaller  
-- **Ultra vs Web**: 71% smaller
+**Size Reduction:**
+- **Web vs Print**: 92% smaller for easy digital sharing
 
 **Complete Build Output:**
 - `YYYY_calendar_print.pdf` - Full quality for printing (~400MB)
-- `YYYY_calendar_ultra.pdf` - Ultra-compressed for sharing (~30MB)
+- `YYYY_calendar_web.pdf` - Web-optimized for sharing (~30MB)
 
 ### **Full Internationalization System** 🌍 **NEW**
 
@@ -195,15 +192,15 @@ python3 scripts/build_calendar.py --year 2026 --month 3 --language de
 # Spanish calendar 
 python3 scripts/build_calendar.py --year 2026 --month 2 --language es
 
-# Complete German year with all PDF formats
+# Complete German year with both PDF formats
 python3 scripts/build_calendar.py --year 2026 --language de --complete
 ```
 
-**Output Files (New Clean Structure):**
+**Output Files (Clean Organized Structure):**
 - HTML: `output/2026/de/html/202603.html` with `lang="de"` and German month names
 - QR Codes: `output/2026/de/assets/qr/qr-2026-03-de.png` linking to German landing page  
 - PDFs: `output/2026/de/pdf/print/202603.pdf` (print quality)
-- PDFs: `output/2026/de/pdf/ultra/202603_ultra.pdf` (ultra compressed)
+- PDFs: `output/2026/de/pdf/web/202603_web.pdf` (web optimized)
 - Assets: `output/2026/de/assets/maps/map-2026-03.svg` (world maps)
 
 ---
@@ -402,7 +399,7 @@ Example:
 
 **🚀 RECOMMENDED: Complete Build (Everything in One Command)**
 ```bash
-# Complete build: HTML + Print PDFs + Ultra PDFs + Bind both versions + Update landing page
+# Complete build: HTML + Print PDFs + Web PDFs + Bind both versions + Update landing page
 python3 scripts/build_calendar.py --year 2026 --complete
 
 # Complete German calendar with all formats and localized QR codes
@@ -435,7 +432,7 @@ python3 scripts/build_calendar.py --year 2026
 # Build full year and bind into single 12-page PDF
 python3 scripts/build_calendar.py --year 2026 --bind-pdf
 
-# Bind existing monthly PDFs without regenerating - creates both print and ultra versions
+# Bind existing monthly PDFs without regenerating - creates both print and web versions
 python3 scripts/build_calendar.py --year 2026 --bind-existing
 
 # Skip PDF generation (HTML only)
@@ -444,16 +441,12 @@ python3 scripts/build_calendar.py --year 2026 --no-pdf
 
 **💾 Compression Options**
 ```bash
-# Web-optimized PDFs (smaller file sizes for monitor viewing)
+# Web-optimized PDFs (smaller file sizes for digital sharing)
 python3 scripts/build_calendar.py --year 2026 --web-pdf
 
-# Ultra-compressed PDFs (minimal file sizes <40MB total)
-python3 scripts/build_calendar.py --year 2026 --ultra-pdf
-
-# Compare all three formats
+# Compare both formats
 python3 scripts/build_calendar.py --year 2026 --month 1          # Print (33MB)
-python3 scripts/build_calendar.py --year 2026 --month 1 --web-pdf    # Web (9MB)  
-python3 scripts/build_calendar.py --year 2026 --month 1 --ultra-pdf  # Ultra (2.5MB)
+python3 scripts/build_calendar.py --year 2026 --month 1 --web-pdf    # Web (2.5MB)
 ```
 
 ### Individual Script Usage
@@ -622,10 +615,10 @@ python3 scripts/build_calendar.py --install-deps
 ✅ **Streamlined design: removed weekday overlays and placeholders**  
 ✅ **Smart QR integration: flexible hash parameters for month/date navigation**  
 ✅ **Auto-location reading from README.md files**  
-✅ **Multi-format PDF generation: Print, Web, Ultra-compressed modes**  
+✅ **Dual-format PDF generation: Print and Web-optimized modes**  
 ✅ **Complete build workflow: Single command generates everything**  
-✅ **Dual PDF binding: Separate print and ultra-compressed bound versions**  
-✅ **Ultra-compression: <40MB total file size achievement**  
+✅ **Dual PDF binding: Separate print and web-optimized bound versions**  
+✅ **Web-compression: ~30MB total file size achievement**  
 ✅ **Landing page with hash parameter support implemented**  
 ✅ **Clean header design with integrated elements**  
 ✅ **Enhanced print media CSS for PDF consistency**  
@@ -637,10 +630,11 @@ python3 scripts/build_calendar.py --install-deps
 3. ✅ **Optimized photo sizing - 10% larger photos in 75% of months**
 4. ✅ **Auto-location reading and hash parameter support**
 5. ✅ **Cross-year photo overflow - January shows December photos**
-6. ✅ **Complete build workflow with multi-format PDF generation**
-7. ✅ **Ultra-compressed PDF mode achieving <40MB target**
+6. ✅ **Complete build workflow with dual-format PDF generation**
+7. ✅ **Web-optimized PDF mode achieving ~30MB target**
 8. ✅ **Full internationalization with German and Spanish support**
-9. ⏳ **Generate remaining months for 2026 calendar with multi-language support**
+9. ✅ **Clean folder structure with organized output/2026/ hierarchy**
+10. ⏳ **Generate remaining months for 2026 calendar with multi-language support**
 10. ⏳ **Deploy optimized system to GitHub Pages with language detection**
 
 ### Contact
