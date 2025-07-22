@@ -29,3 +29,4 @@
 
 ## World map
 + coordinates are sometimes off, needed to tweak them to the right for some maps
++ we probably don't need to create the maps in the assets folder of each language. use one common folder instead?
