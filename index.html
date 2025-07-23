@@ -101,9 +101,11 @@
 
         .date-input {
             position: absolute;
-            left: -9999px;
+            left: -9999px;  
             width: 1px;
             height: 1px;
+            opacity: 0;
+            z-index: -1;
         }
 
         .calendar-section {
@@ -473,32 +475,34 @@
             
             isDatePickerOpen = true;
             
-            // Show the input temporarily
-            todayInput.style.position = 'static';
-            todayInput.style.left = '0';
-            todayInput.style.opacity = '1';
-            todayInput.style.width = '200px';
-            todayInput.style.height = '40px';
-            todayInput.style.marginLeft = '10px';
+            // Temporarily make input focusable but still invisible
+            todayInput.style.position = 'fixed';
+            todayInput.style.left = '50%';
+            todayInput.style.top = '50%';
+            todayInput.style.transform = 'translate(-50%, -50%)';
+            todayInput.style.opacity = '0';
+            todayInput.style.pointerEvents = 'none';
+            todayInput.style.zIndex = '1000';
             
-            // Hide the button temporarily
-            pickDateBtn.style.display = 'none';
-            
-            // Focus and open picker with a small delay to ensure proper rendering
+            // Focus and open picker
             setTimeout(() => {
                 todayInput.focus();
                 if (typeof todayInput.showPicker === 'function') {
                     todayInput.showPicker();
                 }
-            }, 50);
+            }, 10);
         });
         
-        // Function to hide input and show button
-        function hideInputShowButton() {
+        // Function to reset the picker state and hide input
+        function resetDatePickerState() {
+            // Return input to completely hidden state
             todayInput.style.position = 'absolute';
             todayInput.style.left = '-9999px';
+            todayInput.style.top = 'auto';
+            todayInput.style.transform = 'none';
             todayInput.style.opacity = '0';
-            pickDateBtn.style.display = 'inline-block';
+            todayInput.style.zIndex = '-1';
+            
             isDatePickerOpen = false;
         }
         
@@ -507,18 +511,18 @@
             const selectedDate = this.valueAsDate;
             if (selectedDate) {
                 updateDateDisplay(selectedDate);
-                hideInputShowButton();
+                resetDatePickerState();
                 openCurrentObservation();
             }
         });
         
-        // Hide input when user clicks away, but only if the date picker is actually open
+        // Reset picker state when user clicks away or cancels
         todayInput.addEventListener('blur', function() {
             if (isDatePickerOpen) {
                 setTimeout(() => {
                     // Double-check that the date picker should still be closed
                     if (isDatePickerOpen && document.activeElement !== todayInput) {
-                        hideInputShowButton();
+                        resetDatePickerState();
                     }
                 }, 300);
             }
