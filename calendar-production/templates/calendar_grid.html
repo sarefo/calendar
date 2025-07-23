@@ -156,7 +156,7 @@
         /* Photo dimensions: {{ layout.photo_width }}mm × {{ layout.photo_height }}mm */
         /* Optimized height to fit exactly in A3 with ring binding margin */
         .calendar-container {
-            height: 208mm;
+            height: 245mm; /* Match dynamic layout calculation from week_calculator.py */
             padding: 0 13mm 0 13mm;
             margin-top: 38mm; /* Account for absolute positioned header */
             position: relative;
@@ -165,7 +165,7 @@
         
         .calendar-table {
             width: 100%;
-            height: 100%;
+            height: 100%; /* Back to full height of container */
             border-collapse: separate;
             border-spacing: 2mm;
         }
@@ -182,7 +182,7 @@
         }
         
         .week-number-item {
-            height: {{ layout.row_height }}mm;
+            height: {{ layout.row_height }}mm; /* Match dynamic row height for alignment */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -205,12 +205,12 @@
         }
         
         .calendar-week-row {
-            height: {{ layout.row_height }}mm;
+            height: {{ layout.row_height }}mm; /* Dynamic height calculated by week_calculator.py */
         }
         
         .calendar-day {
             width: {{ layout.photo_width }}mm;
-            height: {{ layout.row_height }}mm;
+            height: {{ layout.photo_height }}mm; /* Dynamic height calculated by week_calculator.py */
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
@@ -284,7 +284,7 @@
             }
             
             .calendar-container {
-                height: 208mm !important;
+                height: 245mm !important; /* Match dynamic layout calculation */
                 overflow: visible !important;
             }
             
@@ -311,7 +311,11 @@
             
             .calendar-day {
                 width: {{ layout.photo_width }}mm !important;
-                height: {{ layout.row_height }}mm !important;
+                height: {{ layout.photo_height }}mm !important; /* Use dynamic height calculation */
+            }
+            
+            .calendar-week-row {
+                height: {{ layout.row_height }}mm !important; /* Use dynamic height calculation */
             }
         }
         

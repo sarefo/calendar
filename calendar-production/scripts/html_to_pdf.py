@@ -219,9 +219,9 @@ class HTMLToPDFConverter:
             image-rendering: auto !important;
         }
         .calendar-container {
-            height: 252mm !important;
+            height: 245mm !important; /* Match dynamic layout calculation from week_calculator.py */
             overflow: visible !important;
-            padding-bottom: 5mm !important;
+            padding-bottom: 0mm !important;
         }
         .calendar-table {
             width: 100% !important;
