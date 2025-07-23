@@ -10,6 +10,7 @@
   + layout of date not nice
 
 ## HTML version
++ header broken for some reason
 + check if we really need hardcoded html for each language
 + does it end up on github.io? or in .gitignore?
 + website: make calendar html mobile ready
@@ -20,6 +21,9 @@
 
 ## Title bar
 + consider moving title bar to bottom
+
+## Hosting
++ free webhosting of several 300mb and 30mb files
 
 ## Photos
 

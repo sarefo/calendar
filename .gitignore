@@ -25,3 +25,4 @@ calendar-production/fonts/
 # System
 .DS_Store
 Thumbs.db
+*.swp
