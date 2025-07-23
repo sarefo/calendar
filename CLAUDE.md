@@ -13,6 +13,7 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
+- ✅ **MAJOR**: Perpetual calendar system - day-only layout without weekdays or week numbers
 - ✅ **MAJOR**: Streamlined world map system - single map per month shared across all languages
 - ✅ **MAJOR**: GitHub Pages integration - calendar HTML files accessible via subdirectory paths
 - ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding (portioid_calendar_YYYYMM_lang_type.pdf)
@@ -40,8 +41,23 @@
 
 This system generates professional A3 landscape photo calendars featuring:
 
-- **Daily macro photography** (one photo per day, 28-31 per month)
+### **Two Calendar Types:**
+
+#### **Year-Based Calendars** (Traditional)
 - **7-column grid layout** (Monday-Sunday) with ISO week numbering
+- **Dynamic row layout** (5-row vs 6-row months) with optimized photo sizing
+- **Cross-year photo support** with seamless month overflow
+- **Complete yearly workflows** with automated binding
+
+#### **Perpetual Calendars** 🆕 (Universal)
+- **Day-only layout** without weekdays or week numbers - works for any year
+- **6x5 grid for short months** (28-30 days) and **7x5 grid for long months** (31 days)
+- **February 29th support** included for leap year compatibility
+- **Larger month names** (no year display) with prominent 50pt typography
+- **Universal QR codes** with simplified month-only hash parameters
+
+### **Shared Features:**
+- **Daily macro photography** (one photo per day, 28-31 per month)
 - **Monthly location themes** with world map integration
 - **Smart QR codes** with automatic date picker integration and language detection
 - **Full internationalization** with German and Spanish support
@@ -285,6 +301,89 @@ python3 scripts/build_calendar.py --year 2026 --language de --complete
 
 ---
 
+## 🔄 Perpetual Calendar System 🆕
+
+### **Overview**
+The perpetual calendar system generates universal calendars that work for any year without weekdays or week numbers. Perfect for timeless photo displays and universal planning.
+
+### **Key Features**
+
+#### **Dynamic Grid Layout**
+- **6x5 grid** for short months (28-30 days): February, April, June, September, November
+- **7x5 grid** for long months (31 days): January, March, May, July, August, October, December
+- **Always 5 rows** - no wasted space regardless of month length
+- **Wider photos** in 6-column layout (63mm vs 54mm width)
+
+#### **February 29th Support** 
+- **Always included** in perpetual February calendars
+- **Leap year compatible** - works for both leap and non-leap years
+- **Photo support** available from 2026 photo collection
+
+#### **Simplified Design**
+- **No year display** - prominent 50pt month names
+- **No weekday headers** - clean day-only layout (1, 2, 3... 31)
+- **No week numbers** - eliminates year-specific elements
+- **Universal QR codes** - simple month-only hash parameters
+
+### **Usage Commands**
+
+```bash
+# Generate single perpetual month (HTML + both PDFs)
+python3 scripts/build_calendar.py --month 2
+
+# Generate multiple perpetual months  
+python3 scripts/build_calendar.py --months "1,2,3,4"
+
+# Generate all 12 perpetual months
+python3 scripts/build_calendar.py
+
+# Multi-language perpetual calendars
+python3 scripts/build_calendar.py --month 2 --language de  # German
+python3 scripts/build_calendar.py --month 2 --language es  # Spanish
+
+# HTML only (no PDFs)
+python3 scripts/build_calendar.py --month 2 --no-pdf
+```
+
+### **Output Structure**
+```
+output/perpetual/
+├── assets/maps/          # Shared world maps (language-independent)
+├── en/                   # English perpetual calendars
+│   ├── html/            # 01.html, 02.html, ... 12.html
+│   ├── pdf/print/       # portioid_calendar_MM_en_print.pdf
+│   ├── pdf/web/         # portioid_calendar_MM_en_web.pdf
+│   └── assets/qr/       # qr-MM.png (English QR codes)
+├── de/                   # German perpetual calendars  
+│   └── assets/qr/       # qr-MM-de.png (German QR codes)
+└── es/                   # Spanish perpetual calendars
+    └── assets/qr/       # qr-MM-es.png (Spanish QR codes)
+```
+
+### **File Naming Convention**
+- **HTML**: `MM.html` (e.g., `02.html` for February)
+- **Print PDFs**: `portioid_calendar_MM_lang_print.pdf`
+- **Web PDFs**: `portioid_calendar_MM_lang_web.pdf`
+- **QR Codes**: `qr-MM-lang.png` (English omits language suffix)
+
+### **Layout Examples**
+- **February (29 days)**: 6x5 grid with wider 63mm photos
+- **January (31 days)**: 7x5 grid with standard 54mm photos  
+- **April (30 days)**: 6x5 grid with wider 63mm photos
+
+### **Comparison: Year-Based vs Perpetual**
+```bash
+# Year-based calendar (traditional)
+python3 scripts/build_calendar.py --year 2026 --month 2
+# → Output: 2026/en/html/202602.html
+
+# Perpetual calendar (universal) 
+python3 scripts/build_calendar.py --month 2
+# → Output: perpetual/en/html/02.html
+```
+
+---
+
 ## 🚀 Production Workflow
 
 ### Phase 1: Photo Preparation
@@ -429,6 +528,8 @@ Example:
 ### `build_calendar.py` - Master Build Script
 
 **🚀 RECOMMENDED: Complete Build (Everything in One Command)**
+
+#### **Year-Based Calendars**
 ```bash
 # Complete build: HTML + Print PDFs + Web PDFs + Bind both versions + Update landing page
 python3 scripts/build_calendar.py --year 2026 --complete
@@ -443,7 +544,21 @@ python3 scripts/build_calendar.py --year 2026 --language es --complete
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --complete
 ```
 
+#### **Perpetual Calendars** 🆕
+```bash
+# Complete perpetual calendar - all 12 months (HTML + both PDF formats)
+python3 scripts/build_calendar.py --complete
+
+# Complete German perpetual calendar with localized QR codes
+python3 scripts/build_calendar.py --language de --complete
+
+# Complete perpetual calendar for specific months
+python3 scripts/build_calendar.py --months "1,2,3" --complete
+```
+
 **📋 Standard Build Options**
+
+#### **Year-Based Calendar Commands**
 ```bash
 # Check photos for specific month
 python3 scripts/build_calendar.py --check-photos --year 2026 --month 1
@@ -456,6 +571,22 @@ python3 scripts/build_calendar.py --year 2026 --month 3 --language de
 
 # Build Spanish calendar for specific months (dual PDF generation)
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --language es
+```
+
+#### **Perpetual Calendar Commands** 🆕
+```bash
+# Build single perpetual month (dual PDF generation)
+python3 scripts/build_calendar.py --month 2
+
+# Build German perpetual month with February 29th support
+python3 scripts/build_calendar.py --month 2 --language de
+
+# Build multiple perpetual months
+python3 scripts/build_calendar.py --months "1,2,3,4"
+
+# HTML only (no PDFs)
+python3 scripts/build_calendar.py --month 2 --no-pdf
+```
 
 # Build full year with print package
 python3 scripts/build_calendar.py --year 2026

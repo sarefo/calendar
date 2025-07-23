@@ -124,6 +124,33 @@ class QRGenerator:
         
         return generated_files
     
+    def generate_perpetual_qr(self, month: int, base_url: str = None, 
+                            output_dir: str = "output/qr", style: str = "default", language: str = None) -> str:
+        """Generate QR code for perpetual calendar month (no year)"""
+        
+        if not base_url:
+            base_url = self.default_base_url
+            
+        # Construct URL for perpetual month with hash parameter (no year)
+        url = f"{base_url}#{month:02d}"
+        
+        # Add language parameter if specified
+        if language and language != "en":
+            url += f"&lang={language}"
+        
+        # Generate filename with language suffix if not English
+        filename = f"qr-{month:02d}"
+        if language and language != "en":
+            filename += f"-{language}"
+        filename += ".png"
+        output_path = Path(output_dir) / filename
+
+        # Create output directory if it doesn't exist
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        
+        # Generate QR code
+        return self.generate_qr_code(url, str(output_path), style=style)
+    
     def create_branded_qr(self, url: str, output_path: str, 
                          title: str = "Photo Stories", subtitle: str = None,
                          size: int = 400) -> str:

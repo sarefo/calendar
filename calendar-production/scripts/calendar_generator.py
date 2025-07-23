@@ -343,6 +343,142 @@ class CalendarGenerator:
         
         return None
     
+    def generate_perpetual_month_data(self, month: int, source_year: int = 2026, location_data: Dict = None, photo_dirs: List[str] = None, use_absolute_paths: bool = False, web_optimized: bool = False) -> Dict:
+        """Generate data for a perpetual calendar month (day numbers only, no weekdays/week numbers)"""
+        
+        # Always load location data from README.md using source year
+        readme_location = self._load_location_from_readme(source_year, month)
+        location_data = {
+            **readme_location,
+            "website_url": "https://sarefo.github.io/calendar/",
+            "photographer_name": "Photographer"
+        }
+        
+        # Load photo observations for iNaturalist links
+        photo_observations = self._load_photo_observations()
+        
+        # Default photo directories using source year
+        if not photo_dirs:
+            photo_dirs = [
+                f"photos/{source_year}/{month:02d}",
+                f"photos/{source_year}/{month:02d}-processed"
+            ]
+        
+        # Get number of days in this month (use source year for calculation)
+        import calendar
+        days_in_month = calendar.monthrange(source_year, month)[1]
+        
+        # Special handling for February - always include day 29 for perpetual calendar
+        if month == 2:
+            days_in_month = 29
+        
+        # Determine grid layout based on number of days
+        if days_in_month == 31:
+            columns = 7  # 7x5 grid for 31-day months
+            rows = 5
+        else:
+            columns = 6  # 6x5 grid for shorter months (28-30 days)
+            rows = 5
+        
+        # Create simple day layout (no weekday alignment)
+        weeks = []
+        current_week = {"dates": []}
+        
+        for day in range(1, days_in_month + 1):
+            # Create date object using source year for photo lookup
+            # Special handling for February 29th - use 2024 (leap year)
+            if month == 2 and day == 29:
+                day_date = date(2024, month, day)  # Use leap year for Feb 29
+            else:
+                day_date = date(source_year, month, day)
+            
+            day_info = {
+                'date': day_date,
+                'day': day,
+                'is_current_month': True,
+                'is_previous_month': False,
+                'is_next_month': False
+            }
+            
+            # Find photo for this day
+            day_info['image_path'] = self.find_photo_for_date(day_date, photo_dirs, use_absolute_paths, web_optimized)
+            
+            # Add iNaturalist observation ID if available
+            date_key = day_date.strftime('%Y-%m-%d')
+            observation_id = photo_observations.get(date_key)
+            if observation_id and observation_id != "0":
+                day_info['observation_id'] = observation_id
+                day_info['inaturalist_url'] = f"https://www.inaturalist.org/observations/{observation_id}"
+            
+            current_week["dates"].append(day_info)
+            
+            # Create new week every 'columns' days
+            if len(current_week["dates"]) == columns:
+                weeks.append(current_week)
+                current_week = {"dates": []}
+        
+        # Add any remaining days in final week
+        if current_week["dates"]:
+            # Fill remaining slots with empty days
+            while len(current_week["dates"]) < columns:
+                current_week["dates"].append({
+                    'date': None,
+                    'day': "",
+                    'is_current_month': False,
+                    'is_previous_month': False,
+                    'is_next_month': False,
+                    'image_path': None
+                })
+            weeks.append(current_week)
+        
+        # Generate world map SVG content
+        world_map_svg = self._generate_world_map_content(location_data)
+        
+        # Use localization manager for month names
+        try:
+            from .localization_manager import LocalizationManager
+        except ImportError:
+            from localization_manager import LocalizationManager
+        
+        localization = LocalizationManager(default_language=self.language)
+        month_name = localization.get_month_name(month)
+        
+        # Dynamic layout based on month length
+        if days_in_month == 31:
+            # 7x5 grid for 31-day months
+            photo_width = 54  # Same as regular calendar
+            photo_height = 42.4  # 5-row height
+            row_height = 46.4
+        else:
+            # 6x5 grid for shorter months - wider photos
+            photo_width = 63  # Wider photos for 6-column grid
+            photo_height = 42.4  # Same height
+            row_height = 46.4
+        
+        layout_info = {
+            'layout_type': 'perpetual',
+            'columns': columns,
+            'rows_needed': rows,
+            'row_height': row_height,
+            'photo_width': photo_width,
+            'photo_height': photo_height,
+            'days_in_month': days_in_month
+        }
+        
+        return {
+            'year': None,  # No year in perpetual calendar
+            'month': month,
+            'month_name': month_name,
+            'location': location_data.get('location', 'Unknown Location'),
+            'location_display': location_data.get(f'location_{self.language}', location_data.get('location_en', location_data.get('location', 'Unknown Location'))),
+            'coordinates': location_data.get('coordinates', ''),
+            'weeks': weeks,
+            'layout': layout_info,
+            'world_map_svg': world_map_svg,
+            'language': self.language,
+            'website_url': location_data.get('website_url', 'https://sarefo.github.io/calendar/')
+        }
+
     def generate_month_data(self, year: int, month: int, location_data: Dict = None, photo_dirs: List[str] = None, use_absolute_paths: bool = False, web_optimized: bool = False) -> Dict:
         """Generate all data needed for a month's calendar"""
         
@@ -492,6 +628,38 @@ class CalendarGenerator:
             print(f"✓ Generated: {output_file}")
         
         return generated_files
+
+    def generate_perpetual_calendar_page(self, month: int, source_year: int = 2026, location_data: Dict = None, 
+                                       photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = False, web_optimized: bool = True) -> str:
+        """Generate a complete perpetual calendar page for one month"""
+        
+        # Generate perpetual calendar data
+        calendar_data = self.generate_perpetual_month_data(month, source_year, location_data, photo_dirs, use_absolute_paths, web_optimized)
+        
+        # Render HTML using perpetual template
+        html_content = self.render_calendar_html(calendar_data, "calendar_grid_perpetual.html")
+        
+        # Save HTML
+        output_file = f"{output_dir}/{month:02d}.html"
+        self.save_calendar_html(html_content, output_file)
+        
+        return output_file
+    
+    def generate_perpetual_calendar_page_for_pdf(self, month: int, source_year: int = 2026, location_data: Dict = None, 
+                                                photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = True) -> str:
+        """Generate a perpetual calendar page specifically for PDF conversion"""
+        
+        # Generate perpetual calendar data (PDF should NEVER use web optimization)
+        calendar_data = self.generate_perpetual_month_data(month, source_year, location_data, photo_dirs, use_absolute_paths, web_optimized=False)
+        
+        # Render HTML using perpetual template
+        html_content = self.render_calendar_html(calendar_data, "calendar_grid_perpetual.html")
+        
+        # Save with PDF-specific filename
+        output_file = f"{output_dir}/{month:02d}_pdf.html"
+        self.save_calendar_html(html_content, output_file)
+        
+        return output_file
 
 def main():
     parser = argparse.ArgumentParser(description="Generate A3 landscape photo calendars")

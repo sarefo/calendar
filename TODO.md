@@ -22,11 +22,22 @@
 + remove crop marks and bleed
 + able to navigate to next/previous month
 
-## Eternal calendar
-+ eternal calendar (no weekdays or week numbers)
-+ scrap previous/next month overflow
-+ save under folder "eternal" instead of year
-+ add 0229
+## Perpetual calendar ✅ COMPLETED
++ ✅ consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
++ ✅ perpetual calendar (no weekdays or week numbers) - implemented with day-only layout
++ ✅ scrap previous/next month overflow - perpetual uses simple consecutive day layout
++ ✅ save under folder "perpetual" instead of year - output/perpetual/ structure implemented
++ ✅ multi-language support - German and Spanish QR codes with language-specific URLs
++ ✅ add 0229 - February 29th support implemented with photo from 2026 collection
++ ✅ **ENHANCED**: Dynamic grid system - 6x5 for short months, 7x5 for long months
++ ✅ **ENHANCED**: Wider photos in 6-column layout (63mm vs 54mm width)
++ ✅ **ENHANCED**: Complete CLAUDE.md documentation with usage examples
+
+## Sunday-first calendar option
++ add --sunday-first option to build_calendar.py
++ modify week_calculator.py to support Sunday as first day
++ update calendar templates to handle both Monday and Sunday start
++ add language/region support for different week start preferences
 
 ## Title page
 + 12 photos with country names

@@ -61,22 +61,40 @@ class CalendarBuilder:
         self.map_gen = WorldMapGenerator()
         self.image_optimizer = ImageOptimizer(web_size=400, web_quality=75)
     
-    def get_output_paths(self, year: int) -> dict:
-        """Get organized output paths for a specific year and language"""
-        year_dir = f"{self.base_output_dir}/{year}"
-        lang_dir = f"{year_dir}/{self.language}"
-        
-        return {
-            "year_dir": year_dir,
-            "lang_dir": lang_dir,
-            "html_dir": f"{lang_dir}/html",
-            "pdf_dir": f"{lang_dir}/pdf",
-            "pdf_print_dir": f"{lang_dir}/pdf/print",
-            "pdf_web_dir": f"{lang_dir}/pdf/web",
-            "assets_dir": f"{lang_dir}/assets",
-            "qr_dir": f"{lang_dir}/assets/qr",
-            "maps_dir": f"{year_dir}/assets/maps"  # Language-independent - shared across all languages
-        }
+    def get_output_paths(self, year: int = None) -> dict:
+        """Get organized output paths for a specific year and language, or perpetual calendar"""
+        if year is None:
+            # Perpetual calendar mode
+            base_dir = f"{self.base_output_dir}/perpetual"
+            lang_dir = f"{base_dir}/{self.language}"
+            
+            return {
+                "year_dir": base_dir,
+                "lang_dir": lang_dir,
+                "html_dir": f"{lang_dir}/html",
+                "pdf_dir": f"{lang_dir}/pdf",
+                "pdf_print_dir": f"{lang_dir}/pdf/print",
+                "pdf_web_dir": f"{lang_dir}/pdf/web",
+                "assets_dir": f"{lang_dir}/assets",
+                "qr_dir": f"{lang_dir}/assets/qr",
+                "maps_dir": f"{base_dir}/assets/maps"  # Language-independent - shared across all languages
+            }
+        else:
+            # Regular year-based calendar
+            year_dir = f"{self.base_output_dir}/{year}"
+            lang_dir = f"{year_dir}/{self.language}"
+            
+            return {
+                "year_dir": year_dir,
+                "lang_dir": lang_dir,
+                "html_dir": f"{lang_dir}/html",
+                "pdf_dir": f"{lang_dir}/pdf",
+                "pdf_print_dir": f"{lang_dir}/pdf/print",
+                "pdf_web_dir": f"{lang_dir}/pdf/web",
+                "assets_dir": f"{lang_dir}/assets",
+                "qr_dir": f"{lang_dir}/assets/qr",
+                "maps_dir": f"{year_dir}/assets/maps"  # Language-independent - shared across all languages
+            }
         
     def _load_config(self):
         """Load build configuration"""
@@ -127,17 +145,21 @@ class CalendarBuilder:
         
         return photo_status["photo_count"] > 0
     
-    async def build_month(self, year: int, month: int,
+    async def build_month(self, year: int = None, month: int = None,
                          generate_pdf: bool = True, web_mode: bool = False) -> dict:
         """Build calendar for a single month
         
         Args:
-            year: Calendar year
+            year: Calendar year (None for perpetual calendar)
             month: Calendar month (1-12)
             output_dir: Base output directory
             generate_pdf: Whether to generate PDF files
             web_mode: If True, creates web-optimized PDFs (smaller file sizes)
         """
+        
+        if year is None:
+            # Perpetual calendar mode
+            return await self.build_perpetual_month(month, generate_pdf, web_mode)
         
         print(f"\\n📅 Building {self.language.upper()} calendar for {year}-{month:02d}")
         
@@ -285,6 +307,140 @@ class CalendarBuilder:
         except Exception as e:
             print(f"⚠️  PDF conversion failed: {e}")
             return None
+    
+    async def build_perpetual_month(self, month: int, generate_pdf: bool = True, web_mode: bool = False) -> dict:
+        """Build perpetual calendar for a single month using 2026 photos
+        
+        Args:
+            month: Calendar month (1-12)
+            generate_pdf: Whether to generate PDF files
+            web_mode: If True, creates web-optimized PDFs (smaller file sizes)
+        """
+        
+        source_year = 2026  # Always use 2026 photos for perpetual calendar
+        
+        print(f"\\n📅 Building {self.language.upper()} perpetual calendar for month {month:02d}")
+        
+        # Get organized output paths (year=None for perpetual)
+        paths = self.get_output_paths(None)
+        
+        # Create all necessary directories
+        for path in paths.values():
+            Path(path).mkdir(parents=True, exist_ok=True)
+        
+        # Validate photos using source year
+        if not self.validate_photos_for_month(source_year, month):
+            print(f"❌ Cannot build perpetual calendar for month {month:02d}: insufficient photos in {source_year}")
+            return {"success": False, "reason": "insufficient_photos"}
+        
+        try:
+            # Load and validate location data from source year - fail fast if missing
+            try:
+                map_location_data = self.calendar_gen._load_location_from_readme(source_year, month)
+                print(f"✅ Loaded location data: {map_location_data['location_display']}")
+            except (FileNotFoundError, ValueError) as e:
+                print(f"❌ Cannot build perpetual calendar for month {month:02d}: {e}")
+                return {"success": False, "reason": f"location_data_missing: {e}"}
+            
+            # Generate QR code for perpetual calendar (no year in URL)
+            base_url = "https://sarefo.github.io/calendar/"
+            qr_file = self.qr_gen.generate_perpetual_qr(
+                month, base_url,
+                paths["qr_dir"],
+                language=self.language
+            )
+            print(f"✅ Generated QR code: {qr_file}")
+            
+            # Generate world map in shared directory 
+            map_file_path = f"{paths['maps_dir']}/map-{month:02d}.svg"
+            if Path(map_file_path).exists():
+                print(f"✅ Using existing world map: {map_file_path}")
+                map_file = map_file_path
+            else:
+                map_file = self.map_gen.save_map_svg(
+                    map_location_data,
+                    map_file_path
+                )
+                print(f"✅ Generated new world map: {map_file}")
+            
+            # Generate web-optimized thumbnails for faster HTML loading
+            thumb_result = self.image_optimizer.optimize_month_photos(source_year, month)
+            if thumb_result["success"]:
+                print(f"✅ Generated {thumb_result['processed']} web thumbnails")
+            else:
+                print(f"⚠️  Web thumbnails: {thumb_result['reason']}")
+            
+            # Generate perpetual calendar HTML in language-specific directory
+            from jinja2 import Environment, FileSystemLoader, select_autoescape
+            self.calendar_gen.jinja_env = Environment(
+                loader=FileSystemLoader(self.calendar_gen.template_dir),
+                autoescape=select_autoescape(['html', 'xml'])
+            )
+            html_file = self.calendar_gen.generate_perpetual_calendar_page(
+                month, source_year, None,
+                photo_dirs=[f"photos/{source_year}/{month:02d}"],
+                output_dir=paths["html_dir"],
+                use_absolute_paths=False
+            )
+            print(f"✅ Generated HTML: {html_file}")
+            
+            result = {
+                "success": True,
+                "year": None,  # Perpetual calendar has no year
+                "month": month,
+                "html_file": html_file,
+                "qr_file": qr_file,
+                "map_file": map_file
+            }
+            
+            # Generate PDF if requested
+            if generate_pdf:
+                # Generate HTML for PDF (absolute paths)
+                pdf_html_file = self.calendar_gen.generate_perpetual_calendar_page_for_pdf(
+                    month, source_year, None,
+                    photo_dirs=[f"photos/{source_year}/{month:02d}"],
+                    output_dir=paths["html_dir"],
+                    use_absolute_paths=True
+                )
+                
+                # Convert to PDF
+                pdf_dir = paths["pdf_web_dir"] if web_mode else paths["pdf_print_dir"]
+                pdf_filename = f"portioid_calendar_{month:02d}_{self.language}_{'web' if web_mode else 'print'}.pdf"
+                pdf_path = Path(pdf_dir) / pdf_filename
+                
+                try:
+                    from .html_to_pdf import HTMLToPDFConverter
+                except ImportError:
+                    from html_to_pdf import HTMLToPDFConverter
+                converter = HTMLToPDFConverter()
+                
+                pdf_file = await converter.convert_html_to_pdf(pdf_html_file, str(pdf_path), web_mode=web_mode)
+                
+                if pdf_file:
+                    print(f"✅ Generated {'web' if web_mode else 'print'} PDF: {pdf_filename}")
+                    result["pdf_file"] = pdf_file
+                else:
+                    print(f"⚠️  PDF generation failed")
+                    result["pdf_error"] = "conversion_failed"
+                
+                # Clean up PDF-specific HTML file
+                try:
+                    if pdf_html_file != html_file:
+                        Path(pdf_html_file).unlink()
+                except:
+                    pass
+            
+            return result
+            
+        except (FileNotFoundError, ValueError) as e:
+            # Location data errors - already handled above, but catch any others
+            print(f"❌ Location data error for perpetual month {month:02d}: {e}")
+            return {"success": False, "reason": f"location_data_error: {e}"}
+        except Exception as e:
+            print(f"❌ Unexpected error building perpetual month {month:02d}: {e}")
+            import traceback
+            traceback.print_exc()
+            return {"success": False, "reason": f"unexpected_error: {e}"}
     
     async def build_year(self, year: int,
                         output_dir: str = "output", 
@@ -548,7 +704,7 @@ class CalendarBuilder:
 
 def main():
     parser = argparse.ArgumentParser(description="Build complete calendar production")
-    parser.add_argument('--year', type=int, default=datetime.now().year, help="Year to build")
+    parser.add_argument('--year', type=int, help="Year to build (omit for perpetual calendar)")
     parser.add_argument('--month', type=int, help="Specific month to build (1-12)")
     parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3')")
     parser.add_argument('--config', help="Path to calendar configuration file")
@@ -598,9 +754,11 @@ def main():
         else:
             months = list(range(1, 13))
         
-        print(f"📷 Checking photos for {args.year}")
+        # Use 2026 as default source year for perpetual calendar photo checking
+        check_year = args.year if args.year else 2026
+        print(f"📷 Checking photos for {'perpetual calendar (using ' + str(check_year) + ' photos)' if not args.year else str(args.year)}")
         for month in months:
-            builder.validate_photos_for_month(args.year, month)
+            builder.validate_photos_for_month(check_year, month)
         return 0
     
     # Handle bind-existing mode
@@ -611,7 +769,10 @@ def main():
             print("Try installing: pip install pypdf")
             return 1
         
-        print(f"🔗 Binding existing PDFs for {args.year}")
+        if args.year:
+            print(f"🔗 Binding existing PDFs for {args.year}")
+        else:
+            print("🔗 Binding existing PDFs for perpetual calendar")
         
         # Get paths for current language
         paths = builder.get_output_paths(args.year)
@@ -629,11 +790,17 @@ def main():
         print_pdfs = []
         web_pdfs = []
         
-        # Look for monthly PDFs (portioid_calendar_YYYYMM_lang_print.pdf and portioid_calendar_YYYYMM_lang_web.pdf)
+        # Look for monthly PDFs 
         for month in range(1, 13):
             month_str = f"{month:02d}"
-            print_pdf = pdf_print_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_print.pdf"
-            web_pdf = pdf_web_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_web.pdf"
+            if args.year:
+                # Regular calendar: portioid_calendar_YYYYMM_lang_print.pdf
+                print_pdf = pdf_print_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_print.pdf"
+                web_pdf = pdf_web_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_web.pdf"
+            else:
+                # Perpetual calendar: portioid_calendar_MM_lang_print.pdf
+                print_pdf = pdf_print_dir / f"portioid_calendar_{month_str}_{args.language}_print.pdf"
+                web_pdf = pdf_web_dir / f"portioid_calendar_{month_str}_{args.language}_web.pdf"
             
             if print_pdf.exists():
                 print_pdfs.append(str(print_pdf))
@@ -643,12 +810,17 @@ def main():
         print(f"📄 Found {len(print_pdfs)} print PDFs and {len(web_pdfs)} web PDFs")
         
         if not print_pdfs and not web_pdfs:
-            print(f"❌ No monthly PDF files found for {args.year}")
+            period_name = str(args.year) if args.year else "perpetual calendar"
+            print(f"❌ No monthly PDF files found for {period_name}")
             return 1
         
         # Delete existing bound PDFs to ensure clean recreation
-        print_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_print.pdf"
-        web_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_web.pdf"
+        if args.year:
+            print_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_print.pdf"
+            web_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_web.pdf"
+        else:
+            print_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{args.language}_print.pdf"
+            web_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{args.language}_web.pdf"
         
         if print_bound_path.exists():
             print_bound_path.unlink()
@@ -704,12 +876,16 @@ def main():
     # Build calendar(s)
     async def build():
         try:
+            # Use 2026 as source year for perpetual calendar
+            source_year = args.year if args.year else 2026
+            
             if args.complete:
                 # Complete build: HTML + both print and ultra PDFs + bind both
                 results = await builder.build_complete(args.year, args.output, months_to_build)
                 
                 if results["successful_months"]:
-                    print(f"\\n🎉 Complete build finished successfully!")
+                    build_type = f"{args.year}" if args.year else "perpetual calendar"
+                    print(f"\\n🎉 Complete build finished successfully for {build_type}!")
                     return 0
                 else:
                     print(f"\\n❌ Complete build failed")
@@ -727,7 +903,8 @@ def main():
                     )
                     if print_result["success"]:
                         success_count += 1
-                        print(f"✅ Print PDF created for {args.year}-{month:02d}")
+                        month_display = f"{month:02d}" if not args.year else f"{args.year}-{month:02d}"
+                        print(f"✅ Print PDF created for {month_display}")
                     else:
                         print(f"❌ Print PDF failed: {print_result.get('reason', 'unknown error')}")
                     
@@ -737,7 +914,8 @@ def main():
                     )
                     if web_result["success"]:
                         success_count += 1
-                        print(f"✅ Web PDF created for {args.year}-{month:02d}")
+                        month_display = f"{month:02d}" if not args.year else f"{args.year}-{month:02d}"
+                        print(f"✅ Web PDF created for {month_display}")
                     else:
                         print(f"❌ Web PDF failed: {web_result.get('reason', 'unknown error')}")
                 else:
@@ -749,7 +927,8 @@ def main():
                         success_count = 1
                 
                 if success_count > 0:
-                    print(f"\\n🎉 Successfully built calendar for {args.year}-{month:02d}")
+                    build_type = f"perpetual calendar month {month:02d}" if not args.year else f"calendar for {args.year}-{month:02d}"
+                    print(f"\\n🎉 Successfully built {build_type}")
                     # Update landing page with latest observation IDs
                     update_landing_page()
                 else:
@@ -769,7 +948,8 @@ def main():
                     print(f"\\n⚠️  Some months failed to build: {results['failed_months']}")
                     return 1
                 else:
-                    print(f"\\n🎉 Successfully built calendar for {args.year}")
+                    build_type = f"{args.year}" if args.year else "perpetual calendar"
+                    print(f"\\n🎉 Successfully built calendar for {build_type}")
                     # Update landing page with latest observation IDs
                     update_landing_page()
             
