@@ -1,11 +1,10 @@
 ## General
 
 ## PDF version
-+ only need to crop at top and left/right
 + it's okay if the calendar ends up 3mm shorter than A3 on three sides
++ only need to crop at top and left/right
 + probably should extend green to the very edge
 + cut marks no longer showing (3mm bleed)
-+ add language code to pdf files
 
 ## Landing page
 + "pick other date" problems:
@@ -13,15 +12,13 @@
   + layout of date not nice
 
 ## HTML version
-+ photos no longer show
++ check if we really need hardcoded html for each language
++ does it end up on github.io? or in .gitignore?
 + website: make calendar html mobile ready
 + click on image opens observation
 + able to navigate to next/previous month
-+ check if we really need hardcoded html for each language
-+ does it end up on github.io? or in .gitignore?
 
 ## Workflow
-+ create "print" and "web" pdf at the same time
 
 ## Title bar
 + improve QR code UX: user should know they can get more info about the photos there
