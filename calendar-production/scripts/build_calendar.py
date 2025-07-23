@@ -321,32 +321,20 @@ class CalendarBuilder:
         if results["failed_months"]:
             print(f"❌ Failed: {len(results['failed_months'])} months")
         
-        # Create print package if we have PDFs
-        if generate_pdf and results["successful_months"]:
+        # Bind PDFs into single file if requested
+        if generate_pdf and results["successful_months"] and bind_pdf:
             pdf_files = [f for f in results["generated_files"] if f and f.endswith('.pdf')]
-            if pdf_files:
+            if pdf_files and len(pdf_files) > 1:
                 try:
-                    converter = HTMLToPDFConverter("auto")
-                    package_dir = converter.create_print_package(
-                        pdf_files, f"{output_dir}/print-package-{year}"
-                    )
-                    results["print_package"] = package_dir
-                    print(f"📦 Print package created: {package_dir}")
+                    paths = self.get_output_paths(year)
+                    bound_pdf_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_complete.pdf"
+                    bound_pdf = self.bind_pdfs_to_single_file(pdf_files, bound_pdf_file)
+                    results["bound_pdf"] = bound_pdf
+                    print(f"📚 Complete calendar PDF created: {bound_pdf}")
                 except Exception as e:
-                    print(f"⚠️  Print package creation failed: {e}")
-                
-                # Bind PDFs into single file if requested
-                if bind_pdf and len(pdf_files) > 1:
-                    try:
-                        paths = self.get_output_paths(year)
-                        bound_pdf_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_complete.pdf"
-                        bound_pdf = self.bind_pdfs_to_single_file(pdf_files, bound_pdf_file)
-                        results["bound_pdf"] = bound_pdf
-                        print(f"📚 Complete calendar PDF created: {bound_pdf}")
-                    except Exception as e:
-                        print(f"❌ PDF binding failed: {e}")
-                        if not PDF_MERGER_AVAILABLE:
-                            print("   Install PyPDF2: pip install PyPDF2")
+                    print(f"❌ PDF binding failed: {e}")
+                    if not PDF_MERGER_AVAILABLE:
+                        print("   Install PyPDF2: pip install PyPDF2")
         
         return results
     
@@ -378,7 +366,7 @@ class CalendarBuilder:
         paths = self.get_output_paths(year)
         print_pdf_files = []
         for month in print_results["successful_months"]:
-            pdf_file = f"{paths['pdf_print_dir']}/{year}{month:02d}_print.pdf"
+            pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_print.pdf"
             if Path(pdf_file).exists():
                 print_pdf_files.append(pdf_file)
         
@@ -397,7 +385,7 @@ class CalendarBuilder:
         print(f"\n=== STEP 4: Binding Web-Optimized PDFs ===")
         web_pdf_files = []
         for month in web_results["successful_months"]:
-            pdf_file = f"{paths['pdf_web_dir']}/{year}{month:02d}_web.pdf"
+            pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_web.pdf"
             if Path(pdf_file).exists():
                 web_pdf_files.append(pdf_file)
                 
