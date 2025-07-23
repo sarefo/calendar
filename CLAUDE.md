@@ -13,6 +13,7 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
+- ✅ **MAJOR**: GitHub Pages integration - calendar HTML files accessible via subdirectory paths
 - ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding (portioid_calendar_YYYYMM_lang_type.pdf)
 - ✅ **MAJOR**: Full internationalization support (German and Spanish)
 - ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
@@ -20,6 +21,7 @@
 - ✅ **MAJOR**: Dual PDF generation - single commands now create both print and web PDFs
 - ✅ **MAJOR**: Optimized A3 layout - extended green header with bleed, added ring binding space
 - ✅ **MAJOR**: Consistent PDF naming - print files now use "_print" suffix like web files use "_web"
+- ✅ **FIXED**: GitHub Pages calendar links - index.html now correctly points to subdirectory calendar pages
 - ✅ **FIXED**: Photo display paths corrected for new nested folder structure
 - ✅ **FIXED**: Calendar container height optimized to 208mm to ensure single-page output
 - ✅ **FIXED**: Removed calendar padding for cleaner layout and more photo space
@@ -46,6 +48,7 @@ This system generates professional A3 landscape photo calendars featuring:
   - **Print-ready** (CMYK, 300 DPI, PDF/X compliant): ~400MB total
   - **Web-optimized** (minimal file sizes): ~30MB total
 - **Complete build workflow** generates both formats in one command
+- **GitHub Pages compatibility** with calendar HTML files served from subdirectories
 - **Clean minimal design** optimized for A3 print production
 
 ---
@@ -661,8 +664,8 @@ python3 scripts/build_calendar.py --install-deps
 7. ✅ **Web-optimized PDF mode achieving ~30MB target**
 8. ✅ **Full internationalization with German and Spanish support**
 9. ✅ **Clean folder structure with organized output/2026/ hierarchy**
-10. ⏳ **Generate remaining months for 2026 calendar with multi-language support**
-10. ⏳ **Deploy optimized system to GitHub Pages with language detection**
+10. ✅ **GitHub Pages integration with correct subdirectory paths**
+11. ⏳ **Generate remaining months for 2026 calendar with multi-language support**
 
 ### Contact
 - **Project Repository**: This calendar system
