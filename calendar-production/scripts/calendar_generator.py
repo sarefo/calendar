@@ -214,7 +214,7 @@ class CalendarGenerator:
               font-size="12" fill="#666">World Map</text>
         """
 
-    def find_photo_for_date(self, target_date: date, photo_dirs: List[str], use_absolute_paths: bool = False) -> Optional[str]:
+    def find_photo_for_date(self, target_date: date, photo_dirs: List[str], use_absolute_paths: bool = False, web_optimized: bool = False) -> Optional[str]:
         """
         Find photo for a specific date from photo directories
         Uses order from photo_information.txt: first photo = day 1, second = day 2, etc.
@@ -223,6 +223,7 @@ class CalendarGenerator:
             target_date: The date to find a photo for
             photo_dirs: List of photo directories to search
             use_absolute_paths: If True, return absolute file:// URLs instead of relative paths
+            web_optimized: If True, prefer web thumbnails for faster loading
         """
         # Load photo information if not already loaded
         if not hasattr(self, '_photo_info'):
@@ -242,6 +243,15 @@ class CalendarGenerator:
                 # Find the actual file in photo directories
                 for photo_dir in photo_dirs:
                     photo_path = Path(photo_dir) / f"{filename}.jpg"
+                    
+                    # Check for web thumbnail if web_optimized is requested
+                    if web_optimized and not use_absolute_paths:
+                        web_photo_path = Path(photo_dir) / "web" / f"{filename}.jpg"
+                        if web_photo_path.exists():
+                            # Return relative path to web thumbnail
+                            return f"../../../../{web_photo_path}"
+                    
+                    # Fall back to original photo
                     if photo_path.exists():
                         if use_absolute_paths:
                             # Return absolute filesystem path for PDF conversion (not file:// URI)
@@ -269,6 +279,15 @@ class CalendarGenerator:
             
             if photo_index < len(jpg_files):
                 photo_file = jpg_files[photo_index]
+                
+                # Check for web thumbnail if web_optimized is requested
+                if web_optimized and not use_absolute_paths:
+                    web_photo_file = photo_path / "web" / photo_file.name
+                    if web_photo_file.exists():
+                        # Return relative path to web thumbnail
+                        return f"../../../../{web_photo_file}"
+                
+                # Fall back to original photo
                 if use_absolute_paths:
                     # Return absolute filesystem path for PDF conversion (not file:// URI)
                     return str(photo_file.resolve())
@@ -309,7 +328,7 @@ class CalendarGenerator:
         
         return None
     
-    def generate_month_data(self, year: int, month: int, location_data: Dict = None, photo_dirs: List[str] = None, use_absolute_paths: bool = False) -> Dict:
+    def generate_month_data(self, year: int, month: int, location_data: Dict = None, photo_dirs: List[str] = None, use_absolute_paths: bool = False, web_optimized: bool = False) -> Dict:
         """Generate all data needed for a month's calendar"""
         
         # Get calendar grid from week calculator
@@ -339,14 +358,14 @@ class CalendarGenerator:
                 
                 if current_month == month and current_year == year:
                     # Current month - use main photo directories
-                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], photo_dirs, use_absolute_paths)
+                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], photo_dirs, use_absolute_paths, web_optimized)
                 else:
                     # Previous/next month - look in respective directories
                     overflow_dirs = [
                         f"photos/{current_year}/{current_month:02d}",
                         f"photos/{current_year}/{current_month:02d}-processed"
                     ]
-                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths)
+                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths, web_optimized)
                 
                 # Don't add placeholder for empty days
         
@@ -378,11 +397,11 @@ class CalendarGenerator:
             f.write(html_content)
     
     def generate_calendar_page(self, year: int, month: int, location_data: Dict = None, 
-                             photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = False) -> str:
+                             photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = False, web_optimized: bool = True) -> str:
         """Generate a complete calendar page for one month"""
         
         # Generate calendar data
-        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths)
+        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths, web_optimized)
         
         # Render HTML
         html_content = self.render_calendar_html(calendar_data)
@@ -398,8 +417,8 @@ class CalendarGenerator:
                                       photo_dirs: List[str] = None, output_dir: str = "output", use_absolute_paths: bool = True) -> str:
         """Generate a calendar page specifically for PDF conversion with different filename"""
         
-        # Generate calendar data
-        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths)
+        # Generate calendar data (PDF should NEVER use web optimization - always full-size images)
+        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths, web_optimized=False)
         
         # Render HTML
         html_content = self.render_calendar_html(calendar_data)

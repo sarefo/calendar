@@ -36,12 +36,14 @@ try:
     from .qr_generator import QRGenerator
     from .world_map_generator import WorldMapGenerator
     from .html_to_pdf import HTMLToPDFConverter
+    from .image_optimizer import ImageOptimizer
 except ImportError:
     from calendar_generator import CalendarGenerator
     from update_landing_page import update_landing_page
     from qr_generator import QRGenerator
     from world_map_generator import WorldMapGenerator
     from html_to_pdf import HTMLToPDFConverter
+    from image_optimizer import ImageOptimizer
 
 class CalendarBuilder:
     def __init__(self, config_file: str = None, language: str = "en", base_output_dir: str = "output"):
@@ -57,6 +59,7 @@ class CalendarBuilder:
         self.calendar_gen.jinja_env.auto_reload = True
         self.qr_gen = QRGenerator()
         self.map_gen = WorldMapGenerator()
+        self.image_optimizer = ImageOptimizer(web_size=400, web_quality=75)
     
     def get_output_paths(self, year: int) -> dict:
         """Get organized output paths for a specific year and language"""
@@ -174,6 +177,13 @@ class CalendarBuilder:
                 f"{paths['maps_dir']}/map-{year}-{month:02d}.svg"
             )
             print(f"✅ Generated world map: {map_file}")
+            
+            # Generate web-optimized thumbnails for faster HTML loading
+            thumb_result = self.image_optimizer.optimize_month_photos(year, month)
+            if thumb_result["success"]:
+                print(f"✅ Generated {thumb_result['processed']} web thumbnails")
+            else:
+                print(f"⚠️  Web thumbnails: {thumb_result['reason']}")
             
             # Generate calendar HTML in language-specific directory
             # Clear template cache and reload template environment completely
