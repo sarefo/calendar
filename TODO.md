@@ -4,6 +4,7 @@
 + only need to crop at top and left/right
 + add crop mark to right side
 + do we really need a 400mb file to print at 300px resolution?
++ need to properly center the week numbers taking the 3mm bleed into account
 
 ## Landing page
 + "pick other date" problems:
