@@ -278,6 +278,24 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
         }
 
+        /* Image link styles - maintain same appearance as non-linked images */
+        .image-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .image-link:hover {
+            text-decoration: none;
+        }
+
+        .image-link:visited {
+            color: inherit;
+        }
+
 
         /* Screen/HTML view optimizations - fix header layout without affecting PDF */
         @media screen {
@@ -365,6 +383,16 @@
 
             .calendar-week-row {
                 height: 47.4mm !important; /* Use dynamic height calculation */
+            }
+
+            /* Ensure image links don't interfere with PDF layout */
+            .image-link {
+                display: block !important;
+                width: 100% !important;
+                height: 100% !important;
+                position: relative !important;
+                text-decoration: none !important;
+                color: inherit !important;
             }
         }
 
@@ -558,70 +586,98 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PC020040.jpg" alt="Photo for 2026-06-01" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">1</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/192817892" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PC020040.jpg" alt="Photo for 2026-06-01" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">1</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PC020004.jpg" alt="Photo for 2026-06-02" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">2</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/192817864" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PC020004.jpg" alt="Photo for 2026-06-02" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">2</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB010115.jpg" alt="Photo for 2026-06-03" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">3</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189639975" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB010115.jpg" alt="Photo for 2026-06-03" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">3</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB010074.jpg" alt="Photo for 2026-06-04" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">4</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189639961" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB010074.jpg" alt="Photo for 2026-06-04" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">4</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB100036.jpg" alt="Photo for 2026-06-05" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">5</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/190557650" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB100036.jpg" alt="Photo for 2026-06-05" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">5</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB280036.jpg" alt="Photo for 2026-06-06" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">6</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/192455178" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB280036.jpg" alt="Photo for 2026-06-06" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">6</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA230143.jpg" alt="Photo for 2026-06-07" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">7</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/188665960" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA230143.jpg" alt="Photo for 2026-06-07" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">7</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
@@ -632,70 +688,98 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB040113.jpg" alt="Photo for 2026-06-08" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">8</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189947853" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB040113.jpg" alt="Photo for 2026-06-08" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">8</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB170129.jpg" alt="Photo for 2026-06-09" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">9</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/191258289" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB170129.jpg" alt="Photo for 2026-06-09" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">9</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA190014.jpg" alt="Photo for 2026-06-10" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">10</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/188119194" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA190014.jpg" alt="Photo for 2026-06-10" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">10</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB010100.jpg" alt="Photo for 2026-06-11" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">11</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189639969" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB010100.jpg" alt="Photo for 2026-06-11" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">11</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB170072.jpg" alt="Photo for 2026-06-12" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">12</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/191258278" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB170072.jpg" alt="Photo for 2026-06-12" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">12</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB030393.jpg" alt="Photo for 2026-06-13" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">13</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189826361" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB030393.jpg" alt="Photo for 2026-06-13" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">13</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA230136.jpg" alt="Photo for 2026-06-14" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">14</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/188665954" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA230136.jpg" alt="Photo for 2026-06-14" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">14</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
@@ -706,70 +790,98 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PC030008.jpg" alt="Photo for 2026-06-15" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">15</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/192913951" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PC030008.jpg" alt="Photo for 2026-06-15" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">15</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA090375.jpg" alt="Photo for 2026-06-16" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">16</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186971791" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA090375.jpg" alt="Photo for 2026-06-16" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">16</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB070119.jpg" alt="Photo for 2026-06-17" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">17</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/190300739" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB070119.jpg" alt="Photo for 2026-06-17" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">17</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA090343.jpg" alt="Photo for 2026-06-18" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">18</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186971279" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA090343.jpg" alt="Photo for 2026-06-18" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">18</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA070005.jpg" alt="Photo for 2026-06-19" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">19</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186504535" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA070005.jpg" alt="Photo for 2026-06-19" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">19</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA090259.jpg" alt="Photo for 2026-06-20" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">20</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186971232" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA090259.jpg" alt="Photo for 2026-06-20" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">20</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA090044.jpg" alt="Photo for 2026-06-21" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">21</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186969065" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA090044.jpg" alt="Photo for 2026-06-21" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">21</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
@@ -780,70 +892,98 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PB040018.jpg" alt="Photo for 2026-06-22" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">22</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189947219" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PB040018.jpg" alt="Photo for 2026-06-22" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">22</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/sarefo.jpg" alt="Photo for 2026-06-23" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">23</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/6868059" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/sarefo.jpg" alt="Photo for 2026-06-23" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">23</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA090031.jpg" alt="Photo for 2026-06-24" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">24</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186969058" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA090031.jpg" alt="Photo for 2026-06-24" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">24</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA160250.jpg" alt="Photo for 2026-06-25" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">25</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/187767078" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA160250.jpg" alt="Photo for 2026-06-25" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">25</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA030251.jpg" alt="Photo for 2026-06-26" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">26</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186031076" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA030251.jpg" alt="Photo for 2026-06-26" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">26</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA100017.jpg" alt="Photo for 2026-06-27" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">27</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/186973214" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA100017.jpg" alt="Photo for 2026-06-27" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">27</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA230170.jpg" alt="Photo for 2026-06-28" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">28</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/188665976" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA230170.jpg" alt="Photo for 2026-06-28" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">28</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
@@ -854,70 +994,98 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA280131.jpg" alt="Photo for 2026-06-29" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">29</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/189217274" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA280131.jpg" alt="Photo for 2026-06-29" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">29</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/web/PA160269.jpg" alt="Photo for 2026-06-30" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">30</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/187767089" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/06/web/PA160269.jpg" alt="Photo for 2026-06-30" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">30</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/web/IMG_3912.jpg" alt="Photo for 2026-07-01" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">1</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/17855546" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/07/web/IMG_3912.jpg" alt="Photo for 2026-07-01" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">1</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/web/stack_02.jpg" alt="Photo for 2026-07-02" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">2</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/17808336" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/07/web/stack_02.jpg" alt="Photo for 2026-07-02" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">2</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/web/IMG_1320.jpg" alt="Photo for 2026-07-03" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">3</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/17808335" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/07/web/IMG_1320.jpg" alt="Photo for 2026-07-03" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">3</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/web/IMG_8259.jpg" alt="Photo for 2026-07-04" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">4</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/11635804" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/07/web/IMG_8259.jpg" alt="Photo for 2026-07-04" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">4</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/web/20220312.jpg" alt="Photo for 2026-07-05" class="day-image">
-                        <div class="day-overlay">
-                            <div class="day-number">5</div>
-                        </div>
+                            
+                            <a href="https://www.inaturalist.org/observations/108479020" target="_blank" rel="noopener noreferrer" class="image-link">
+                                <img src="../../../../photos/2026/07/web/20220312.jpg" alt="Photo for 2026-07-05" class="day-image">
+                                <div class="day-overlay">
+                                    <div class="day-number">5</div>
+                                </div>
+                            </a>
+                            
                         
                     </td>
                     

@@ -101,6 +101,21 @@ class CalendarGenerator:
         
         return photo_info
     
+    def _load_photo_observations(self) -> Dict[str, str]:
+        """Load photo observation data from ../data/photo-observations.json"""
+        observations_path = Path("../data/photo-observations.json")
+        
+        if not observations_path.exists():
+            print(f"Warning: Photo observations file not found: {observations_path}")
+            return {}
+            
+        try:
+            with open(observations_path, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"Warning: Could not load photo observations: {e}")
+            return {}
+    
     def _load_location_from_readme(self, year: int, month: int) -> Dict[str, str]:
         """Load location information from README.md in photo folder"""
         readme_path = Path(f"photos/{year}/{month:02d}/README.md")
@@ -342,6 +357,9 @@ class CalendarGenerator:
             "photographer_name": "Photographer"
         }
         
+        # Load photo observations for iNaturalist links
+        photo_observations = self._load_photo_observations()
+        
         # Default photo directories using new structure
         if not photo_dirs:
             photo_dirs = [
@@ -349,7 +367,7 @@ class CalendarGenerator:
                 f"photos/{year}/{month:02d}-processed"
             ]
         
-        # Add photo paths to each day
+        # Add photo paths and observation data to each day
         for week in grid_data['weeks']:
             for day_info in week['dates']:
                 # Determine which photo directory to use based on month
@@ -366,6 +384,13 @@ class CalendarGenerator:
                         f"photos/{current_year}/{current_month:02d}-processed"
                     ]
                     day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths, web_optimized)
+                
+                # Add iNaturalist observation ID if available
+                date_key = day_info['date'].strftime('%Y-%m-%d')
+                observation_id = photo_observations.get(date_key)
+                if observation_id and observation_id != "0":
+                    day_info['observation_id'] = observation_id
+                    day_info['inaturalist_url'] = f"https://www.inaturalist.org/observations/{observation_id}"
                 
                 # Don't add placeholder for empty days
         
