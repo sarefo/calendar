@@ -454,7 +454,9 @@ class HTMLToPDFConverter:
             print(f"Optimized {optimized_count} images for PDF generation")
         
         # Create temporary file with updated content
-        temp_file = html_path.parent / f"{html_path.stem}_{suffix}.html"
+        # Remove any existing _pdf suffix from stem to avoid duplication
+        clean_stem = html_path.stem.replace("_pdf", "")
+        temp_file = html_path.parent / f"{clean_stem}_{suffix}.html"
         temp_file.write_text(updated_content, encoding='utf-8')
         
         print(f"Created optimized HTML file: {temp_file}")

@@ -1,9 +1,11 @@
 ## General
 
 ## PDF version
-+ page now too high for A3
++ only need to crop at top and left/right
++ it's okay if the calendar ends up 3mm shorter than A3 on three sides
++ probably should extend green to the very edge
 + cut marks no longer showing (3mm bleed)
-+ leave space for top binding
++ add language code to pdf files
 
 ## Landing page
 + "pick other date" problems:
