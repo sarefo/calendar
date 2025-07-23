@@ -359,40 +359,24 @@
             background: #000;
         }
         
-        /* Top crop marks */
+        /* Top corner crop marks only - no bottom cropping needed */
         .crop-mark.top-left { top: 3mm; left: -2mm; }
-        .crop-mark.top-center { top: 3mm; left: calc(50% - 5mm); }
         .crop-mark.top-right { top: 3mm; right: -2mm; }
         
-        /* Left crop marks */
-        .crop-mark.left-top { left: 3mm; top: -2mm; }
-        .crop-mark.left-center { left: 3mm; top: calc(50% - 5mm); }
-        .crop-mark.left-bottom { left: 3mm; bottom: -2mm; }
-        
-        /* Right crop marks */
-        .crop-mark.right-top { right: 3mm; top: -2mm; }
-        .crop-mark.right-center { right: 3mm; top: calc(50% - 5mm); }
-        .crop-mark.right-bottom { right: 3mm; bottom: -2mm; }
+        /* Vertical marks for top corners */
+        .crop-mark.vertical.top-left { top: -2mm; left: 3mm; }
+        .crop-mark.vertical.top-right { top: -2mm; right: 3mm; }
     </style>
 </head>
 <body>
     <div class="calendar-page">
-        <!-- Crop marks for professional printing -->
+        <!-- Top corner crop marks for professional printing -->
         <div class="crop-marks">
-            <!-- Top crop marks -->
+            <!-- Top corners only - no bottom crop needed -->
             <div class="crop-mark horizontal top-left"></div>
-            <div class="crop-mark horizontal top-center"></div>
+            <div class="crop-mark vertical top-left"></div>
             <div class="crop-mark horizontal top-right"></div>
-            
-            <!-- Left crop marks -->
-            <div class="crop-mark vertical left-top"></div>
-            <div class="crop-mark vertical left-center"></div>
-            <div class="crop-mark vertical left-bottom"></div>
-            
-            <!-- Right crop marks -->
-            <div class="crop-mark vertical right-top"></div>
-            <div class="crop-mark vertical right-center"></div>
-            <div class="crop-mark vertical right-bottom"></div>
+            <div class="crop-mark vertical top-right"></div>
         </div>
         
         <!-- Header with title and world map -->
