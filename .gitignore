@@ -11,7 +11,8 @@ calendar-production/test_*.pdf
 # Generated calendar output - new clean structure
 # Exclude large PDF files but allow HTML files for GitHub Pages
 calendar-production/output/**/*.pdf
-calendar-production/output/*/assets/
+calendar-production/output/*/assets/qr/
+!calendar-production/output/*/assets/maps/
 calendar-production/output/build_report_*.json
 !calendar-production/output/.gitkeep
 
