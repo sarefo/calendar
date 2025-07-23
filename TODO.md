@@ -1,10 +1,8 @@
 ## General
 
 ## PDF version
-+ it's okay if the calendar ends up 3mm shorter than A3 on three sides
 + only need to crop at top and left/right
-+ probably should extend green to the very edge
-+ cut marks no longer showing (3mm bleed)
++ add crop mark to right side
 
 ## Landing page
 + "pick other date" problems:
