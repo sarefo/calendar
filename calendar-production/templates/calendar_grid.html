@@ -13,6 +13,14 @@
             bleed: 3mm;
         }
         
+        /* Reset browser defaults */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
         .calendar-page {
             width: 420mm;
             height: 297mm;
@@ -20,30 +28,30 @@
             background: white;
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            padding-bottom: 5mm; /* Ensure white margin at bottom */
+            padding-bottom: 5mm;
+            margin: 0;
+            padding: 0;
         }
         
         /* Header section with title, world map, QR code and branding */
-        /* Extended to top with bleed, content positioned for ring binding */
         .header {
-            height: 38mm; /* Total height including bleed and ring binding space */
+            height: 38mm;
             padding: 0;
-            /* Extend beyond page boundary for bleed */
-            margin-left: -3mm;
-            margin-right: -3mm;
-            margin-top: -3mm;
-            width: calc(100% + 6mm);
+            margin: 0;
+            width: 100vw; /* Use viewport width to ensure full width */
+            position: absolute;
+            top: 0;
+            left: 0;
             background: #74ac00;
             color: white;
-            position: relative;
         }
         
-        /* Content within header positioned down for ring binding */
+        /* Content within header positioned symmetrically */
         .header-content {
             position: absolute;
-            bottom: 3mm; /* Position content at bottom of header */
-            left: 13mm; /* Account for bleed + normal padding */
-            right: 13mm;
+            bottom: 3mm;
+            left: 13mm; /* 3mm (crop) + 10mm (content margin) */
+            right: 13mm; /* Same on both sides for symmetry */
             height: 25mm;
             display: flex;
             align-items: center;
@@ -148,8 +156,9 @@
         /* Photo dimensions: {{ layout.photo_width }}mm × {{ layout.photo_height }}mm */
         /* Optimized height to fit exactly in A3 with ring binding margin */
         .calendar-container {
-            height: 208mm; /* Further reduced to ensure single page with margin */
-            padding: 0 10mm 0 10mm; /* Clean layout, no top/bottom padding */
+            height: 208mm;
+            padding: 0 13mm 0 13mm;
+            margin-top: 38mm; /* Account for absolute positioned header */
             position: relative;
             overflow: visible;
         }
@@ -306,11 +315,12 @@
             }
         }
         
-        /* Crop marks for professional printing - hidden in HTML, visible in PDF */
+        /* Crop marks for professional printing - always visible */
         .crop-marks {
             position: absolute;
             pointer-events: none;
-            display: none; /* Hidden by default in HTML */
+            display: block; /* Always visible for crop guidance */
+            z-index: 1000;
         }
         
         .crop-mark {
@@ -328,35 +338,53 @@
             height: 5mm;
         }
         
-        /* Top-left crop marks */
-        .crop-mark.tl-h { top: -4mm; left: -2mm; }
-        .crop-mark.tl-v { top: -4mm; left: -2mm; }
+        /* Crop marks positioned AT the crop lines (3mm from edges) */
+        .crop-mark.horizontal {
+            height: 0.5px;
+            width: 10mm;
+            background: #000;
+        }
         
-        /* Top-right crop marks */
-        .crop-mark.tr-h { top: -4mm; right: -2mm; }
-        .crop-mark.tr-v { top: -4mm; right: -2mm; }
+        .crop-mark.vertical {
+            width: 0.5px;
+            height: 10mm;
+            background: #000;
+        }
         
-        /* Bottom-left crop marks */
-        .crop-mark.bl-h { bottom: -4mm; left: -2mm; }
-        .crop-mark.bl-v { bottom: -4mm; left: -2mm; }
+        /* Top crop marks */
+        .crop-mark.top-left { top: 3mm; left: -2mm; }
+        .crop-mark.top-center { top: 3mm; left: calc(50% - 5mm); }
+        .crop-mark.top-right { top: 3mm; right: -2mm; }
         
-        /* Bottom-right crop marks */
-        .crop-mark.br-h { bottom: -4mm; right: -2mm; }
-        .crop-mark.br-v { bottom: -4mm; right: -2mm; }
+        /* Left crop marks */
+        .crop-mark.left-top { left: 3mm; top: -2mm; }
+        .crop-mark.left-center { left: 3mm; top: calc(50% - 5mm); }
+        .crop-mark.left-bottom { left: 3mm; bottom: -2mm; }
+        
+        /* Right crop marks */
+        .crop-mark.right-top { right: 3mm; top: -2mm; }
+        .crop-mark.right-center { right: 3mm; top: calc(50% - 5mm); }
+        .crop-mark.right-bottom { right: 3mm; bottom: -2mm; }
     </style>
 </head>
 <body>
     <div class="calendar-page">
         <!-- Crop marks for professional printing -->
         <div class="crop-marks">
-            <div class="crop-mark horizontal tl-h"></div>
-            <div class="crop-mark vertical tl-v"></div>
-            <div class="crop-mark horizontal tr-h"></div>
-            <div class="crop-mark vertical tr-v"></div>
-            <div class="crop-mark horizontal bl-h"></div>
-            <div class="crop-mark vertical bl-v"></div>
-            <div class="crop-mark horizontal br-h"></div>
-            <div class="crop-mark vertical br-v"></div>
+            <!-- Top crop marks -->
+            <div class="crop-mark horizontal top-left"></div>
+            <div class="crop-mark horizontal top-center"></div>
+            <div class="crop-mark horizontal top-right"></div>
+            
+            <!-- Left crop marks -->
+            <div class="crop-mark vertical left-top"></div>
+            <div class="crop-mark vertical left-center"></div>
+            <div class="crop-mark vertical left-bottom"></div>
+            
+            <!-- Right crop marks -->
+            <div class="crop-mark vertical right-top"></div>
+            <div class="crop-mark vertical right-center"></div>
+            <div class="crop-mark vertical right-bottom"></div>
         </div>
         
         <!-- Header with title and world map -->
