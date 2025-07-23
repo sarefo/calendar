@@ -3,6 +3,7 @@
 ## PDF version
 + only need to crop at top and left/right
 + add crop mark to right side
++ do we really need a 400mb file to print at 300px resolution?
 
 ## Landing page
 + "pick other date" problems:

@@ -1,0 +1,24 @@
+{
+  "year": 2026,
+  "successful_months": [
+    1,
+    3
+  ],
+  "failed_months": [],
+  "generated_files": [
+    "output/2026/en/html/202601.html",
+    "output/2026/en/pdf/print/portioid_calendar_202601_en_print.pdf",
+    "output/2026/en/assets/qr/qr-2026-01.png",
+    "output/2026/en/assets/maps/map-2026-01.svg",
+    "output/2026/en/html/202603.html",
+    "output/2026/en/pdf/print/portioid_calendar_202603_en_print.pdf",
+    "output/2026/en/assets/qr/qr-2026-03.png",
+    "output/2026/en/assets/maps/map-2026-03.svg"
+  ],
+  "print_package": "output/print-package-2026",
+  "build_info": {
+    "timestamp": "2025-07-23T00:14:01.974036",
+    "config_file": "data/calendar_config.json",
+    "total_files": 8
+  }
+}

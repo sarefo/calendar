@@ -167,7 +167,7 @@
             width: 100%;
             height: 100%; /* Back to full height of container */
             border-collapse: separate;
-            border-spacing: 2mm;
+            border-spacing: {% if layout.rows_needed == 6 %}1.6mm{% else %}2mm{% endif %}; /* Less spacing for 6-row months */
         }
         
         .week-number-overlay {
