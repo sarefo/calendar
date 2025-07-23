@@ -24,6 +24,7 @@
 - ✅ **FIXED**: Calendar container height optimized to 208mm to ensure single-page output
 - ✅ **FIXED**: Removed calendar padding for cleaner layout and more photo space
 - ✅ **FIXED**: Crop marks only show in PDF, hidden in HTML preview
+- ✅ **FIXED**: QR code processing - excluded from smart cropping, maintains square aspect ratio, saved as PNG
 - ✅ Implemented complete build workflow (--complete option)
 - ✅ Added dual-format PDF support (print and web compression modes)
 - ✅ Enhanced PDF binding with separate print and web versions

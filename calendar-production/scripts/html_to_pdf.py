@@ -382,8 +382,8 @@ class HTMLToPDFConverter:
             quality = 45    # Lower quality for minimum file size
             print(f"Creating WEB-OPTIMIZED HTML for minimal file size...")
         else:
-            max_size = 800  # Larger for print quality
-            quality = 85    # Higher quality for print
+            max_size = 800   # Max dimension for smart cropping (will be resized to 650px width)
+            quality = 85     # High quality for print
             print(f"Creating PRINT-OPTIMIZED HTML for PDF conversion...")
         
         def optimize_and_replace_image(match):
@@ -413,17 +413,70 @@ class HTMLToPDFConverter:
                     optimized_name = f"{prefix}{source_path.name}"
                     optimized_path = temp_dir / optimized_name
                     
-                    # Resize image based on mode
+                    # Check if this is a QR code (by filename pattern or directory)
+                    is_qr_code = ('qr-' in source_path.name.lower() or 
+                                  '/qr/' in str(source_path).lower() or
+                                  'qr_' in source_path.name.lower())
+                    
+                    # Process image
                     with Image.open(source_path) as img:
                         # Convert to RGB if needed
                         if img.mode not in ['RGB', 'L']:
                             img = img.convert('RGB')
                         
-                        # Resize maintaining aspect ratio
-                        img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
-                        
-                        # Save with quality optimization
-                        img.save(optimized_path, 'JPEG', quality=quality, optimize=True)
+                        if is_qr_code:
+                            # QR codes: NO CROPPING - just resize to maintain square aspect ratio
+                            # QR codes must remain square to be scannable
+                            if not web_mode:
+                                # For print: resize QR codes to reasonable size (keep quality high)
+                                target_size = min(300, max_size)  # Keep QR codes reasonably sized
+                                img = img.resize((target_size, target_size), Image.Resampling.LANCZOS)
+                                print(f"PRINT QR: {source_path.name} -> {optimized_name} (no cropping, PNG format)")
+                            else:
+                                # Web mode: smaller QR codes
+                                target_size = min(150, max_size)
+                                img = img.resize((target_size, target_size), Image.Resampling.LANCZOS)
+                                print(f"WEB QR: {source_path.name} -> {optimized_name} (no cropping, PNG format)")
+                            
+                            # Save QR codes as PNG to preserve crisp edges (JPEG would blur them)
+                            optimized_name = optimized_name.replace('.jpg', '.png').replace('.jpeg', '.png')
+                            if not optimized_name.endswith('.png'):
+                                optimized_name = optimized_name.rsplit('.', 1)[0] + '.png'
+                            optimized_path = temp_dir / optimized_name
+                            img.save(optimized_path, 'PNG', optimize=True)
+                        else:
+                            # Regular photos: Apply smart cropping for calendar cells
+                            # Calendar cells are ~1.27:1 for 5-row months (54mm:42.4mm)
+                            # and ~1.56:1 for 6-row months (54mm:34.7mm)
+                            # Use 1.27:1 as it's most common and provides good crop for both
+                            target_aspect = 1.27  # width/height ratio
+                            
+                            width, height = img.size
+                            current_aspect = width / height
+                            
+                            if current_aspect > target_aspect:
+                                # Image is wider than target - crop width (center crop)
+                                new_width = int(height * target_aspect)
+                                left = (width - new_width) // 2
+                                img = img.crop((left, 0, left + new_width, height))
+                            elif current_aspect < target_aspect:
+                                # Image is taller than target - crop height (center crop)
+                                new_height = int(width / target_aspect)
+                                top = (height - new_height) // 2
+                                img = img.crop((0, top, width, top + new_height))
+                            
+                            # Now resize the cropped image to target dimensions
+                            # For print: aim for ~650px width (300 DPI at 55mm print width)
+                            if not web_mode:
+                                target_width = min(650, max_size)
+                                target_height = int(target_width / target_aspect)
+                                img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
+                            else:
+                                # Web mode: smaller dimensions
+                                img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+                            
+                            # Save regular photos as JPEG with quality optimization
+                            img.save(optimized_path, 'JPEG', quality=quality, optimize=True)
                     
                     optimized_count += 1
                     
@@ -433,7 +486,11 @@ class HTMLToPDFConverter:
                         mode_label = "WEB"
                     else:
                         mode_label = "PRINT"
-                    print(f"  {mode_label}: {source_path.name} -> {relative_path}")
+                    
+                    if is_qr_code:
+                        print(f"  {mode_label} QR: {source_path.name} -> {relative_path} (no cropping, PNG format)")
+                    else:
+                        print(f"  {mode_label}: {source_path.name} -> {relative_path}")
                     return f'src="{relative_path}"'
                     
                 except Exception as e:
