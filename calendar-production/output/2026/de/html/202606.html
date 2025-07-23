@@ -40,8 +40,8 @@
             height: 38mm;
             padding: 0;
             margin: 0;
-            width: 100vw;
-            /* Use viewport width to ensure full width */
+            width: 420mm;
+            /* Match calendar page width for proper alignment */
             position: absolute;
             top: 0;
             left: 0;
@@ -279,6 +279,21 @@
         }
 
 
+        /* Screen/HTML view optimizations - fix header layout without affecting PDF */
+        @media screen {
+            .header {
+                width: 420mm;
+                /* Ensure header matches calendar page width */
+                position: relative;
+                /* Change from absolute to relative for HTML view */
+            }
+            
+            .calendar-container {
+                margin-top: 0;
+                /* Remove top margin since header is now relative */
+            }
+        }
+
         /* Print optimizations */
         @media print {
             * {
@@ -333,6 +348,14 @@
             .header {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+                position: absolute !important;
+                /* Ensure absolute positioning for PDF */
+                width: 420mm !important;
+            }
+            
+            .calendar-container {
+                margin-top: 38mm !important;
+                /* Restore top margin for PDF */
             }
 
             .calendar-day {
@@ -535,7 +558,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PC020040.jpg" alt="Photo for 2026-06-01" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PC020040.jpg" alt="Photo for 2026-06-01" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">1</div>
                         </div>
@@ -545,7 +568,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PC020004.jpg" alt="Photo for 2026-06-02" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PC020004.jpg" alt="Photo for 2026-06-02" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">2</div>
                         </div>
@@ -555,7 +578,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB010115.jpg" alt="Photo for 2026-06-03" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB010115.jpg" alt="Photo for 2026-06-03" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">3</div>
                         </div>
@@ -565,7 +588,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB010074.jpg" alt="Photo for 2026-06-04" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB010074.jpg" alt="Photo for 2026-06-04" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">4</div>
                         </div>
@@ -575,7 +598,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB100036.jpg" alt="Photo for 2026-06-05" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB100036.jpg" alt="Photo for 2026-06-05" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">5</div>
                         </div>
@@ -585,7 +608,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB280036.jpg" alt="Photo for 2026-06-06" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB280036.jpg" alt="Photo for 2026-06-06" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">6</div>
                         </div>
@@ -595,7 +618,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA230143.jpg" alt="Photo for 2026-06-07" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA230143.jpg" alt="Photo for 2026-06-07" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">7</div>
                         </div>
@@ -609,7 +632,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB040113.jpg" alt="Photo for 2026-06-08" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB040113.jpg" alt="Photo for 2026-06-08" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">8</div>
                         </div>
@@ -619,7 +642,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB170129.jpg" alt="Photo for 2026-06-09" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB170129.jpg" alt="Photo for 2026-06-09" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">9</div>
                         </div>
@@ -629,7 +652,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA190014.jpg" alt="Photo for 2026-06-10" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA190014.jpg" alt="Photo for 2026-06-10" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">10</div>
                         </div>
@@ -639,7 +662,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB010100.jpg" alt="Photo for 2026-06-11" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB010100.jpg" alt="Photo for 2026-06-11" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">11</div>
                         </div>
@@ -649,7 +672,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB170072.jpg" alt="Photo for 2026-06-12" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB170072.jpg" alt="Photo for 2026-06-12" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">12</div>
                         </div>
@@ -659,7 +682,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB030393.jpg" alt="Photo for 2026-06-13" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB030393.jpg" alt="Photo for 2026-06-13" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">13</div>
                         </div>
@@ -669,7 +692,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA230136.jpg" alt="Photo for 2026-06-14" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA230136.jpg" alt="Photo for 2026-06-14" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">14</div>
                         </div>
@@ -683,7 +706,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PC030008.jpg" alt="Photo for 2026-06-15" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PC030008.jpg" alt="Photo for 2026-06-15" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">15</div>
                         </div>
@@ -693,7 +716,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA090375.jpg" alt="Photo for 2026-06-16" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA090375.jpg" alt="Photo for 2026-06-16" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">16</div>
                         </div>
@@ -703,7 +726,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB070119.jpg" alt="Photo for 2026-06-17" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB070119.jpg" alt="Photo for 2026-06-17" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">17</div>
                         </div>
@@ -713,7 +736,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA090343.jpg" alt="Photo for 2026-06-18" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA090343.jpg" alt="Photo for 2026-06-18" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">18</div>
                         </div>
@@ -723,7 +746,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA070005.jpg" alt="Photo for 2026-06-19" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA070005.jpg" alt="Photo for 2026-06-19" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">19</div>
                         </div>
@@ -733,7 +756,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA090259.jpg" alt="Photo for 2026-06-20" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA090259.jpg" alt="Photo for 2026-06-20" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">20</div>
                         </div>
@@ -743,7 +766,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA090044.jpg" alt="Photo for 2026-06-21" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA090044.jpg" alt="Photo for 2026-06-21" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">21</div>
                         </div>
@@ -757,7 +780,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PB040018.jpg" alt="Photo for 2026-06-22" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PB040018.jpg" alt="Photo for 2026-06-22" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">22</div>
                         </div>
@@ -767,7 +790,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/sarefo.jpg" alt="Photo for 2026-06-23" class="day-image">
+                        <img src="../../../../photos/2026/06/web/sarefo.jpg" alt="Photo for 2026-06-23" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">23</div>
                         </div>
@@ -777,7 +800,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA090031.jpg" alt="Photo for 2026-06-24" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA090031.jpg" alt="Photo for 2026-06-24" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">24</div>
                         </div>
@@ -787,7 +810,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA160250.jpg" alt="Photo for 2026-06-25" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA160250.jpg" alt="Photo for 2026-06-25" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">25</div>
                         </div>
@@ -797,7 +820,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA030251.jpg" alt="Photo for 2026-06-26" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA030251.jpg" alt="Photo for 2026-06-26" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">26</div>
                         </div>
@@ -807,7 +830,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA100017.jpg" alt="Photo for 2026-06-27" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA100017.jpg" alt="Photo for 2026-06-27" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">27</div>
                         </div>
@@ -817,7 +840,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA230170.jpg" alt="Photo for 2026-06-28" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA230170.jpg" alt="Photo for 2026-06-28" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">28</div>
                         </div>
@@ -831,7 +854,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA280131.jpg" alt="Photo for 2026-06-29" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA280131.jpg" alt="Photo for 2026-06-29" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">29</div>
                         </div>
@@ -841,7 +864,7 @@
                     <td
                         class="calendar-day ">
                         
-                        <img src="../../../../photos/2026/06/PA160269.jpg" alt="Photo for 2026-06-30" class="day-image">
+                        <img src="../../../../photos/2026/06/web/PA160269.jpg" alt="Photo for 2026-06-30" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">30</div>
                         </div>
@@ -851,7 +874,7 @@
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/IMG_3912.jpg" alt="Photo for 2026-07-01" class="day-image">
+                        <img src="../../../../photos/2026/07/web/IMG_3912.jpg" alt="Photo for 2026-07-01" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">1</div>
                         </div>
@@ -861,7 +884,7 @@
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/stack_02.jpg" alt="Photo for 2026-07-02" class="day-image">
+                        <img src="../../../../photos/2026/07/web/stack_02.jpg" alt="Photo for 2026-07-02" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">2</div>
                         </div>
@@ -871,7 +894,7 @@
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/IMG_1320.jpg" alt="Photo for 2026-07-03" class="day-image">
+                        <img src="../../../../photos/2026/07/web/IMG_1320.jpg" alt="Photo for 2026-07-03" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">3</div>
                         </div>
@@ -881,7 +904,7 @@
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/IMG_8259.jpg" alt="Photo for 2026-07-04" class="day-image">
+                        <img src="../../../../photos/2026/07/web/IMG_8259.jpg" alt="Photo for 2026-07-04" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">4</div>
                         </div>
@@ -891,7 +914,7 @@
                     <td
                         class="calendar-day next-month">
                         
-                        <img src="../../../../photos/2026/07/20220312.jpg" alt="Photo for 2026-07-05" class="day-image">
+                        <img src="../../../../photos/2026/07/web/20220312.jpg" alt="Photo for 2026-07-05" class="day-image">
                         <div class="day-overlay">
                             <div class="day-number">5</div>
                         </div>

@@ -41,18 +41,15 @@
             font-size: 1.1em;
         }
 
-        .date-display {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 30px;
-            margin: 30px 0;
-            border: 2px solid #e9ecef;
+        .date-section {
+            margin: 20px 0;
         }
 
-        .date-display h2 {
+        .date-section h2 {
             color: #2C3E50;
             margin-bottom: 20px;
             font-size: 1.8em;
+            text-align: center;
         }
 
         .current-date {
@@ -83,7 +80,7 @@
         }
 
         .pick-date-btn {
-            background: #6c757d;
+            background: linear-gradient(135deg, #74ac00, #8bc34a);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -92,16 +89,17 @@
             font-size: 1em;
             font-weight: 500;
             transition: all 0.2s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .pick-date-btn:hover {
-            background: #5a6268;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(116, 172, 0, 0.4);
         }
 
         .date-input {
             position: absolute;
-            left: -9999px;  
+            left: -9999px;
             width: 1px;
             height: 1px;
             opacity: 0;
@@ -109,8 +107,7 @@
         }
 
         .calendar-section {
-            margin-top: 40px;
-            padding-top: 30px;
+            margin-top: 30px;
             border-top: 2px solid #e9ecef;
         }
 
@@ -173,18 +170,85 @@
         }
 
         @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
             .container {
-                padding: 20px;
-                margin: 10px;
+                padding: 15px;
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 2em;
+                margin-bottom: 5px;
+            }
+
+            .subtitle {
+                margin-bottom: 20px;
+                font-size: 1em;
+            }
+
+            .date-section {
+                margin: 10px 0;
+            }
+
+            .date-section h2 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+
+            .current-date {
+                font-size: 1.4em;
+                padding: 15px;
+                margin-bottom: 10px;
+            }
+
+            .date-help {
+                font-size: 0.8em;
+                margin-bottom: 10px;
+            }
+
+            .pick-date-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .calendar-section {
+                margin-top: 15px;
+                padding-top: 10px;
+            }
+
+            .calendar-section h3 {
+                font-size: 1.2em;
+                margin-bottom: 15px;
             }
 
             .calendar-grid {
                 flex-direction: column;
-                gap: 15px;
+                gap: 10px;
+            }
+
+            .year-label {
+                font-size: 1.4em;
+                padding: 10px 20px;
             }
 
             .months-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                padding: 15px;
+            }
+
+            .month-link {
+                padding: 10px 6px;
+                font-size: 0.9em;
+            }
+
+            .footer {
+                margin-top: 20px;
+                font-size: 0.8em;
+                line-height: 1.3;
             }
         }
     </style>
@@ -195,9 +259,10 @@
         <h1>Macro Calendar</h1>
         <p class="subtitle">A daily journey through macro photography from around the world</p>
 
-        <div class="date-display">
+        <div class="date-section">
             <h2>What's on the photo?</h2>
-            <div class="current-date" id="currentDateDisplay" title="Click to view this photo's observation on iNaturalist">
+            <div class="current-date" id="currentDateDisplay"
+                title="Click to view this photo's observation on iNaturalist">
                 <!-- Date will be set by JavaScript -->
             </div>
             <div class="date-help">
@@ -211,19 +276,8 @@
             <h3>View Calendar Pages</h3>
             <div class="calendar-grid">
                 <div class="year-label">2026</div>
-                <div class="months-grid">
-                    <a href="calendar-production/output/2026/en/html/202601.html" class="month-link">1</a>
-                    <a href="calendar-production/output/2026/en/html/202602.html" class="month-link">2</a>
-                    <a href="calendar-production/output/2026/en/html/202603.html" class="month-link">3</a>
-                    <a href="calendar-production/output/2026/en/html/202604.html" class="month-link">4</a>
-                    <a href="calendar-production/output/2026/en/html/202605.html" class="month-link">5</a>
-                    <a href="calendar-production/output/2026/en/html/202606.html" class="month-link">6</a>
-                    <a href="calendar-production/output/2026/en/html/202607.html" class="month-link">7</a>
-                    <a href="calendar-production/output/2026/en/html/202608.html" class="month-link">8</a>
-                    <a href="calendar-production/output/2026/en/html/202609.html" class="month-link">9</a>
-                    <a href="calendar-production/output/2026/en/html/202610.html" class="month-link">10</a>
-                    <a href="calendar-production/output/2026/en/html/202611.html" class="month-link">11</a>
-                    <a href="calendar-production/output/2026/en/html/202612.html" class="month-link">12</a>
+                <div class="months-grid" id="monthsGrid">
+                    <!-- Month links will be populated by JavaScript based on language -->
                 </div>
             </div>
         </div>
@@ -249,6 +303,7 @@
                 pickDateBtn: "Pick Other Date",
                 viewCalendar: "View Calendar Pages",
                 footerText: "Explore the beauty of macro photography through our A3 landscape calendar featuring daily photos from locations around the world.<br>All photos by",
+                onINaturalist: "on iNaturalist.",
                 noObservation: "No observation available for this date yet. Photos for this date may not be added to the calendar.",
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
             },
@@ -260,6 +315,7 @@
                 pickDateBtn: "Anderes Datum wählen",
                 viewCalendar: "Kalenderseiten ansehen",
                 footerText: "Entdecken Sie die Schönheit der Makrofotografie mit unserem A3-Querformat-Kalender mit täglich neuen Fotos aus aller Welt.<br>Alle Fotos von",
+                onINaturalist: "auf iNaturalist.",
                 noObservation: "Für dieses Datum ist noch keine Beobachtung verfügbar. Fotos für dieses Datum wurden möglicherweise noch nicht zum Kalender hinzugefügt.",
                 months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
             },
@@ -271,13 +327,14 @@
                 pickDateBtn: "Elegir otra fecha",
                 viewCalendar: "Ver páginas del calendario",
                 footerText: "Explora la belleza de la fotografía macro con nuestro calendario A3 horizontal con fotos diarias de ubicaciones de todo el mundo.<br>Todas las fotos por",
+                onINaturalist: "en iNaturalist.",
                 noObservation: "Aún no hay observación disponible para esta fecha. Es posible que las fotos de esta fecha no se hayan agregado al calendario.",
                 months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
             }
         };
-        
+
         let currentLanguage = 'en';
-        
+
         // Photo observation data mapping
         const photoObservations = {
             // December 2025
@@ -324,59 +381,79 @@
         const todayInput = document.getElementById('todayDate');
         const currentDateDisplay = document.getElementById('currentDateDisplay');
         const pickDateBtn = document.getElementById('pickDateBtn');
-        
+
         let currentDate = new Date();
-        
+
         // Update UI language
         function updateLanguage(language) {
             currentLanguage = language;
             document.documentElement.lang = language;
-            
+
             const t = translations[language] || translations.en;
-            
+
             // Update text content
             document.querySelector('h1').textContent = t.title;
             document.querySelector('.subtitle').textContent = t.subtitle;
-            document.querySelector('.date-display h2').textContent = t.dateQuestion;
+            document.querySelector('.date-section h2').textContent = t.dateQuestion;
             document.querySelector('.date-help').textContent = t.dateHelp;
             document.getElementById('pickDateBtn').textContent = t.pickDateBtn;
             document.querySelector('.calendar-section h3').textContent = t.viewCalendar;
-            document.querySelector('.footer').innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> on iNaturalist.';
-            
+            document.querySelector('.footer').innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> ' + t.onINaturalist;
+
+            // Update calendar month links
+            updateMonthLinks(language);
+
             // Update date display
             updateDateDisplay(currentDate);
         }
-        
+
+        // Update month links based on language
+        function updateMonthLinks(language) {
+            const monthsGrid = document.getElementById('monthsGrid');
+            monthsGrid.innerHTML = '';
+
+            // Generate month links for the specified language
+            for (let month = 1; month <= 12; month++) {
+                const monthStr = month.toString().padStart(2, '0');
+                const yearMonth = `2026${monthStr}`;
+                const link = document.createElement('a');
+                link.href = `calendar-production/output/2026/${language}/html/${yearMonth}.html`;
+                link.className = 'month-link';
+                link.textContent = month.toString();
+                monthsGrid.appendChild(link);
+            }
+        }
+
         // Format date for display
         function formatDateForDisplay(date) {
             const t = translations[currentLanguage] || translations.en;
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             };
-            
+
             // Use appropriate locale for date formatting
             let locale = 'en-US';
             if (currentLanguage === 'de') locale = 'de-DE';
             else if (currentLanguage === 'es') locale = 'es-ES';
-            
+
             return date.toLocaleDateString(locale, options);
         }
-        
+
         // Format date for observation lookup (YYYY-MM-DD)
         function formatDateForLookup(date) {
             return date.toISOString().split('T')[0];
         }
-        
+
         // Update the displayed date
         function updateDateDisplay(date) {
             currentDate = date;
             currentDateDisplay.textContent = formatDateForDisplay(date);
             todayInput.valueAsDate = date;
         }
-        
+
         // Open observation for current date
         function openCurrentObservation() {
             const dateString = formatDateForLookup(currentDate);
@@ -390,38 +467,38 @@
                 alert(t.noObservation);
             }
         }
-        
+
         // Check for hash parameter like #202601 or #20260115 or #202601&lang=de
         function setDateFromHash() {
             const hash = window.location.hash.substring(1); // Remove #
-            
+
             // Parse hash to extract date and language parameters
             let dateString = hash;
             let language = 'en';
-            
+
             if (hash.includes('&lang=')) {
                 const parts = hash.split('&lang=');
                 dateString = parts[0];
                 language = parts[1];
-                
+
                 // Validate language and update UI
                 if (['en', 'de', 'es'].includes(language)) {
                     updateLanguage(language);
                 }
             }
-            
+
             // Check for YYYYMMDD format (8 digits)
             if (dateString && dateString.match(/^\d{8}$/)) {
                 // Parse YYYYMMDD format
                 const year = parseInt(dateString.substring(0, 4));
                 const month = parseInt(dateString.substring(4, 6));
                 const day = parseInt(dateString.substring(6, 8));
-                
+
                 if (year >= 2000 && year <= 3000 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
                     const targetDate = new Date(year, month - 1, day);
                     // Verify the date is valid (handles leap years and month lengths)
-                    if (targetDate.getFullYear() === year && 
-                        targetDate.getMonth() === month - 1 && 
+                    if (targetDate.getFullYear() === year &&
+                        targetDate.getMonth() === month - 1 &&
                         targetDate.getDate() === day) {
                         updateDateDisplay(targetDate);
                         return true;
@@ -433,13 +510,13 @@
                 // Parse YYYYMM format
                 const year = parseInt(dateString.substring(0, 4));
                 const month = parseInt(dateString.substring(4, 6));
-                
+
                 if (year >= 2000 && year <= 3000 && month >= 1 && month <= 12) {
                     // Check if current date is within that month
                     const now = new Date();
                     const currentYear = now.getFullYear();
                     const currentMonth = now.getMonth() + 1;
-                    
+
                     let targetDate;
                     if (currentYear === year && currentMonth === month) {
                         // Use current date if we're in the target month
@@ -448,33 +525,36 @@
                         // Use first day of the target month
                         targetDate = new Date(year, month - 1, 1);
                     }
-                    
+
                     updateDateDisplay(targetDate);
                     return true;
                 }
             }
             return false;
         }
-        
-        // Initialize date
+
+        // Initialize date and language
         if (!setDateFromHash()) {
             updateDateDisplay(new Date());
         }
-        
+
+        // Initialize month links with default language
+        updateMonthLinks(currentLanguage);
+
         // Listen for hash changes
         window.addEventListener('hashchange', setDateFromHash);
-        
+
         // Event listeners
         currentDateDisplay.addEventListener('click', openCurrentObservation);
-        
+
         let isDatePickerOpen = false;
-        
-        pickDateBtn.addEventListener('click', function() {
+
+        pickDateBtn.addEventListener('click', function () {
             // Prevent multiple rapid clicks
             if (isDatePickerOpen) return;
-            
+
             isDatePickerOpen = true;
-            
+
             // Temporarily make input focusable but still invisible
             todayInput.style.position = 'fixed';
             todayInput.style.left = '50%';
@@ -483,7 +563,7 @@
             todayInput.style.opacity = '0';
             todayInput.style.pointerEvents = 'none';
             todayInput.style.zIndex = '1000';
-            
+
             // Focus and open picker
             setTimeout(() => {
                 todayInput.focus();
@@ -492,7 +572,7 @@
                 }
             }, 10);
         });
-        
+
         // Function to reset the picker state and hide input
         function resetDatePickerState() {
             // Return input to completely hidden state
@@ -502,12 +582,12 @@
             todayInput.style.transform = 'none';
             todayInput.style.opacity = '0';
             todayInput.style.zIndex = '-1';
-            
+
             isDatePickerOpen = false;
         }
-        
+
         // Handle date selection
-        todayInput.addEventListener('change', function() {
+        todayInput.addEventListener('change', function () {
             const selectedDate = this.valueAsDate;
             if (selectedDate) {
                 updateDateDisplay(selectedDate);
@@ -515,9 +595,9 @@
                 openCurrentObservation();
             }
         });
-        
+
         // Reset picker state when user clicks away or cancels
-        todayInput.addEventListener('blur', function() {
+        todayInput.addEventListener('blur', function () {
             if (isDatePickerOpen) {
                 setTimeout(() => {
                     // Double-check that the date picker should still be closed
