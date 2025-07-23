@@ -9,6 +9,7 @@
 
 ## PDF version
 + make sure spiral binding does not ruin title elements
++ consider embedding fonts for print shops
 
 ## Landing page
 + improve page layout (laptop/mobile)
@@ -22,16 +23,13 @@
 + remove crop marks and bleed
 + able to navigate to next/previous month
 
-## Perpetual calendar ✅ COMPLETED
-+ ✅ consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
-+ ✅ perpetual calendar (no weekdays or week numbers) - implemented with day-only layout
-+ ✅ scrap previous/next month overflow - perpetual uses simple consecutive day layout
-+ ✅ save under folder "perpetual" instead of year - output/perpetual/ structure implemented
-+ ✅ multi-language support - German and Spanish QR codes with language-specific URLs
-+ ✅ add 0229 - February 29th support implemented with photo from 2026 collection
-+ ✅ **ENHANCED**: Dynamic grid system - 6x5 for short months, 7x5 for long months
-+ ✅ **ENHANCED**: Wider photos in 6-column layout (63mm vs 54mm width)
-+ ✅ **ENHANCED**: Complete CLAUDE.md documentation with usage examples
+## Perpetual calendar
++ consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
++ don't show empty frames for photo places after last day
++ improve layout:
+  + left/right page margin same for all months
+  + slightly more margin on top
+  + left/right margins to align with month name and qr-section
 
 ## Sunday-first calendar option
 + add --sunday-first option to build_calendar.py

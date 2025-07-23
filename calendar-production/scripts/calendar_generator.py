@@ -443,17 +443,18 @@ class CalendarGenerator:
         localization = LocalizationManager(default_language=self.language)
         month_name = localization.get_month_name(month)
         
-        # Dynamic layout based on month length
+        # Dynamic layout based on month length - OPTIMIZED FOR PERPETUAL CALENDARS
+        # Expanded dimensions to better utilize available space without weekday headers/week numbers
         if days_in_month == 31:
-            # 7x5 grid for 31-day months
-            photo_width = 54  # Same as regular calendar
-            photo_height = 42.4  # 5-row height
-            row_height = 46.4
+            # 7x5 grid for 31-day months - optimized spacing
+            photo_width = 55.9  # Expanded from 54mm (+1.9mm)
+            photo_height = 47.3  # Expanded from 42.4mm (+4.9mm)  
+            row_height = 49.8   # Expanded from 46.4mm to accommodate larger photos
         else:
-            # 6x5 grid for shorter months - wider photos
-            photo_width = 63  # Wider photos for 6-column grid
-            photo_height = 42.4  # Same height
-            row_height = 46.4
+            # 6x5 grid for shorter months - wider photos with optimized spacing
+            photo_width = 65.4  # Expanded from 63mm (+2.4mm)
+            photo_height = 47.3  # Expanded from 42.4mm (+4.9mm)
+            row_height = 49.8   # Expanded from 46.4mm to accommodate larger photos
         
         layout_info = {
             'layout_type': 'perpetual',

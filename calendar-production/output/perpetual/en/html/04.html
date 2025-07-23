@@ -53,9 +53,9 @@
         .header-content {
             position: absolute;
             bottom: 3mm;
-            left: 13mm;
-            /* 3mm (crop) + 10mm (content margin) */
-            right: 13mm;
+            left: 10mm;
+            /* 3mm (crop) + 7mm (content margin) - optimized for perpetual calendars */
+            right: 10mm;
             /* Same on both sides for symmetry */
             height: 25mm;
             display: flex;
@@ -164,9 +164,12 @@
         /* Dynamic grid: 6x5 for short months (28-30 days), 7x5 for long months (31 days) */
         /* Always 5 rows since we don't need weekday alignment */
         /* February includes day 29 for leap year compatibility */
+        /* OPTIMIZED: Expanded layout to better utilize space without weekday headers/week numbers */
         .calendar-container {
-            height: 245mm;
-            padding: 0 13mm 0 13mm;
+            height: 250mm;
+            /* Expanded from 245mm (+5mm) to use more bottom space */
+            padding: 0 10mm 0 10mm;
+            /* Reduced from 13mm to 10mm each side (+6mm total width) */
             margin-top: 38mm;
             /* Account for absolute positioned header */
             position: relative;
@@ -177,22 +180,23 @@
             width: 100%;
             height: 100%;
             border-collapse: separate;
-            border-spacing: 2mm;
+            border-spacing: 1.5mm;
+            /* Reduced from 2mm to 1.5mm for optimized spacing */
             
             /* 6-column layout for shorter months - centered */
             margin: 0 auto;
-            max-width: calc(6 * (63mm + 2mm));
+            max-width: calc(6 * (65.4mm + 2mm));
             
         }
 
         /* No weekday headers or week numbers in perpetual calendar */
         .calendar-week-row {
-            height: 46.4mm; /* Always use 5-row height since perpetual always has 5 rows */
+            height: 49.8mm; /* Always use 5-row height since perpetual always has 5 rows */
         }
 
         .calendar-day {
-            width: 63mm;
-            height: 42.4mm; /* Always use 5-row photo height */
+            width: 65.4mm;
+            height: 47.3mm; /* Always use 5-row photo height */
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
@@ -295,7 +299,8 @@
             }
 
             .calendar-container {
-                height: 245mm !important;
+                height: 250mm !important;
+                /* Expanded from 245mm for optimized layout */
                 overflow: visible !important;
             }
 
@@ -329,12 +334,12 @@
             }
 
             .calendar-day {
-                width: 63mm !important;
-                height: 42.4mm !important;
+                width: 65.4mm !important;
+                height: 47.3mm !important;
             }
 
             .calendar-week-row {
-                height: 46.4mm !important;
+                height: 49.8mm !important;
             }
 
             /* Ensure image links don't interfere with PDF layout */
