@@ -21,7 +21,6 @@
 + does it end up on github.io? or in .gitignore?
 
 ## Workflow
-+ fix `Created optimized HTML file: output/2026/de/html/202609_pdf_pdf_optimized.html` naming error
 + create "print" and "web" pdf at the same time
 
 ## Title bar

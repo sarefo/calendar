@@ -255,12 +255,12 @@ class CalendarBuilder:
         try:
             converter = HTMLToPDFConverter("auto")
             
-            # Generate PDF filename from year and month with appropriate suffix
+            # Generate PDF filename with language code and project name
             if web_mode:
                 suffix = "_web"
             else:
                 suffix = "_print"
-            pdf_filename = f"{year}{month:02d}{suffix}.pdf"
+            pdf_filename = f"portioid_calendar_{year}{month:02d}_{self.language}{suffix}.pdf"
             pdf_path = Path(output_dir) / pdf_filename
             
             # Convert to PDF with compression mode options
@@ -339,7 +339,7 @@ class CalendarBuilder:
                 if bind_pdf and len(pdf_files) > 1:
                     try:
                         paths = self.get_output_paths(year)
-                        bound_pdf_file = f"{paths['pdf_dir']}/{year}_calendar_complete.pdf"
+                        bound_pdf_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_complete.pdf"
                         bound_pdf = self.bind_pdfs_to_single_file(pdf_files, bound_pdf_file)
                         results["bound_pdf"] = bound_pdf
                         print(f"📚 Complete calendar PDF created: {bound_pdf}")
@@ -383,7 +383,7 @@ class CalendarBuilder:
                 print_pdf_files.append(pdf_file)
         
         if print_pdf_files:
-            print_bound_file = f"{paths['pdf_dir']}/{year}_calendar_print.pdf"
+            print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_print.pdf"
             try:
                 bound_print = self.bind_pdfs_to_single_file(print_pdf_files, print_bound_file)
                 print(f"✅ Print calendar bound: {bound_print}")
@@ -402,7 +402,7 @@ class CalendarBuilder:
                 web_pdf_files.append(pdf_file)
                 
         if web_pdf_files:
-            web_bound_file = f"{paths['pdf_dir']}/{year}_calendar_web.pdf"
+            web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_web.pdf"
             try:
                 bound_web = self.bind_pdfs_to_single_file(web_pdf_files, web_bound_file)
                 print(f"✅ Web calendar bound: {bound_web}")
@@ -466,17 +466,18 @@ class CalendarBuilder:
         if not valid_pdf_files:
             raise ValueError("No valid PDF files found for binding")
         
-        # Sort PDF files by month (assuming filename format YYYYMM_print.pdf or YYYYMM_web.pdf)
+        # Sort PDF files by month (assuming filename format portioid_calendar_YYYYMM_lang_print.pdf or portioid_calendar_YYYYMM_lang_web.pdf)
         def get_month_from_filename(filename):
             try:
                 basename = Path(filename).stem
-                # Handle both YYYYMM_print and YYYYMM_web formats
+                # Handle new format: portioid_calendar_YYYYMM_lang_print/web
                 if "_" in basename:
-                    year_month_part = basename.split("_")[0]
-                else:
-                    year_month_part = basename
-                if len(year_month_part) >= 6 and year_month_part[:6].isdigit():
-                    return int(year_month_part[4:6])  # Extract month from YYYYMM
+                    parts = basename.split("_")
+                    # Look for the YYYYMM part (should be third element: portioid_calendar_YYYYMM_lang_suffix)
+                    if len(parts) >= 3:
+                        year_month_part = parts[2]  # portioid_calendar_YYYYMM_...
+                        if len(year_month_part) >= 6 and year_month_part[:6].isdigit():
+                            return int(year_month_part[4:6])  # Extract month from YYYYMM
                 return 0
             except:
                 return 0
@@ -625,11 +626,11 @@ def main():
         print_pdfs = []
         web_pdfs = []
         
-        # Look for monthly PDFs (YYYYMM_print.pdf and YYYYMM_web.pdf)
+        # Look for monthly PDFs (portioid_calendar_YYYYMM_lang_print.pdf and portioid_calendar_YYYYMM_lang_web.pdf)
         for month in range(1, 13):
             month_str = f"{month:02d}"
-            print_pdf = pdf_print_dir / f"{args.year}{month_str}_print.pdf"
-            web_pdf = pdf_web_dir / f"{args.year}{month_str}_web.pdf"
+            print_pdf = pdf_print_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_print.pdf"
+            web_pdf = pdf_web_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_web.pdf"
             
             if print_pdf.exists():
                 print_pdfs.append(str(print_pdf))
@@ -643,8 +644,8 @@ def main():
             return 1
         
         # Delete existing bound PDFs to ensure clean recreation
-        print_bound_path = pdf_output_dir / f"{args.year}_calendar_print.pdf"
-        web_bound_path = pdf_output_dir / f"{args.year}_calendar_web.pdf"
+        print_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_print.pdf"
+        web_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_web.pdf"
         
         if print_bound_path.exists():
             print_bound_path.unlink()

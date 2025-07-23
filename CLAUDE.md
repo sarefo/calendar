@@ -13,6 +13,7 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
+- ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding (portioid_calendar_YYYYMM_lang_type.pdf)
 - ✅ **MAJOR**: Full internationalization support (German and Spanish)
 - ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
 - ✅ **MAJOR**: Simplified PDF generation - only print and web formats
@@ -206,9 +207,26 @@ python3 scripts/build_calendar.py --year 2026 --language de --complete
 **Output Files (Clean Organized Structure):**
 - HTML: `output/2026/de/html/202603.html` with `lang="de"` and German month names
 - QR Codes: `output/2026/de/assets/qr/qr-2026-03-de.png` linking to German landing page  
-- PDFs: `output/2026/de/pdf/print/202603_print.pdf` (print quality)
-- PDFs: `output/2026/de/pdf/web/202603_web.pdf` (web optimized)
+- PDFs: `output/2026/de/pdf/print/portioid_calendar_202603_de_print.pdf` (print quality)
+- PDFs: `output/2026/de/pdf/web/portioid_calendar_202603_de_web.pdf` (web optimized)
+- Bound PDFs: `output/2026/de/pdf/portioid_calendar_2026_de_print.pdf` (full year print)
+- Bound PDFs: `output/2026/de/pdf/portioid_calendar_2026_de_web.pdf` (full year web)
 - Assets: `output/2026/de/assets/maps/map-2026-03.svg` (world maps)
+
+### **Enhanced PDF Naming Convention** 🆕
+
+**New Format**: `portioid_calendar_YYYYMM_LANG_TYPE.pdf`
+
+**Examples:**
+- `portioid_calendar_202603_en_print.pdf` - March 2026 English print version
+- `portioid_calendar_202603_de_web.pdf` - March 2026 German web version  
+- `portioid_calendar_2026_es_print.pdf` - Full year 2026 Spanish print bound
+
+**Benefits:**
+- **Clear Project Branding**: "portioid_calendar" prefix identifies the project
+- **Language Identification**: Easy to distinguish language versions
+- **Type Clarity**: "_print" vs "_web" makes compression level obvious
+- **Professional Naming**: Consistent, descriptive filenames for sharing and archiving
 
 ---
 
