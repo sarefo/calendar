@@ -1,20 +1,21 @@
 ## General
 + consider using sunday first for US/Canada/Mexico/Australia
+  + add that info to pdf filenames
+  + needs to be part of i18n somehow…
 
 ## PDF version
 + make sure spiral binding does not ruin title elements
 
 ## Landing page
-+ "pick other date" problems:
-  + only first click works, afterwards closes directly after click
-  + layout of date not nice
++ improve page layout (laptop/mobile)
++ if applicable: show today's photo with short explanation
+  + or if full date given in URL
+  + need to add species names for that (i18n!)
 
 ## HTML version
-+ header broken for some reason
 + check if we really need hardcoded html for each language
-+ does it end up on github.io? or in .gitignore?
 + website: make calendar html mobile ready
-+ click on image opens observation
++ remove crop marks and bleed
 + able to navigate to next/previous month
 
 ## Workflow

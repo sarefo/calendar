@@ -13,6 +13,7 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
+- ✅ **MAJOR**: Streamlined world map system - single map per month shared across all languages
 - ✅ **MAJOR**: GitHub Pages integration - calendar HTML files accessible via subdirectory paths
 - ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding (portioid_calendar_YYYYMM_lang_type.pdf)
 - ✅ **MAJOR**: Full internationalization support (German and Spanish)

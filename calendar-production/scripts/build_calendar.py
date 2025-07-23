@@ -75,7 +75,7 @@ class CalendarBuilder:
             "pdf_web_dir": f"{lang_dir}/pdf/web",
             "assets_dir": f"{lang_dir}/assets",
             "qr_dir": f"{lang_dir}/assets/qr",
-            "maps_dir": f"{lang_dir}/assets/maps"
+            "maps_dir": f"{year_dir}/assets/maps"  # Language-independent - shared across all languages
         }
         
     def _load_config(self):
@@ -171,12 +171,17 @@ class CalendarBuilder:
             )
             print(f"✅ Generated QR code: {qr_file}")
             
-            # Generate world map in language-specific directory
-            map_file = self.map_gen.save_map_svg(
-                map_location_data,
-                f"{paths['maps_dir']}/map-{year}-{month:02d}.svg"
-            )
-            print(f"✅ Generated world map: {map_file}")
+            # Generate world map in shared directory (once per month, not per language)
+            map_file_path = f"{paths['maps_dir']}/map-{year}-{month:02d}.svg"
+            if Path(map_file_path).exists():
+                print(f"✅ Using existing world map: {map_file_path}")
+                map_file = map_file_path
+            else:
+                map_file = self.map_gen.save_map_svg(
+                    map_location_data,
+                    map_file_path
+                )
+                print(f"✅ Generated new world map: {map_file}")
             
             # Generate web-optimized thumbnails for faster HTML loading
             thumb_result = self.image_optimizer.optimize_month_photos(year, month)
