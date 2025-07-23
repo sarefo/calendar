@@ -465,7 +465,14 @@
         // Event listeners
         currentDateDisplay.addEventListener('click', openCurrentObservation);
         
+        let isDatePickerOpen = false;
+        
         pickDateBtn.addEventListener('click', function() {
+            // Prevent multiple rapid clicks
+            if (isDatePickerOpen) return;
+            
+            isDatePickerOpen = true;
+            
             // Show the input temporarily
             todayInput.style.position = 'static';
             todayInput.style.left = '0';
@@ -477,11 +484,13 @@
             // Hide the button temporarily
             pickDateBtn.style.display = 'none';
             
-            // Focus and open picker
-            todayInput.focus();
-            if (typeof todayInput.showPicker === 'function') {
-                todayInput.showPicker();
-            }
+            // Focus and open picker with a small delay to ensure proper rendering
+            setTimeout(() => {
+                todayInput.focus();
+                if (typeof todayInput.showPicker === 'function') {
+                    todayInput.showPicker();
+                }
+            }, 50);
         });
         
         // Function to hide input and show button
@@ -490,6 +499,7 @@
             todayInput.style.left = '-9999px';
             todayInput.style.opacity = '0';
             pickDateBtn.style.display = 'inline-block';
+            isDatePickerOpen = false;
         }
         
         // Handle date selection
@@ -502,9 +512,16 @@
             }
         });
         
-        // Hide input when user clicks away
+        // Hide input when user clicks away, but only if the date picker is actually open
         todayInput.addEventListener('blur', function() {
-            setTimeout(hideInputShowButton, 200); // Small delay to allow date picker interaction
+            if (isDatePickerOpen) {
+                setTimeout(() => {
+                    // Double-check that the date picker should still be closed
+                    if (isDatePickerOpen && document.activeElement !== todayInput) {
+                        hideInputShowButton();
+                    }
+                }, 300);
+            }
         });
     </script>
 </body>
