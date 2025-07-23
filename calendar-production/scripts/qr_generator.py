@@ -63,7 +63,7 @@ class QRGenerator:
                 image_factory=StyledPilImage,
                 module_drawer=RoundedModuleDrawer(),
                 fill_color="#2C3E50",
-                back_color="white"
+                back_color="#f0f8e0"
             )
         elif style == "gradient" and GRADIENT_AVAILABLE:
             img = qr.make_image(
@@ -76,7 +76,7 @@ class QRGenerator:
             )
         else:
             # Default black and white (works with all qrcode versions)
-            img = qr.make_image(fill_color="#2C3E50", back_color="white")
+            img = qr.make_image(fill_color="#2C3E50", back_color="#f0f8e0")
         
         # Resize to exact size
         img = img.resize((size, size), Image.Resampling.LANCZOS)
@@ -154,7 +154,7 @@ class QRGenerator:
         qr.add_data(url)
         qr.make(fit=True)
         
-        qr_img = qr.make_image(fill_color="#2C3E50", back_color="white")
+        qr_img = qr.make_image(fill_color="#2C3E50", back_color="#f0f8e0")
         qr_img = qr_img.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
         
         # Create final image with text
@@ -221,7 +221,7 @@ class QRGenerator:
         qr.add_data(url)
         qr.make(fit=True)
         
-        img = qr.make_image(fill_color="#2C3E50", back_color="white")
+        img = qr.make_image(fill_color="#2C3E50", back_color="#f0f8e0")
         
         # Save SVG
         output_file = Path(output_path)

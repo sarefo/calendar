@@ -1,7 +1,8 @@
 ## General
++ consider using sunday first for US/Canada/Mexico/Australia
 
 ## PDF version
-+ do we really need a 400mb file to print at 300px resolution?
++ make sure spiral binding does not ruin title elements
 
 ## Landing page
 + "pick other date" problems:
@@ -18,7 +19,6 @@
 ## Workflow
 
 ## Title bar
-+ improve QR code UX: user should know they can get more info about the photos there
 + consider moving title bar to bottom
 
 ## Photos
