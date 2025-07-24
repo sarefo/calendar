@@ -168,8 +168,8 @@
         .calendar-container {
             height: 250mm;
             /* Expanded from 245mm (+5mm) to use more bottom space */
-            padding: 0 7mm 0 7mm;
-            /* Elegant side margins - less than year calendar (13mm) but clear of bleed (3mm) */
+            padding: 2mm 7mm 0 7mm;
+            /* Balanced top padding + elegant side margins */
             margin-top: 38mm;
             /* Account for absolute positioned header */
             position: relative;
@@ -178,13 +178,13 @@
 
         .calendar-table {
             width: 100%;
-            height: calc(100% - 3mm);
-            /* Reduce height to account for top margin */
+            height: calc(100% - 2mm);
+            /* Reduce height to account for container top padding */
             border-collapse: separate;
             border-spacing: 1.5mm;
             /* Reduced from 2mm to 1.5mm for optimized spacing */
-            margin-top: 3mm;
-            /* Balance top/bottom margins since no bottom crop */
+            margin-top: 0;
+            /* No margin since using container padding for spacing */
             {% if layout.columns == 6 %}
             /* 6-column layout for shorter months - centered */
             margin-left: auto;
@@ -317,15 +317,15 @@
                 height: 250mm !important;
                 /* Expanded from 245mm for optimized layout */
                 overflow: visible !important;
-                padding: 0 7mm 0 7mm !important;
-                /* Elegant side margins in PDF */
+                padding: 2mm 7mm 0 7mm !important;
+                /* Balanced top padding + elegant side margins in PDF */
             }
 
-            .calendar-table {
-                margin-top: 3mm !important;
-                /* Balance top/bottom margins in PDF */
-                height: calc(100% - 3mm) !important;
-                /* Account for top margin in PDF */
+            table.calendar-table {
+                margin-top: 0 !important;
+                /* Remove margin since using container padding */
+                height: calc(100% - 2mm) !important;
+                /* Account for container top padding */
             }
 
             /* Show crop marks in print/PDF */
