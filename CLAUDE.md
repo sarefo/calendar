@@ -111,7 +111,6 @@ calendar/
 │   │           ├── photo2.jpg    # Order determined by file, not filename
 │   │           ├── README.md     # Location data (required for all months)
 │   │           └── ...           # etc.
-│   └── website/                  # GitHub.io companion site (future)
 ```
 
 ---
