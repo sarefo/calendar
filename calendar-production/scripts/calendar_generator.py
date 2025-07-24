@@ -806,22 +806,34 @@ class CalendarGenerator:
         if len(cover_photos) != 12:
             raise ValueError(f"Expected 12 cover photos, found {len(cover_photos)}")
         
-        # Generate calendar title and subtitle based on language and type
-        if not calendar_title:
-            if self.language == "de":
-                calendar_title = "Makrofotografie Kalender"
-            elif self.language == "es":
-                calendar_title = "Calendario de Macrofotografía"
-            else:
-                calendar_title = "Macro Photography Calendar"
-        
-        if not calendar_subtitle:
-            if self.language == "de":
-                calendar_subtitle = "Eine Reise durch die Welt winziger Wunder"
-            elif self.language == "es":
-                calendar_subtitle = "Un viaje por el mundo de maravillas diminutas"
-            else:
-                calendar_subtitle = "A Journey Through the World of Tiny Wonders"
+        # Generate calendar title and subtitle from config
+        if not calendar_title or not calendar_subtitle:
+            # Load cover titles from config
+            try:
+                config_data = self._load_config()
+                cover_titles = config_data.get('localization', {}).get('cover_titles', {})
+                lang_titles = cover_titles.get(self.language, {})
+                
+                if not calendar_title:
+                    calendar_title = lang_titles.get('title', 
+                        cover_titles.get('en', {}).get('title', 'Nature Calendar'))
+                
+                if not calendar_subtitle:
+                    calendar_subtitle = lang_titles.get('subtitle',
+                        cover_titles.get('en', {}).get('subtitle', 'A Photographic Journey'))
+                    
+            except Exception as e:
+                print(f"⚠️  Warning: Could not load cover titles from config: {e}")
+                # Fallback to hardcoded titles
+                if not calendar_title:
+                    calendar_title = "Nature's Hidden Worlds" if self.language == "en" else (
+                        "Verborgene Welten der Natur" if self.language == "de" else 
+                        "Mundos Ocultos de la Naturaleza")
+                
+                if not calendar_subtitle:
+                    calendar_subtitle = "A Macro Photography Journey" if self.language == "en" else (
+                        "Eine Makrofotografie-Reise" if self.language == "de" else 
+                        "Un Viaje de Macrofotografía")
         
         # Prepare template data
         calendar_data = {

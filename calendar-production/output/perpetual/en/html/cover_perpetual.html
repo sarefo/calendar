@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro Photography Calendar </title>
+    <title>Nature&#39;s Hidden Worlds </title>
     <link rel="stylesheet" href="print_styles.css">
     <style>
         /* Print-specific styles for A3 landscape */
@@ -27,7 +27,8 @@
             width: 420mm;
             height: 297mm;
             position: relative;
-            background: linear-gradient(135deg, #74ac00 0%, #5a8500 100%);
+            background: 
+                linear-gradient(180deg, #74ac00 0%, #5a8500 35%, #ffffff 50%);
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
@@ -100,24 +101,28 @@
         /* Photo showcase grid */
         .photo-showcase {
             position: absolute;
-            top: 105mm;
-            left: 13mm;
-            right: 13mm;
-            bottom: 15mm;
+            top: 100mm;
+            left: 40mm;
+            right: 40mm;
+            bottom: 10mm;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 3mm;
+            column-gap: 3mm;
+            row-gap: 3mm;
             z-index: 5;
         }
 
         .showcase-photo {
             position: relative;
-            border-radius: 6mm;
+            border-radius: 8mm;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease;
+            aspect-ratio: 1.5 / 1;
+            width: 100%;
+            height: 100%;
         }
 
         .showcase-photo:hover {
@@ -145,21 +150,13 @@
             justify-content: flex-end;
         }
 
-        .photo-month {
-            font-size: 14pt;
-            font-weight: 700;
-            margin: 0 0 1mm 0;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-        }
-
         .photo-location {
-            font-size: 10pt;
-            font-weight: 400;
+            font-size: 15pt;
+            font-weight: 600;
             margin: 0;
-            color: rgba(255, 255, 255, 0.9);
-            font-style: italic;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-            line-height: 1.2;
+            color: rgba(255, 255, 255, 0.98);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+            line-height: 1.3;
         }
 
         /* Decorative elements */
@@ -287,8 +284,8 @@
 
         <!-- Hero section with title -->
         <section class="hero-section">
-            <h1 class="calendar-title">Macro Photography Calendar</h1>
-            <p class="calendar-subtitle">A Journey Through the World of Tiny Wonders</p>
+            <h1 class="calendar-title">Nature&#39;s Hidden Worlds</h1>
+            <p class="calendar-subtitle">A Macro Photography Journey</p>
             
             <div class="perpetual-badge">Perpetual Calendar</div>
             
@@ -298,97 +295,85 @@
         <section class="photo-showcase">
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/01/P1230360.jpg" alt="January - Bali" loading="lazy">
+                <img src="../../../photos/2026/01/P1230360.jpg" alt="Bali" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">January</div>
                     <div class="photo-location">Bali</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/02/IMG_8157.jpg" alt="February - Thailand" loading="lazy">
+                <img src="../../../photos/2026/02/IMG_8157.jpg" alt="Thailand" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">February</div>
                     <div class="photo-location">Thailand</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/03/IMG_0913.jpg" alt="March - Sumatra" loading="lazy">
+                <img src="../../../photos/2026/03/IMG_0913.jpg" alt="Sumatra" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">March</div>
                     <div class="photo-location">Sumatra</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/04/IMG_5251.jpg" alt="April - North India" loading="lazy">
+                <img src="../../../photos/2026/04/IMG_5251.jpg" alt="North India" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">April</div>
                     <div class="photo-location">North India</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/05/IMG_1562.jpg" alt="May - Colombia" loading="lazy">
+                <img src="../../../photos/2026/05/IMG_1562.jpg" alt="Colombia" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">May</div>
                     <div class="photo-location">Colombia</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/06/PA280131.jpg" alt="June - Gulf of Thailand" loading="lazy">
+                <img src="../../../photos/2026/06/PA280131.jpg" alt="Gulf of Thailand" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">June</div>
                     <div class="photo-location">Gulf of Thailand</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/07/IMG_1400.jpg" alt="July - Hong Kong" loading="lazy">
+                <img src="../../../photos/2026/07/IMG_1400.jpg" alt="Hong Kong" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">July</div>
                     <div class="photo-location">Hong Kong</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/08/IMG_6555.jpg" alt="August - Ecuador" loading="lazy">
+                <img src="../../../photos/2026/08/IMG_6555.jpg" alt="Ecuador" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">August</div>
                     <div class="photo-location">Ecuador</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/09/issuspara.jpg" alt="September - Germany" loading="lazy">
+                <img src="../../../photos/2026/09/issuspara.jpg" alt="Germany" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">September</div>
                     <div class="photo-location">Germany</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/10/P6180453.jpg" alt="October - Borneo" loading="lazy">
+                <img src="../../../photos/2026/10/P6180453.jpg" alt="Borneo" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">October</div>
                     <div class="photo-location">Borneo</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/11/P4060027.jpg" alt="November - Philippines" loading="lazy">
+                <img src="../../../photos/2026/11/P4060027.jpg" alt="Philippines" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">November</div>
                     <div class="photo-location">Philippines</div>
                 </div>
             </div>
             
             <div class="showcase-photo">
-                <img src="../../../photos/2026/12/IMG_6582.jpg" alt="December - Costa Rica" loading="lazy">
+                <img src="../../../photos/2026/12/IMG_6582.jpg" alt="Costa Rica" loading="lazy">
                 <div class="photo-overlay">
-                    <div class="photo-month">December</div>
                     <div class="photo-location">Costa Rica</div>
                 </div>
             </div>
