@@ -66,20 +66,6 @@
       "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       "de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
       "es": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-    },
-    "cover_titles": {
-      "en": {
-        "title": "Nature's Hidden Worlds",
-        "subtitle": "A Macro Photography Journey"
-      },
-      "de": {
-        "title": "Verborgene Welten der Natur", 
-        "subtitle": "Eine Makrofotografie-Reise"
-      },
-      "es": {
-        "title": "Mundos Ocultos de la Naturaleza",
-        "subtitle": "Un Viaje de Macrofotografía"
-      }
     }
   },
   "alternative_configurations": {

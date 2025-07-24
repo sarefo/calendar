@@ -59,6 +59,24 @@ class CalendarGenerator:
             print(f"Config file not found: {self.config_file}")
             return self._default_config()
     
+    def _load_translations(self):
+        """Load website translations from translations.json"""
+        # Website translations.json is in the main calendar directory (up two levels from scripts/)
+        # calendar-production/scripts/calendar_generator.py -> calendar/data/translations.json
+        script_dir = os.path.dirname(__file__)  # calendar-production/scripts/
+        calendar_production_dir = os.path.dirname(script_dir)  # calendar-production/
+        calendar_dir = os.path.dirname(calendar_production_dir)  # calendar/
+        translations_file = os.path.join(calendar_dir, 'data', 'translations.json')
+        print(f"🔍 Loading translations from: {translations_file}")
+        
+        if not os.path.exists(translations_file):
+            raise FileNotFoundError(f"❌ Translations file not found: {translations_file}")
+        
+        with open(translations_file, 'r', encoding='utf-8') as f:
+            translations = json.load(f)
+            print(f"🔍 Successfully loaded translations for languages: {list(translations.keys())}")
+            return translations
+    
     def _default_config(self):
         """Default configuration if file not found"""
         return {
@@ -806,34 +824,37 @@ class CalendarGenerator:
         if len(cover_photos) != 12:
             raise ValueError(f"Expected 12 cover photos, found {len(cover_photos)}")
         
-        # Generate calendar title and subtitle from config
+        # Generate calendar title and subtitle from translations
         if not calendar_title or not calendar_subtitle:
-            # Load cover titles from config
-            try:
-                config_data = self._load_config()
-                cover_titles = config_data.get('localization', {}).get('cover_titles', {})
-                lang_titles = cover_titles.get(self.language, {})
-                
+            # Load cover titles from translations.json - NO FALLBACKS, FAIL FAST
+            translations = self._load_translations()
+            if not translations:
+                raise ValueError("❌ Failed to load translations.json - cannot proceed without translations")
+            
+            lang_translations = translations.get(self.language)
+            if not lang_translations:
+                raise ValueError(f"❌ No translations found for language '{self.language}' in translations.json")
+            
+            print(f"🔍 Language: {self.language}")
+            print(f"🔍 Available translations for {self.language}: {list(lang_translations.keys())}")
+            
+            if not calendar_title:
+                calendar_title = lang_translations.get('coverTitle')
                 if not calendar_title:
-                    calendar_title = lang_titles.get('title', 
-                        cover_titles.get('en', {}).get('title', 'Nature Calendar'))
-                
+                    raise ValueError(f"❌ Missing 'coverTitle' for language '{self.language}' in translations.json")
+                print(f"🔍 Calendar title: {calendar_title}")
+            
+            if not calendar_subtitle:
+                calendar_subtitle = lang_translations.get('coverSubtitle')
                 if not calendar_subtitle:
-                    calendar_subtitle = lang_titles.get('subtitle',
-                        cover_titles.get('en', {}).get('subtitle', 'A Photographic Journey'))
-                    
-            except Exception as e:
-                print(f"⚠️  Warning: Could not load cover titles from config: {e}")
-                # Fallback to hardcoded titles
-                if not calendar_title:
-                    calendar_title = "Nature's Hidden Worlds" if self.language == "en" else (
-                        "Verborgene Welten der Natur" if self.language == "de" else 
-                        "Mundos Ocultos de la Naturaleza")
-                
-                if not calendar_subtitle:
-                    calendar_subtitle = "A Macro Photography Journey" if self.language == "en" else (
-                        "Eine Makrofotografie-Reise" if self.language == "de" else 
-                        "Un Viaje de Macrofotografía")
+                    raise ValueError(f"❌ Missing 'coverSubtitle' for language '{self.language}' in translations.json")
+                print(f"🔍 Calendar subtitle: {calendar_subtitle}")
+        
+        # Load translations for template
+        translations = self._load_translations()
+        lang_translations = translations.get(self.language)
+        if not lang_translations:
+            raise ValueError(f"❌ No translations found for language '{self.language}' for template rendering")
         
         # Prepare template data
         calendar_data = {
@@ -841,7 +862,8 @@ class CalendarGenerator:
             "calendar_title": calendar_title,
             "calendar_subtitle": calendar_subtitle,
             "year": year,
-            "cover_photos": cover_photos
+            "cover_photos": cover_photos,
+            "translations": lang_translations
         }
         
         # Render HTML using cover page template

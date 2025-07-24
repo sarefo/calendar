@@ -289,7 +289,7 @@
             {% if year %}
             <div class="year-badge">{{ year }}</div>
             {% else %}
-            <div class="perpetual-badge">{% if language == 'de' %}Immerwährender Kalender{% elif language == 'es' %}Calendario Perpetuo{% else %}Perpetual Calendar{% endif %}</div>
+            <div class="perpetual-badge">{{ translations.perpetualBadge or 'Perpetual Calendar' }}</div>
             {% endif %}
         </section>
 
