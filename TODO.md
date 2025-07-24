@@ -11,7 +11,6 @@
 + make sure spiral binding does not ruin title elements
 
 ## Landing page
-+ improve page layout (laptop/mobile)
 + if applicable: show today's photo with short explanation
   + or if full date given in URL
   + need to add species names for that (i18n!)
@@ -34,4 +33,3 @@
 ## Workflow
 
 ## Hosting
-+ free webhosting of several 300mb and 30mb files
