@@ -13,25 +13,6 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
-- ✅ **MAJOR**: Professional cover page system with 12-photo showcase grid
-- ✅ **MAJOR**: Multi-language cover page support (English, German, Spanish)
-- ✅ **MAJOR**: Cover page integration in complete build workflow (--complete includes cover)
-- ✅ **MAJOR**: Dedicated --cover option for standalone cover page generation
-- ✅ **MAJOR**: Cover page PDF generation (both print and web formats)
-- ✅ **MAJOR**: Cover photo selection from photo_information.txt "cover" column
-- ✅ **MAJOR**: Perpetual calendar system - day-only layout without weekdays or week numbers
-- ✅ **MAJOR**: Streamlined world map system - single map per month shared across all languages
-- ✅ **MAJOR**: GitHub Pages integration - calendar HTML files accessible via subdirectory paths
-- ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding
-- ✅ **MAJOR**: Full internationalization support (German and Spanish)
-- ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
-- ✅ **MAJOR**: Dual PDF generation - single commands now create both print and web PDFs
-- ✅ **MAJOR**: Optimized A3 layout - extended green header with bleed, added ring binding space
-- ✅ **MAJOR**: Perpetual calendar landing page support - handles #01-#12 parameters
-- ✅ **FIXED**: Complete 12-month cover photo system (all months 1-12 now have cover photos)
-- ✅ **FIXED**: Calendar container height optimized to 208mm to ensure single-page output
-- ✅ **FIXED**: Crop marks only show in PDF, hidden in HTML preview
-- ✅ **FIXED**: QR code processing - excluded from smart cropping, maintains square aspect ratio, saved as PNG
 - ✅ **FIXED**: Landing page perpetual calendar navigation - maps month-only parameters to current year  
 
 ---
@@ -175,7 +156,7 @@ The system generates three PDF formats optimized for different use cases:
 | Format    | File Size (per month) | Total (12 months) | Image Size | Quality | Use Case                             |
 | --------- | --------------------- | ----------------- | ---------- | ------- | ------------------------------------ |
 | **Print** | 33-34MB               | ~400MB            | 800px      | 85%     | Professional printing, CMYK, 300 DPI |
-| **Web**   | 2.5-3MB               | **~30MB**         | 200px      | 45%     | Email sharing, mobile viewing        |
+| **Web**   | 2.5-3MB               | ~30MB             | 200px      | 45%     | Email sharing, mobile viewing        |
 
 **Size Reduction:**
 - **Web vs Print**: 92% smaller for easy digital sharing
@@ -730,18 +711,10 @@ python3 scripts/update_landing_page.py
 ## 🔮 Future Enhancements
 
 ### Phase 2: GitHub.io Website
-- **Interactive calendar** with date picker
 - **Photo stories** with location context and biodiversity info
 - **iNaturalist integration** for species identification
 - **DuoNat integration** for biodiversity exploration
 - **Mobile-responsive design**
-
-### Phase 3: Advanced Features
-- **Additional language support** (Portuguese, French)
-- **Custom color themes** per location
-- **Enhanced world maps** with terrain/satellite imagery
-- **Photo metadata integration** (camera settings, species info)
-- **Batch year generation** with progress tracking
 
 ### Phase 4: Print Automation
 - **Direct print shop API integration**
@@ -818,35 +791,8 @@ pip install -r requirements.txt
 ✅ **Production-ready workflow with complete build system including cover pages**  
 ✅ **Professional cover page system with 12-photo showcase grid**  
 ✅ **Multi-language cover page support (English, German, Spanish)**
-✅ **Cover page integration in complete build workflow (--complete includes cover)**  
-✅ **Dedicated --cover option for standalone cover page generation**  
-✅ **Cover page PDF generation (both print and web formats)**  
-✅ **Complete 12-month cover photo system (all months 1-12 have cover photos)**  
-✅ **Dynamic row layout system - eliminates empty rows completely**  
-✅ **Enhanced photo presentation: Variable dimensions (42.4mm vs 34.7mm height)**  
-✅ **Smart QR integration: flexible hash parameters for month/date navigation**  
-✅ **Auto-location reading from README.md files**  
-✅ **Dual-format PDF generation: Print and Web-optimized modes**  
-✅ **Complete build workflow: Single command generates everything**  
-✅ **Dual PDF binding: Separate print and web-optimized bound versions**  
-✅ **Landing page with hash parameter support implemented**  
-✅ **Perpetual calendar landing page integration - handles #01-#12 parameters**  
-✅ **Clean header design with integrated elements**  
-✅ **Enhanced print media CSS for PDF consistency**  
-✅ **Cross-year photo support: YYYYMM format with seamless overflow**
 
 ### Next Steps
-1. ✅ **Professional cover page system with 12-photo showcase grid**
-2. ✅ **Multi-language cover page support with localized titles**
-3. ✅ **Cover page integration in complete build workflow**
-4. ✅ **Dedicated --cover option for standalone generation**
-5. ✅ **Cover page PDF generation (print and web formats)**
-6. ✅ **Complete 12-month cover photo system**
-7. ✅ **Dynamic calendar layout system - NO MORE EMPTY ROWS!**
-8. ✅ **Enhanced QR code integration with smart landing page**
-9. ✅ **Complete build workflow with dual-format PDF generation**
-10. ✅ **Full internationalization with German and Spanish support**
-11. ⏳ **Generate remaining months for 2027+ calendar years**
 
 ### Contact
 - **Project Repository**: This calendar system
