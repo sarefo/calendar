@@ -442,14 +442,14 @@ class CalendarBuilder:
             traceback.print_exc()
             return {"success": False, "reason": f"unexpected_error: {e}"}
     
-    async def build_year(self, year: int,
+    async def build_year(self, year: int = None,
                         output_dir: str = "output", 
                         months: list = None, generate_pdf: bool = True,
                         bind_pdf: bool = False, web_mode: bool = False) -> dict:
-        """Build calendar for entire year or specified months
+        """Build calendar for entire year or specified months (supports perpetual calendar)
         
         Args:
-            year: Calendar year
+            year: Calendar year (None for perpetual calendar)
             output_dir: Base output directory
             months: List of months to build (None = all months)
             generate_pdf: Whether to generate PDF files
@@ -460,7 +460,10 @@ class CalendarBuilder:
         if not months:
             months = list(range(1, 13))  # All months
         
-        print(f"\\n🏗️  Building calendar for {year}")
+        if year:
+            print(f"\\n🏗️  Building calendar for {year}")
+        else:
+            print(f"\\n🏗️  Building perpetual calendar")
         print(f"Months: {months}")
         
         results = {
@@ -487,7 +490,8 @@ class CalendarBuilder:
                 results["failed_months"].append(month)
         
         # Generate summary
-        print(f"\\n📊 Build Summary for {year}:")
+        calendar_type = f"{year}" if year else "perpetual calendar"
+        print(f"\\n📊 Build Summary for {calendar_type}:")
         print(f"✅ Successful: {len(results['successful_months'])} months")
         if results["failed_months"]:
             print(f"❌ Failed: {len(results['failed_months'])} months")
@@ -498,7 +502,10 @@ class CalendarBuilder:
             if pdf_files and len(pdf_files) > 1:
                 try:
                     paths = self.get_output_paths(year)
-                    bound_pdf_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_complete.pdf"
+                    if year:
+                        bound_pdf_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_complete.pdf"
+                    else:
+                        bound_pdf_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{self.language}_complete.pdf"
                     bound_pdf = self.bind_pdfs_to_single_file(pdf_files, bound_pdf_file)
                     results["bound_pdf"] = bound_pdf
                     print(f"📚 Complete calendar PDF created: {bound_pdf}")
@@ -509,11 +516,11 @@ class CalendarBuilder:
         
         return results
     
-    async def build_complete(self, year: int, output_dir: str = "output", months: list = None) -> dict:
+    async def build_complete(self, year: int = None, output_dir: str = "output", months: list = None) -> dict:
         """Complete build: HTML + both print and web PDFs + bind both versions
         
         Args:
-            year: Calendar year
+            year: Calendar year (None for perpetual calendar)
             output_dir: Base output directory  
             months: List of months to build (None = all months)
         """
@@ -521,7 +528,10 @@ class CalendarBuilder:
         if not months:
             months = list(range(1, 13))  # All months
         
-        print(f"🚀 Starting COMPLETE build for {year}")
+        if year:
+            print(f"🚀 Starting COMPLETE build for {year}")
+        else:
+            print(f"🚀 Starting COMPLETE build for perpetual calendar")
         print(f"📅 Building {len(months)} months with HTML + Print PDFs + Web PDFs + Binds")
         
         # Step 1: Build all months with print PDFs
@@ -537,12 +547,19 @@ class CalendarBuilder:
         paths = self.get_output_paths(year)
         print_pdf_files = []
         for month in print_results["successful_months"]:
-            pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_print.pdf"
+            if year:
+                pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_print.pdf"
+            else:
+                # Perpetual calendar format
+                pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{month:02d}_{self.language}_print.pdf"
             if Path(pdf_file).exists():
                 print_pdf_files.append(pdf_file)
         
         if print_pdf_files:
-            print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_print.pdf"
+            if year:
+                print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_print.pdf"
+            else:
+                print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{self.language}_print.pdf"
             try:
                 bound_print = self.bind_pdfs_to_single_file(print_pdf_files, print_bound_file)
                 print(f"✅ Print calendar bound: {bound_print}")
@@ -556,12 +573,19 @@ class CalendarBuilder:
         print(f"\n=== STEP 4: Binding Web-Optimized PDFs ===")
         web_pdf_files = []
         for month in web_results["successful_months"]:
-            pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_web.pdf"
+            if year:
+                pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_web.pdf"
+            else:
+                # Perpetual calendar format
+                pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{month:02d}_{self.language}_web.pdf"
             if Path(pdf_file).exists():
                 web_pdf_files.append(pdf_file)
                 
         if web_pdf_files:
-            web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_web.pdf"
+            if year:
+                web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{year}_{self.language}_web.pdf"
+            else:
+                web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{self.language}_web.pdf"
             try:
                 bound_web = self.bind_pdfs_to_single_file(web_pdf_files, web_bound_file)
                 print(f"✅ Web calendar bound: {bound_web}")
@@ -592,7 +616,8 @@ class CalendarBuilder:
         }
         
         # Final summary
-        print(f"\n🎉 COMPLETE BUILD SUMMARY for {year}:")
+        calendar_type = f"{year}" if year else "perpetual calendar"
+        print(f"\n🎉 COMPLETE BUILD SUMMARY for {calendar_type}:")
         print(f"📄 HTML files: {len(results['successful_months'])} months")
         print(f"🖨️  Print PDFs: {results['print_pdfs']} files")
         print(f"💻 Web PDFs: {results['web_pdfs']} files")
