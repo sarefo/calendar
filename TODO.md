@@ -1,5 +1,6 @@
 ## General
-+ --complete does not add cover s
++ seems the observation links don't get updated when rebuilding?
+  + neither in date picker nor in PDF/html page links
 + replace tabs in photo_information.txt with commas?
 
 ## Photos
@@ -11,7 +12,6 @@
 + consider embedding fonts for print shops
 
 ## Landing page
-+ seems the observation links don't get updated when rebuilding?
 + improve page layout (laptop/mobile)
 + if applicable: show today's photo with short explanation
   + or if full date given in URL

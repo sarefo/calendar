@@ -517,7 +517,7 @@ class CalendarBuilder:
         return results
     
     async def build_complete(self, year: int = None, output_dir: str = "output", months: list = None) -> dict:
-        """Complete build: HTML + both print and web PDFs + bind both versions
+        """Complete build: HTML + both print and web PDFs + bind both versions + cover page
         
         Args:
             year: Calendar year (None for perpetual calendar)
@@ -532,7 +532,7 @@ class CalendarBuilder:
             print(f"🚀 Starting COMPLETE build for {year}")
         else:
             print(f"🚀 Starting COMPLETE build for perpetual calendar")
-        print(f"📅 Building {len(months)} months with HTML + Print PDFs + Web PDFs + Binds")
+        print(f"📅 Building {len(months)} months with HTML + Print PDFs + Web PDFs + Binds + Cover")
         
         # Step 1: Build all months with print PDFs
         print(f"\n=== STEP 1: Building Print-Quality PDFs ===")
@@ -542,10 +542,44 @@ class CalendarBuilder:
         print(f"\n=== STEP 2: Building Web-Optimized PDFs ===")
         web_results = await self.build_year(year, output_dir, months, generate_pdf=True, bind_pdf=False, web_mode=True)
         
-        # Step 3: Bind print PDFs
-        print(f"\n=== STEP 3: Binding Print PDFs ===")
+        # Step 3: Generate cover page (only for full 12-month builds)
+        cover_print_result = None
+        cover_web_result = None
+        if len(months) == 12:  # Only generate cover for complete calendar
+            print(f"\n=== STEP 3: Generating Cover Page ===")
+            try:
+                # Generate print cover page
+                cover_print_result = await self.build_cover_page(year, 2026, True, False)
+                if cover_print_result["success"]:
+                    print(f"✅ Print cover page generated")
+                else:
+                    print(f"⚠️ Print cover page failed: {cover_print_result.get('reason', 'unknown error')}")
+                
+                # Generate web cover page  
+                cover_web_result = await self.build_cover_page(year, 2026, True, True)
+                if cover_web_result["success"]:
+                    print(f"✅ Web cover page generated")
+                else:
+                    print(f"⚠️ Web cover page failed: {cover_web_result.get('reason', 'unknown error')}")
+                    
+            except Exception as e:
+                print(f"⚠️ Cover page generation failed: {e}")
+        else:
+            print(f"\n=== STEP 3: Skipping Cover Page (partial build: {len(months)} months) ===")
+        
+        # Step 4: Bind print PDFs (include cover if generated)
+        print(f"\n=== STEP 4: Binding Print PDFs ===")
         paths = self.get_output_paths(year)
         print_pdf_files = []
+        
+        # Add cover page PDF first if it exists
+        if cover_print_result and cover_print_result.get("success") and cover_print_result.get("pdf_file"):
+            cover_pdf = cover_print_result["pdf_file"]
+            if Path(cover_pdf).exists():
+                print_pdf_files.append(cover_pdf)
+                print(f"   Including cover page: {Path(cover_pdf).name}")
+        
+        # Add monthly PDFs
         for month in print_results["successful_months"]:
             if year:
                 pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_print.pdf"
@@ -569,9 +603,18 @@ class CalendarBuilder:
         else:
             bound_print = None
             
-        # Step 4: Bind web PDFs  
-        print(f"\n=== STEP 4: Binding Web-Optimized PDFs ===")
+        # Step 5: Bind web PDFs (include cover if generated)
+        print(f"\n=== STEP 5: Binding Web-Optimized PDFs ===")
         web_pdf_files = []
+        
+        # Add cover page PDF first if it exists
+        if cover_web_result and cover_web_result.get("success") and cover_web_result.get("pdf_file"):
+            cover_pdf = cover_web_result["pdf_file"]
+            if Path(cover_pdf).exists():
+                web_pdf_files.append(cover_pdf)
+                print(f"   Including cover page: {Path(cover_pdf).name}")
+        
+        # Add monthly PDFs
         for month in web_results["successful_months"]:
             if year:
                 pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{year}{month:02d}_{self.language}_web.pdf"
@@ -594,26 +637,6 @@ class CalendarBuilder:
                 bound_web = None
         else:
             bound_web = None
-        
-        # Step 5: Generate cover page
-        print(f"\n=== STEP 5: Generating Cover Page ===")
-        try:
-            # Generate print cover page
-            print_cover_result = await self.build_cover_page(year, 2026, True, False)
-            if print_cover_result["success"]:
-                print(f"✅ Print cover page generated")
-            else:
-                print(f"⚠️ Print cover page failed: {print_cover_result.get('reason', 'unknown error')}")
-            
-            # Generate web cover page  
-            web_cover_result = await self.build_cover_page(year, 2026, True, True)
-            if web_cover_result["success"]:
-                print(f"✅ Web cover page generated")
-            else:
-                print(f"⚠️ Web cover page failed: {web_cover_result.get('reason', 'unknown error')}")
-                
-        except Exception as e:
-            print(f"⚠️ Cover page generation failed: {e}")
         
         # Step 6: Update landing page
         print(f"\n=== STEP 6: Updating Landing Page ===")
@@ -792,8 +815,13 @@ class CalendarBuilder:
         
         # Remove existing file if it exists to ensure replacement (not appending)
         if output_path.exists():
-            output_path.unlink()
-            print(f"🗑️  Removed existing file: {output_path.name}")
+            try:
+                output_path.unlink()
+                print(f"🗑️  Removed existing file: {output_path.name}")
+            except PermissionError:
+                raise PermissionError(f"Cannot overwrite existing PDF file (may be open in PDF viewer): {output_path.name}. Please close any PDF viewers and try again.")
+            except Exception as e:
+                raise Exception(f"Error removing existing PDF file: {e}")
         
         # Merge PDFs
         pdf_writer = PdfWriter()
@@ -987,6 +1015,33 @@ def main():
             print_pdfs = []
             web_pdfs = []
             
+            # Look for cover page PDFs first
+            if args.year:
+                # Year-based cover: portioid_calendar_cover_YYYY_lang_print.pdf
+                cover_print_pdf = pdf_print_dir / f"portioid_calendar_cover_{args.year}_{language}_print.pdf"
+                cover_web_pdf = pdf_web_dir / f"portioid_calendar_cover_{args.year}_{language}_web.pdf"
+            else:
+                # Perpetual cover: portioid_calendar_cover_perpetual_lang_print.pdf
+                cover_print_pdf = pdf_print_dir / f"portioid_calendar_cover_perpetual_{language}_print.pdf"
+                cover_web_pdf = pdf_web_dir / f"portioid_calendar_cover_perpetual_{language}_web.pdf"
+            
+            cover_print_exists = cover_print_pdf.exists()
+            cover_web_exists = cover_web_pdf.exists()
+            
+            if not cover_print_exists and not cover_web_exists:
+                period_name = str(args.year) if args.year else "perpetual calendar"
+                print(f"❌ Cover page PDF not found for {period_name} in {language}")
+                print(f"   Expected print: {cover_print_pdf}")
+                print(f"   Expected web: {cover_web_pdf}")
+                print(f"   Run with --cover option first to generate cover page")
+                continue
+            
+            # Add cover page PDFs first (they should appear first in bound PDF)
+            if cover_print_exists:
+                print_pdfs.append(str(cover_print_pdf))
+            if cover_web_exists:
+                web_pdfs.append(str(cover_web_pdf))
+            
             # Look for monthly PDFs 
             for month in range(1, 13):
                 month_str = f"{month:02d}"
@@ -1004,14 +1059,20 @@ def main():
                 if web_pdf.exists():
                     web_pdfs.append(str(web_pdf))
             
-            print(f"📄 Found {len(print_pdfs)} print PDFs and {len(web_pdfs)} web PDFs")
+            # Report what was found
+            cover_count = int(cover_print_exists) + int(cover_web_exists)
+            monthly_print_count = len(print_pdfs) - int(cover_print_exists)
+            monthly_web_count = len(web_pdfs) - int(cover_web_exists)
+            
+            print(f"📄 Found cover page: {cover_count}/2 formats")
+            print(f"📄 Found {monthly_print_count} monthly print PDFs and {monthly_web_count} monthly web PDFs")
             
             if not print_pdfs and not web_pdfs:
                 period_name = str(args.year) if args.year else "perpetual calendar"
                 print(f"❌ No monthly PDF files found for {period_name} in {language}")
                 continue
             
-            # Delete existing bound PDFs to ensure clean recreation
+            # Delete existing bound PDFs to ensure clean recreation (with error handling)
             if args.year:
                 print_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{language}_print.pdf"
                 web_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{language}_web.pdf"
@@ -1019,13 +1080,31 @@ def main():
                 print_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{language}_print.pdf"
                 web_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{language}_web.pdf"
             
+            # Try to remove existing print bound PDF
             if print_bound_path.exists():
-                print_bound_path.unlink()
-                print(f"🗑️  Removed existing print bound PDF: {print_bound_path.name}")
-                
+                try:
+                    print_bound_path.unlink()
+                    print(f"🗑️  Removed existing print bound PDF: {print_bound_path.name}")
+                except PermissionError:
+                    print(f"⚠️  Cannot remove existing print bound PDF (file may be open): {print_bound_path.name}")
+                    print(f"   Please close any PDF viewers and try again, or rename the existing file")
+                    continue
+                except Exception as e:
+                    print(f"⚠️  Error removing existing print bound PDF: {e}")
+                    continue
+                    
+            # Try to remove existing web bound PDF
             if web_bound_path.exists():
-                web_bound_path.unlink()
-                print(f"🗑️  Removed existing web bound PDF: {web_bound_path.name}")
+                try:
+                    web_bound_path.unlink()
+                    print(f"🗑️  Removed existing web bound PDF: {web_bound_path.name}")
+                except PermissionError:
+                    print(f"⚠️  Cannot remove existing web bound PDF (file may be open): {web_bound_path.name}")
+                    print(f"   Please close any PDF viewers and try again, or rename the existing file")
+                    continue
+                except Exception as e:
+                    print(f"⚠️  Error removing existing web bound PDF: {e}")
+                    continue
             
             # Bind print PDFs
             print_success = False
