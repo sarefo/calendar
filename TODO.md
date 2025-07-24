@@ -2,6 +2,7 @@
 + seems the observation links don't get updated when rebuilding?
   + neither in date picker nor in PDF/html page links
 + replace tabs in photo_information.txt with commas?
++ 2027 images no longer show in 2026 calendar
 
 ## Photos
 
