@@ -208,6 +208,14 @@
             padding: 0;
         }
 
+        .calendar-day-empty {
+            width: {{ layout.photo_width }}mm;
+            height: {{ layout.photo_height }}mm;
+            background: white;
+            border: none;
+            padding: 0;
+        }
+
         .day-image {
             width: 100%;
             height: 100%;
@@ -341,6 +349,13 @@
                 height: {{ layout.photo_height }}mm !important;
             }
 
+            .calendar-day-empty {
+                width: {{ layout.photo_width }}mm !important;
+                height: {{ layout.photo_height }}mm !important;
+                background: white !important;
+                border: none !important;
+            }
+
             .calendar-week-row {
                 height: {{ layout.row_height }}mm !important;
             }
@@ -467,6 +482,10 @@
                 {% for week in weeks %}
                 <tr class="calendar-week-row">
                     {% for day in week.dates %}
+                    {% if day.day == "" %}
+                    <!-- Empty white cell for positions after the month ends -->
+                    <td class="calendar-day-empty"></td>
+                    {% else %}
                     <td class="calendar-day">
                         {% if day.image_path %}
                             {% if day.inaturalist_url %}
@@ -488,6 +507,7 @@
                         </div>
                         {% endif %}
                     </td>
+                    {% endif %}
                     {% endfor %}
                 </tr>
                 {% endfor %}
