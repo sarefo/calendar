@@ -281,6 +281,49 @@ class CalendarGenerator:
         
         return None
     
+    def find_photo_for_date_with_key(self, target_date: date, photo_dirs: List[str], use_absolute_paths: bool = False, web_optimized: bool = False, month_key_override: str = None) -> Optional[str]:
+        """
+        Find photo for a specific date with a custom month key override
+        Used for special cases like Feb 29th in perpetual calendars
+        """
+        # Load photo information if not already loaded
+        if not hasattr(self, '_photo_info'):
+            self._photo_info = self._load_photo_information()
+        
+        # Use override month key if provided
+        month_key = month_key_override if month_key_override else f"{target_date.year}{target_date.month:02d}"
+        day_of_month = target_date.day
+        
+        # Check if we have photo info for this month
+        if month_key in self._photo_info:
+            photos_for_month = self._photo_info[month_key]
+            photo_index = day_of_month - 1  # Convert to 0-based index
+            
+            if photo_index < len(photos_for_month):
+                filename = photos_for_month[photo_index]
+                
+                # Find the actual file in photo directories
+                for photo_dir in photo_dirs:
+                    photo_path = Path(photo_dir) / f"{filename}.jpg"
+                    
+                    # Check for web thumbnail if web_optimized is requested
+                    if web_optimized and not use_absolute_paths:
+                        web_photo_path = Path(photo_dir) / "web" / f"{filename}.jpg"
+                        if web_photo_path.exists():
+                            # Return relative path to web thumbnail
+                            return f"../../../../{web_photo_path}"
+                    
+                    # Fall back to original photo
+                    if photo_path.exists():
+                        if use_absolute_paths:
+                            # Return absolute filesystem path for PDF conversion
+                            return str(photo_path.resolve())
+                        else:
+                            # Return relative path from output directory to source photos
+                            return f"../../../../{photo_path}"
+        
+        return None
+    
     def _extract_date_from_filename(self, filename: str) -> Optional[date]:
         """Extract date from filename using various patterns"""
         try:
@@ -354,10 +397,10 @@ class CalendarGenerator:
         missing_photos = []
         
         for day in range(1, days_in_month + 1):
-            # Create date object using source year for photo lookup
-            # Special handling for February 29th - use 2024 (leap year)
-            if month == 2 and day == 29:
-                day_date = date(2024, month, day)  # Use leap year for Feb 29
+            # Create date object - handle Feb 29th for non-leap years
+            if month == 2 and day == 29 and not calendar.isleap(source_year):
+                # Use a known leap year for date object, but photo lookup will use source year
+                day_date = date(2024, month, day)
             else:
                 day_date = date(source_year, month, day)
             
@@ -369,8 +412,13 @@ class CalendarGenerator:
                 'is_next_month': False
             }
             
-            # Find photo for this day
-            day_info['image_path'] = self.find_photo_for_date(day_date, photo_dirs, use_absolute_paths, web_optimized)
+            # Find photo for this day - use source year for photo lookup
+            if month == 2 and day == 29 and not calendar.isleap(source_year):
+                # For Feb 29th in non-leap years, override the photo lookup to use source year
+                month_key_override = f"{source_year}{month:02d}"
+                day_info['image_path'] = self.find_photo_for_date_with_key(day_date, photo_dirs, use_absolute_paths, web_optimized, month_key_override)
+            else:
+                day_info['image_path'] = self.find_photo_for_date(day_date, photo_dirs, use_absolute_paths, web_optimized)
             
             # Check if photo is missing
             if day_info['image_path'] is None:
@@ -432,13 +480,13 @@ class CalendarGenerator:
         if days_in_month == 31:
             # 7x5 grid for 31-day months - calculated for elegant fit
             photo_width = 56.0  # Fits elegantly in 400mm width with spacing (400mm ÷ 7 - spacing)
-            photo_height = 47.3  # Expanded from 42.4mm (+4.9mm)  
-            row_height = 49.8   # Expanded from 46.4mm to accommodate larger photos
+            photo_height = 46.8  # Reduced from 47.3mm (-1.5mm) for better bottom margin  
+            row_height = 49.3   # Adjusted to accommodate smaller photos
         else:
             # 6x5 grid for shorter months - wider photos with elegant spacing
             photo_width = 65.0  # Fits elegantly in 400mm width with spacing (400mm ÷ 6 - spacing)
-            photo_height = 47.3  # Expanded from 42.4mm (+4.9mm)
-            row_height = 49.8   # Expanded from 46.4mm to accommodate larger photos
+            photo_height = 46.8  # Reduced from 47.3mm (-1.5mm) for better bottom margin
+            row_height = 49.3   # Adjusted to accommodate smaller photos
         
         layout_info = {
             'layout_type': 'perpetual',
