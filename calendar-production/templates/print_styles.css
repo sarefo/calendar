@@ -310,6 +310,84 @@ body {
     outline-offset: 1mm;
 }
 
+/* Cover page specific styles */
+.cover-grid-4x3 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 3mm;
+}
+
+.cover-photo-frame {
+    border-radius: 6mm;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+}
+
+.cover-hero-title {
+    font-size: 52pt;
+    font-weight: 800;
+    letter-spacing: 2mm;
+    line-height: 1.1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cover-hero-subtitle {
+    font-size: 28pt;
+    font-weight: 400;
+    letter-spacing: 1mm;
+    font-style: italic;
+}
+
+.cover-year-badge {
+    font-size: 32pt;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25mm;
+    padding: 4mm 8mm;
+    backdrop-filter: blur(10px);
+}
+
+.cover-perpetual-badge {
+    font-size: 24pt;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25mm;
+    padding: 4mm 12mm;
+    backdrop-filter: blur(10px);
+    letter-spacing: 1mm;
+}
+
+.cover-photo-month {
+    font-size: 14pt;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.cover-photo-location {
+    font-size: 10pt;
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    line-height: 1.2;
+}
+
+.cover-gradient-bg {
+    background: linear-gradient(135deg, #74ac00 0%, #5a8500 100%);
+}
+
+.cover-decorative-overlay {
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+}
+
 /* Print debugging utilities (remove in production) */
 .debug-print {
     outline: 1px dashed red;

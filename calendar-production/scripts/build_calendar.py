@@ -595,8 +595,28 @@ class CalendarBuilder:
         else:
             bound_web = None
         
-        # Step 5: Update landing page
-        print(f"\n=== STEP 5: Updating Landing Page ===")
+        # Step 5: Generate cover page
+        print(f"\n=== STEP 5: Generating Cover Page ===")
+        try:
+            # Generate print cover page
+            print_cover_result = await self.build_cover_page(year, 2026, True, False)
+            if print_cover_result["success"]:
+                print(f"✅ Print cover page generated")
+            else:
+                print(f"⚠️ Print cover page failed: {print_cover_result.get('reason', 'unknown error')}")
+            
+            # Generate web cover page  
+            web_cover_result = await self.build_cover_page(year, 2026, True, True)
+            if web_cover_result["success"]:
+                print(f"✅ Web cover page generated")
+            else:
+                print(f"⚠️ Web cover page failed: {web_cover_result.get('reason', 'unknown error')}")
+                
+        except Exception as e:
+            print(f"⚠️ Cover page generation failed: {e}")
+        
+        # Step 6: Update landing page
+        print(f"\n=== STEP 6: Updating Landing Page ===")
         try:
             update_landing_page()
             print("✅ Landing page updated")
@@ -630,6 +650,99 @@ class CalendarBuilder:
             print(f"❌ Failed months: {results['failed_months']}")
         
         return results
+    
+    async def build_cover_page(self, year: int = None, source_year: int = 2026, 
+                              generate_pdf: bool = True, web_mode: bool = False) -> dict:
+        """Build cover page for calendar
+        
+        Args:
+            year: Calendar year (None for perpetual calendar) 
+            source_year: Year to source photos from (default: 2026)
+            generate_pdf: Whether to generate PDF files
+            web_mode: If True, creates web-optimized PDFs (smaller file sizes)
+        """
+        
+        if year:
+            print(f"\n📖 Building {self.language.upper()} cover page for {year}")
+        else:
+            print(f"\n📖 Building {self.language.upper()} perpetual cover page")
+        
+        # Get organized output paths
+        paths = self.get_output_paths(year)
+        
+        # Create all necessary directories
+        for path in paths.values():
+            Path(path).mkdir(parents=True, exist_ok=True)
+        
+        try:
+            # Generate cover page HTML
+            html_file = self.calendar_gen.generate_cover_page(
+                year=year,
+                source_year=source_year,
+                output_dir=paths["html_dir"],
+                use_absolute_paths=False
+            )
+            print(f"✅ Generated cover HTML: {html_file}")
+            
+            result = {
+                "success": True,
+                "year": year,
+                "html_file": html_file,
+                "type": "cover"
+            }
+            
+            # Generate PDF if requested
+            if generate_pdf:
+                # Generate PDF-specific HTML with absolute paths
+                pdf_html_file = self.calendar_gen.generate_cover_page(
+                    year=year,
+                    source_year=source_year,
+                    output_dir=paths["html_dir"],
+                    use_absolute_paths=True
+                )
+                
+                # Determine PDF output directory and filename based on mode
+                if web_mode:
+                    pdf_output_dir = paths["pdf_web_dir"]
+                    suffix = "_web"
+                else:
+                    pdf_output_dir = paths["pdf_print_dir"]
+                    suffix = "_print"
+                
+                if year:
+                    pdf_filename = f"portioid_calendar_cover_{year}_{self.language}{suffix}.pdf"
+                else:
+                    pdf_filename = f"portioid_calendar_cover_perpetual_{self.language}{suffix}.pdf"
+                
+                pdf_path = Path(pdf_output_dir) / pdf_filename
+                
+                try:
+                    converter = HTMLToPDFConverter("auto")
+                    pdf_file = await converter.convert_html_to_pdf(pdf_html_file, str(pdf_path), web_mode=web_mode)
+                    if pdf_file:
+                        result["pdf_file"] = pdf_file
+                        print(f"✅ Generated {'web' if web_mode else 'print'} cover PDF: {pdf_filename}")
+                    else:
+                        print(f"⚠️  Cover PDF generation failed")
+                        result["pdf_error"] = "conversion_failed"
+                except Exception as e:
+                    print(f"⚠️  Cover PDF conversion failed: {e}")
+                    result["pdf_error"] = str(e)
+                
+                # Clean up PDF-specific HTML file
+                try:
+                    if pdf_html_file != html_file:
+                        Path(pdf_html_file).unlink()
+                except:
+                    pass
+            
+            return result
+            
+        except Exception as e:
+            print(f"❌ Error building cover page: {e}")
+            import traceback
+            traceback.print_exc()
+            return {"success": False, "reason": str(e)}
     
     def bind_pdfs_to_single_file(self, pdf_files: list, output_file: str) -> str:
         """Bind multiple PDFs into a single PDF file"""
@@ -735,7 +848,8 @@ def main():
     parser.add_argument('--language', default='en', help="Language(s) for calendar generation - single (e.g., 'en') or comma-separated (e.g., 'en,de,es')")
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
-    parser.add_argument('--complete', action='store_true', help="Complete build: generate HTML + both print and web PDFs + bind both versions")
+    parser.add_argument('--complete', action='store_true', help="Complete build: generate HTML + both print and web PDFs + bind both versions + cover page")
+    parser.add_argument('--cover', action='store_true', help="Generate cover page only")
     parser.add_argument('--bind-pdf', action='store_true', help="Bind all monthly PDFs into single file")
     parser.add_argument('--bind-existing', action='store_true', help="Only bind existing PDFs without regenerating")
     
@@ -743,12 +857,14 @@ def main():
     
     # Check if no meaningful arguments provided - show usage
     meaningful_args = [
-        args.year, args.months, args.complete, args.bind_pdf, args.bind_existing
+        args.year, args.months, args.complete, args.cover, args.bind_pdf, args.bind_existing
     ]
     if not any(meaningful_args):
         parser.print_help()
         print("\nExamples:")
-        print("  python3 build_calendar.py --year 2026 --complete                    # Complete build for 2026")
+        print("  python3 build_calendar.py --year 2026 --complete                    # Complete build for 2026 with cover")
+        print("  python3 build_calendar.py --cover --year 2026 --language de         # German cover page for 2026")
+        print("  python3 build_calendar.py --cover --language es                     # Spanish perpetual cover page")
         print("  python3 build_calendar.py --months 1,2,3 --language en,de          # Months 1-3 in English and German")
         print("  python3 build_calendar.py --months 6 --year 2026                   # Single month (June 2026)")
         print("  python3 build_calendar.py --complete --language de                  # German perpetual calendar")
@@ -762,6 +878,74 @@ def main():
         if lang not in valid_languages:
             print(f"❌ Invalid language: {lang}. Supported languages: {', '.join(valid_languages)}")
             return 1
+    
+    # Handle cover page only mode
+    if args.cover:
+        print(f"📖 Generating cover page{'s' if len(languages) > 1 else ''}")
+        
+        # Process each language
+        async def build_covers():
+            overall_success = True
+            
+            for language in languages:
+                print(f"\n{'='*50}")
+                print(f"Building cover page for language: {language.upper()}")
+                print(f"{'='*50}")
+                
+                # Initialize builder for this language
+                try:
+                    builder = CalendarBuilder(args.config, language)
+                except Exception as e:
+                    print(f"Failed to initialize builder for {language}: {e}")
+                    overall_success = False
+                    continue
+                
+                success_count = 0
+                
+                if not args.no_pdf:
+                    # Build print cover page
+                    print_result = await builder.build_cover_page(args.year, 2026, True, False)
+                    if print_result["success"]:
+                        success_count += 1
+                        cover_type = f"cover for {args.year}" if args.year else "perpetual cover"
+                        print(f"✅ Print cover created for {cover_type} in {language.upper()}")
+                    else:
+                        print(f"❌ Print cover failed for {language.upper()}: {print_result.get('reason', 'unknown error')}")
+                        overall_success = False
+                    
+                    # Build web cover page
+                    web_result = await builder.build_cover_page(args.year, 2026, True, True)
+                    if web_result["success"]:
+                        success_count += 1
+                        cover_type = f"cover for {args.year}" if args.year else "perpetual cover"
+                        print(f"✅ Web cover created for {cover_type} in {language.upper()}")
+                    else:
+                        print(f"❌ Web cover failed for {language.upper()}: {web_result.get('reason', 'unknown error')}")
+                        overall_success = False
+                else:
+                    # HTML only
+                    result = await builder.build_cover_page(args.year, 2026, False, False)
+                    if result["success"]:
+                        success_count = 1
+                        cover_type = f"cover for {args.year}" if args.year else "perpetual cover"
+                        print(f"✅ HTML cover created for {cover_type} in {language.upper()}")
+                    else:
+                        print(f"❌ Cover failed for {language.upper()}: {result.get('reason', 'unknown error')}")
+                        overall_success = False
+                
+                if success_count > 0:
+                    print(f"✅ Successfully built cover page in {language.upper()}")
+            
+            # Final summary
+            if overall_success:
+                print(f"\n🎉 Successfully built cover pages for all languages: {', '.join(lang.upper() for lang in languages)}")
+                return 0
+            else:
+                print(f"\n❌ Some cover builds failed. Check output above for details.")
+                return 1
+        
+        # Run cover build
+        return asyncio.run(build_covers())
     
     # Handle bind-existing mode
     if args.bind_existing:

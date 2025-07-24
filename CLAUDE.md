@@ -12,28 +12,25 @@
 
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
-**Latest Updates (July 2025)**:
+**Latest Updates (January 2025)**:
+- ✅ **MAJOR**: Professional cover page system with 12-photo showcase grid
+- ✅ **MAJOR**: Multi-language cover page support (English, German, Spanish)
+- ✅ **MAJOR**: Cover page integration in complete build workflow (--complete includes cover)
+- ✅ **MAJOR**: Dedicated --cover option for standalone cover page generation
+- ✅ **MAJOR**: Cover page PDF generation (both print and web formats)
+- ✅ **MAJOR**: Cover photo selection from photo_information.txt "cover" column
 - ✅ **MAJOR**: Perpetual calendar system - day-only layout without weekdays or week numbers
 - ✅ **MAJOR**: Streamlined world map system - single map per month shared across all languages
 - ✅ **MAJOR**: GitHub Pages integration - calendar HTML files accessible via subdirectory paths
-- ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding (portioid_calendar_YYYYMM_lang_type.pdf)
+- ✅ **MAJOR**: Enhanced PDF naming with language extensions and project branding
 - ✅ **MAJOR**: Full internationalization support (German and Spanish)
 - ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
-- ✅ **MAJOR**: Simplified PDF generation - only print and web formats
 - ✅ **MAJOR**: Dual PDF generation - single commands now create both print and web PDFs
 - ✅ **MAJOR**: Optimized A3 layout - extended green header with bleed, added ring binding space
-- ✅ **MAJOR**: Consistent PDF naming - print files now use "_print" suffix like web files use "_web"
-- ✅ **FIXED**: GitHub Pages calendar links - index.html now correctly points to subdirectory calendar pages
-- ✅ **FIXED**: Photo display paths corrected for new nested folder structure
+- ✅ **FIXED**: Complete 12-month cover photo system (all months 1-12 now have cover photos)
 - ✅ **FIXED**: Calendar container height optimized to 208mm to ensure single-page output
-- ✅ **FIXED**: Removed calendar padding for cleaner layout and more photo space
 - ✅ **FIXED**: Crop marks only show in PDF, hidden in HTML preview
-- ✅ **FIXED**: QR code processing - excluded from smart cropping, maintains square aspect ratio, saved as PNG
-- ✅ Implemented complete build workflow (--complete option)
-- ✅ Added dual-format PDF support (print and web compression modes)
-- ✅ Enhanced PDF binding with separate print and web versions
-- ✅ Updated --bind-existing to create both print and web bound PDFs
-- ✅ Removed unused font files and PDF files from git tracking  
+- ✅ **FIXED**: QR code processing - excluded from smart cropping, maintains square aspect ratio, saved as PNG  
 
 ---
 
@@ -55,6 +52,15 @@ This system generates professional A3 landscape photo calendars featuring:
 - **February 29th support** included for leap year compatibility
 - **Larger month names** (no year display) with prominent 50pt typography
 - **Universal QR codes** with simplified month-only hash parameters
+
+### **Professional Cover Page System** 🆕
+- **4×3 photo showcase grid** featuring 12 selected photos (one per month)
+- **Multi-language titles and subtitles** with elegant typography
+- **Year badges** for year-based calendars or "Perpetual Calendar" badges
+- **Location integration** with automatic reading from README.md files
+- **Cover photo selection** via "cover" marking in photo_information.txt
+- **Dual PDF formats** (print-ready and web-optimized versions)
+- **Professional A3 layout** with proper bleed and crop marks
 
 ### **Shared Features:**
 - **Daily macro photography** (one photo per day, 28-31 per month)
@@ -86,7 +92,9 @@ calendar/
 │   │   ├── photoshop_specs.py    # Photo crop specifications
 │   │   └── test_workflow.py      # 🧪 Test suite
 │   ├── templates/                # HTML/CSS templates
-│   │   ├── calendar_grid.html    # Main calendar template
+│   │   ├── calendar_grid.html    # Year-based calendar template
+│   │   ├── calendar_grid_perpetual.html # Perpetual calendar template
+│   │   ├── cover_page.html       # Cover page template
 │   │   └── print_styles.css      # CMYK print-optimized styles
 │   ├── data/                     # Configuration & content
 │   │   ├── calendar_config.json  # Calendar settings
@@ -94,7 +102,7 @@ calendar/
 │   │   ├── print-ready/          # Final PDFs
 │   │   └── previews/             # HTML previews
 │   ├── photos/                   # Photo repository (consolidated location)
-│   │   ├── photo_information.txt # Photo ordering file (YYYYMM\tfilename\tobservation_id)
+│   │   ├── photo_information.txt # Photo ordering file (YYYYMM\tfilename\tobservation_id\tcover_photo)
 │   │   └── YYYY/                 # Year directory
 │   │       └── MM/               # Month directory (01-12)
 │   │           ├── photo1.jpg    # Photos listed in photo_information.txt
@@ -531,29 +539,44 @@ Example:
 
 #### **Year-Based Calendars**
 ```bash
-# Complete build: HTML + Print PDFs + Web PDFs + Bind both versions + Update landing page
+# Complete build: HTML + Print PDFs + Web PDFs + Cover Page + Bind both versions + Update landing page
 python3 scripts/build_calendar.py --year 2026 --complete
 
-# Complete German calendar with all formats and localized QR codes
+# Complete German calendar with all formats, cover page, and localized QR codes
 python3 scripts/build_calendar.py --year 2026 --language de --complete
 
-# Complete Spanish calendar
+# Complete Spanish calendar with cover page
 python3 scripts/build_calendar.py --year 2026 --language es --complete
 
-# Complete build for specific months
+# Complete build for specific months (no cover page for partial builds)
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --complete
 ```
 
 #### **Perpetual Calendars** 🆕
 ```bash
-# Complete perpetual calendar - all 12 months (HTML + both PDF formats)
+# Complete perpetual calendar - all 12 months + cover page (HTML + both PDF formats)
 python3 scripts/build_calendar.py --complete
 
-# Complete German perpetual calendar with localized QR codes
+# Complete German perpetual calendar with cover page and localized QR codes
 python3 scripts/build_calendar.py --language de --complete
 
-# Complete perpetual calendar for specific months
+# Complete perpetual calendar for specific months (no cover page for partial builds)
 python3 scripts/build_calendar.py --months "1,2,3" --complete
+```
+
+#### **Cover Page Generation** 🆕
+```bash
+# Generate English cover page for 2026 (HTML + both PDFs)
+python3 scripts/build_calendar.py --cover --year 2026 --language en
+
+# Generate German perpetual cover page (HTML + both PDFs)
+python3 scripts/build_calendar.py --cover --language de
+
+# Generate Spanish cover page (HTML only)
+python3 scripts/build_calendar.py --cover --year 2026 --language es --no-pdf
+
+# Generate cover pages for multiple languages
+python3 scripts/build_calendar.py --cover --year 2026 --language en,de,es
 ```
 
 **📋 Standard Build Options**
@@ -765,10 +788,24 @@ python3 scripts/build_calendar.py --install-deps
 - Check existing PDFs are in `output/print-ready/` directory
 - Ensure PDF files follow `YYYYMM.pdf` naming convention
 
+**"No cover photo found for YYYYMM"**
+- Check `calendar-production/photos/photo_information.txt` for entries marked with "cover" in 4th column
+- Format should be: `YYYYMM\tfilename\tobservation_id\tcover`
+- Ensure all 12 months (202601-202612) have cover photos marked
+- Cover photos must exist as `.jpg` files in respective month directories
+- Run: `python3 scripts/build_calendar.py --cover --no-pdf` to test cover generation
+
+**"Cover page generation failed"**
+- Verify location data exists in all month README.md files
+- Check that cover photos exist in `photos/YYYY/MM/` directories
+- Ensure photo_information.txt uses tab-separated format with cover column
+- Test individual components: location reading, photo loading, template rendering
+
 **"Can't find output HTML or PDF files"**
-- **HTML Files**: Located at `calendar-production/output/YYYYMM.html` (e.g., `output/202609.html`)
-- **PDF Files**: Located at `calendar-production/output/print-ready/YYYYMM.pdf` (e.g., `output/print-ready/202609.pdf`)
-- **Language-specific assets**: QR codes include language suffix (e.g., `output/assets/qr-2026-09-de.png`)
+- **Calendar Files**: `output/YYYY/lang/html/YYYYMM.html` and `output/YYYY/lang/pdf/print|web/`
+- **Perpetual Files**: `output/perpetual/lang/html/MM.html` and `output/perpetual/lang/pdf/`
+- **Cover Files**: `output/YYYY/lang/html/cover_YYYY.html` or `output/perpetual/lang/html/cover_perpetual.html`
+- **Cover PDFs**: `portioid_calendar_cover_YYYY_lang_print.pdf` and `portioid_calendar_cover_YYYY_lang_web.pdf`
 - **Check current directory**: Run commands from `calendar-production/` directory
 - **Verify build success**: Look for "✅ Generated HTML:" and "🎉 Successfully built" messages
 
@@ -777,33 +814,37 @@ python3 scripts/build_calendar.py --install-deps
 ## 📞 Support & Development
 
 ### Current Status
-✅ **Production-ready workflow with complete build system**  
+✅ **Production-ready workflow with complete build system including cover pages**  
+✅ **Professional cover page system with 12-photo showcase grid**  
+✅ **Multi-language cover page support (English, German, Spanish)**
+✅ **Cover page integration in complete build workflow (--complete includes cover)**  
+✅ **Dedicated --cover option for standalone cover page generation**  
+✅ **Cover page PDF generation (both print and web formats)**  
+✅ **Complete 12-month cover photo system (all months 1-12 have cover photos)**  
 ✅ **Dynamic row layout system - eliminates empty rows completely**  
 ✅ **Enhanced photo presentation: Variable dimensions (42.4mm vs 34.7mm height)**  
-✅ **Streamlined design: removed weekday overlays and placeholders**  
 ✅ **Smart QR integration: flexible hash parameters for month/date navigation**  
 ✅ **Auto-location reading from README.md files**  
 ✅ **Dual-format PDF generation: Print and Web-optimized modes**  
 ✅ **Complete build workflow: Single command generates everything**  
 ✅ **Dual PDF binding: Separate print and web-optimized bound versions**  
-✅ **Web-compression: ~30MB total file size achievement**  
 ✅ **Landing page with hash parameter support implemented**  
 ✅ **Clean header design with integrated elements**  
 ✅ **Enhanced print media CSS for PDF consistency**  
 ✅ **Cross-year photo support: YYYYMM format with seamless overflow**
 
 ### Next Steps
-1. ✅ **Dynamic calendar layout system - NO MORE EMPTY ROWS!**
-2. ✅ **Enhanced QR code integration with smart landing page**
-3. ✅ **Optimized photo sizing - 10% larger photos in 75% of months**
-4. ✅ **Auto-location reading and hash parameter support**
-5. ✅ **Cross-year photo overflow - January shows December photos**
-6. ✅ **Complete build workflow with dual-format PDF generation**
-7. ✅ **Web-optimized PDF mode achieving ~30MB target**
-8. ✅ **Full internationalization with German and Spanish support**
-9. ✅ **Clean folder structure with organized output/2026/ hierarchy**
-10. ✅ **GitHub Pages integration with correct subdirectory paths**
-11. ⏳ **Generate remaining months for 2026 calendar with multi-language support**
+1. ✅ **Professional cover page system with 12-photo showcase grid**
+2. ✅ **Multi-language cover page support with localized titles**
+3. ✅ **Cover page integration in complete build workflow**
+4. ✅ **Dedicated --cover option for standalone generation**
+5. ✅ **Cover page PDF generation (print and web formats)**
+6. ✅ **Complete 12-month cover photo system**
+7. ✅ **Dynamic calendar layout system - NO MORE EMPTY ROWS!**
+8. ✅ **Enhanced QR code integration with smart landing page**
+9. ✅ **Complete build workflow with dual-format PDF generation**
+10. ✅ **Full internationalization with German and Spanish support**
+11. ⏳ **Generate remaining months for 2027+ calendar years**
 
 ### Contact
 - **Project Repository**: This calendar system

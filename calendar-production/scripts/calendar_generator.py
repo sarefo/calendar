@@ -706,6 +706,153 @@ class CalendarGenerator:
         self.save_calendar_html(html_content, output_file)
         
         return output_file
+    
+    def generate_cover_page(self, year: int = None, source_year: int = 2026, 
+                           output_dir: str = "output", use_absolute_paths: bool = False,
+                           calendar_title: str = None, calendar_subtitle: str = None) -> str:
+        """Generate cover page with 12 photos showcasing the calendar
+        
+        Args:
+            year: Calendar year (None for perpetual calendar)
+            source_year: Year to source photos from (default: 2026)
+            output_dir: Output directory for HTML file
+            use_absolute_paths: Use absolute paths for images (for PDF generation)
+            calendar_title: Override default title
+            calendar_subtitle: Override default subtitle
+            
+        Returns:
+            Path to generated HTML file
+        """
+        
+        # Import localization manager
+        try:
+            from .localization_manager import LocalizationManager
+        except ImportError:
+            from localization_manager import LocalizationManager
+        
+        localization = LocalizationManager(default_language=self.language)
+        
+        # Load photo information and observations
+        photo_info = self._load_photo_information()
+        photo_observations = self._load_photo_observations()
+        
+        # Get cover photos for all 12 months
+        cover_photos = []
+        
+        for month in range(1, 13):
+            yyyymm = f"{source_year}{month:02d}"
+            
+            try:
+                # Load location data for this month
+                location_data = self._load_location_from_readme(source_year, month)
+                location_display = location_data.get('location_display', f"Month {month}")
+            except (FileNotFoundError, ValueError) as e:
+                print(f"⚠️  Warning: Could not load location for month {month}: {e}")
+                location_display = f"Month {month}"
+            
+            # Find cover photo for this month from photo_information.txt
+            cover_photo_found = False
+            if yyyymm in photo_info:
+                photo_info_path = Path("photos/photo_information.txt")
+                
+                if photo_info_path.exists():
+                    with open(photo_info_path, 'r') as f:
+                        lines = f.readlines()
+                    
+                    # Look for cover photo in this month
+                    for line in lines[1:]:  # Skip header
+                        parts = line.strip().split('\t')
+                        if len(parts) >= 4 and parts[0].strip() == yyyymm and parts[3].strip() == "cover":
+                            filename = parts[1].strip()
+                            observation_id = parts[2].strip() if len(parts) > 2 else ""
+                            
+                            # Determine image path
+                            photo_dir = Path(f"photos/{source_year}/{month:02d}")
+                            
+                            if use_absolute_paths:
+                                current_dir = Path.cwd()
+                                image_path = str(current_dir / photo_dir / f"{filename}.jpg")
+                            else:
+                                image_path = f"../../../photos/{source_year}/{month:02d}/{filename}.jpg"
+                            
+                            # Get localized month name
+                            month_name = localization.get_month_name(month)
+                            
+                            cover_photos.append({
+                                "image_path": image_path,
+                                "month_name": month_name,
+                                "location": location_display,
+                                "month": month,
+                                "filename": filename,
+                                "observation_id": observation_id
+                            })
+                            
+                            cover_photo_found = True
+                            break
+            
+            if not cover_photo_found:
+                print(f"❌ No cover photo found for {yyyymm}")
+                # Still add entry with placeholder to maintain 12-photo grid
+                month_name = localization.get_month_name(month)
+                cover_photos.append({
+                    "image_path": "placeholder.jpg",
+                    "month_name": month_name,
+                    "location": location_display,
+                    "month": month,
+                    "filename": "placeholder",
+                    "observation_id": ""
+                })
+        
+        if len(cover_photos) != 12:
+            raise ValueError(f"Expected 12 cover photos, found {len(cover_photos)}")
+        
+        # Generate calendar title and subtitle based on language and type
+        if not calendar_title:
+            if self.language == "de":
+                calendar_title = "Makrofotografie Kalender"
+            elif self.language == "es":
+                calendar_title = "Calendario de Macrofotografía"
+            else:
+                calendar_title = "Macro Photography Calendar"
+        
+        if not calendar_subtitle:
+            if self.language == "de":
+                calendar_subtitle = "Eine Reise durch die Welt winziger Wunder"
+            elif self.language == "es":
+                calendar_subtitle = "Un viaje por el mundo de maravillas diminutas"
+            else:
+                calendar_subtitle = "A Journey Through the World of Tiny Wonders"
+        
+        # Prepare template data
+        calendar_data = {
+            "language": self.language,
+            "calendar_title": calendar_title,
+            "calendar_subtitle": calendar_subtitle,
+            "year": year,
+            "cover_photos": cover_photos
+        }
+        
+        # Render HTML using cover page template
+        html_content = self.render_calendar_html(calendar_data, "cover_page.html")
+        
+        # Determine output filename
+        if year:
+            output_file = f"{output_dir}/cover_{year}.html"
+        else:
+            output_file = f"{output_dir}/cover_perpetual.html"
+        
+        if use_absolute_paths:
+            output_file = output_file.replace(".html", "_pdf.html")
+        
+        # Save HTML file
+        self.save_calendar_html(html_content, output_file)
+        
+        print(f"✅ Generated cover page: {output_file}")
+        print(f"   - Found {len([p for p in cover_photos if p['filename'] != 'placeholder'])} cover photos")
+        print(f"   - Calendar type: {'Year ' + str(year) if year else 'Perpetual'}")
+        print(f"   - Language: {self.language.upper()}")
+        
+        return output_file
 
 def main():
     parser = argparse.ArgumentParser(description="Generate A3 landscape photo calendars")

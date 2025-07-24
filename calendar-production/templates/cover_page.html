@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="{{ language|default('en') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ calendar_title }} {% if year %}{{ year }}{% endif %}</title>
+    <link rel="stylesheet" href="print_styles.css">
+    <style>
+        /* Print-specific styles for A3 landscape */
+        @page {
+            size: A3 landscape;
+            margin: 0;
+            bleed: 3mm;
+        }
+
+        /* Reset browser defaults */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cover-page {
+            width: 420mm;
+            height: 297mm;
+            position: relative;
+            background: linear-gradient(135deg, #74ac00 0%, #5a8500 100%);
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Hero section with title */
+        .hero-section {
+            position: absolute;
+            top: 15mm;
+            left: 13mm;
+            right: 13mm;
+            height: 80mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            z-index: 10;
+        }
+
+        .calendar-title {
+            font-size: 52pt;
+            font-weight: 800;
+            margin: 0 0 8mm 0;
+            letter-spacing: 2mm;
+            color: white;
+            line-height: 1.1;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .calendar-subtitle {
+            font-size: 28pt;
+            font-weight: 400;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 1mm;
+            font-style: italic;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 4mm 8mm;
+            border-radius: 25mm;
+            font-size: 32pt;
+            font-weight: 700;
+            margin-top: 6mm;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .perpetual-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 4mm 12mm;
+            border-radius: 25mm;
+            font-size: 24pt;
+            font-weight: 600;
+            margin-top: 6mm;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            letter-spacing: 1mm;
+        }
+
+        /* Photo showcase grid */
+        .photo-showcase {
+            position: absolute;
+            top: 105mm;
+            left: 13mm;
+            right: 13mm;
+            bottom: 15mm;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 3mm;
+            z-index: 5;
+        }
+
+        .showcase-photo {
+            position: relative;
+            border-radius: 6mm;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .showcase-photo:hover {
+            transform: scale(1.02);
+        }
+
+        .showcase-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 3mm 4mm 4mm 4mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .photo-month {
+            font-size: 14pt;
+            font-weight: 700;
+            margin: 0 0 1mm 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .photo-location {
+            font-size: 10pt;
+            font-weight: 400;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            line-height: 1.2;
+        }
+
+        /* Decorative elements */
+        .cover-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Print optimizations */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .cover-page {
+                page-break-after: always;
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
+                height: 297mm !important;
+                box-sizing: border-box !important;
+            }
+
+            .photo-showcase {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                grid-template-rows: repeat(3, 1fr) !important;
+                gap: 3mm !important;
+            }
+
+            .showcase-photo img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                display: block !important;
+            }
+
+            /* Show crop marks in print/PDF */
+            .crop-marks {
+                display: block !important;
+            }
+        }
+
+        /* Screen view adjustments */
+        @media screen {
+            .cover-page {
+                min-height: 100vh;
+            }
+        }
+
+        /* Crop marks for professional printing - only top and sides */
+        .crop-marks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: block;
+            z-index: 1000;
+        }
+
+        .crop-mark {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .crop-mark.horizontal {
+            height: 0.5px;
+            width: 10mm;
+        }
+
+        .crop-mark.vertical {
+            width: 0.5px;
+            height: 10mm;
+        }
+
+        /* Top corner crop marks only - no bottom cropping needed */
+        .crop-mark.top-left {
+            top: 3mm;
+            left: -2mm;
+        }
+
+        .crop-mark.top-right {
+            top: 3mm;
+            right: -2mm;
+        }
+
+        /* Vertical marks for top corners */
+        .crop-mark.vertical.top-left {
+            top: -2mm;
+            left: 3mm;
+        }
+
+        .crop-mark.vertical.top-right {
+            top: -2mm;
+            right: 3mm;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cover-page">
+        <!-- Top corner crop marks for professional printing -->
+        <div class="crop-marks">
+            <!-- Top corners only - no bottom crop needed -->
+            <div class="crop-mark horizontal top-left"></div>
+            <div class="crop-mark vertical top-left"></div>
+            <div class="crop-mark horizontal top-right"></div>
+            <div class="crop-mark vertical top-right"></div>
+        </div>
+
+        <!-- Decorative background elements -->
+        <div class="cover-decoration"></div>
+
+        <!-- Hero section with title -->
+        <section class="hero-section">
+            <h1 class="calendar-title">{{ calendar_title }}</h1>
+            <p class="calendar-subtitle">{{ calendar_subtitle }}</p>
+            {% if year %}
+            <div class="year-badge">{{ year }}</div>
+            {% else %}
+            <div class="perpetual-badge">{% if language == 'de' %}Immerwährender Kalender{% elif language == 'es' %}Calendario Perpetuo{% else %}Perpetual Calendar{% endif %}</div>
+            {% endif %}
+        </section>
+
+        <!-- Photo showcase grid -->
+        <section class="photo-showcase">
+            {% for photo in cover_photos %}
+            <div class="showcase-photo">
+                <img src="{{ photo.image_path }}" alt="{{ photo.month_name }} - {{ photo.location }}" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-month">{{ photo.month_name }}</div>
+                    <div class="photo-location">{{ photo.location }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+    </div>
+</body>
+
+</html>

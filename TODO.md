@@ -4,6 +4,12 @@
 
 ## Photos
 
+## Cover page
++ title: Biodiversity Calendar (but choose a more engaging phrasing)
++ three columns, four rows
++ lose the month names
++ don't go all green background. especially on the bottom it needs to be white
+
 ## PDF version
 + make sure spiral binding does not ruin title elements
 + consider embedding fonts for print shops
@@ -31,10 +37,6 @@
 + modify week_calculator.py to support Sunday as first day
 + update calendar templates to handle both Monday and Sunday start
 + add language/region support for different week start preferences
-
-## Title page
-+ 12 photos with country names
-+ title?
 
 ## Workflow
 
