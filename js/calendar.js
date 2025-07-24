@@ -213,8 +213,19 @@ function updateDateDisplay(date) {
 
 // Open observation for current date
 function openCurrentObservation() {
-    const dateString = formatDateForLookup(currentDate);
-    const observationId = photoObservations[dateString];
+    let dateString = formatDateForLookup(currentDate);
+    let observationId = photoObservations[dateString];
+
+    // If no observation found for current date, try 2026 equivalent for perpetual calendar
+    if (!observationId || observationId === '0') {
+        const currentDateObj = new Date(currentDate);
+        const month = currentDateObj.getMonth() + 1; // 1-12
+        const day = currentDateObj.getDate();
+        
+        // Create 2026 equivalent date
+        const year2026DateString = `2026-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        observationId = photoObservations[year2026DateString];
+    }
 
     if (observationId && observationId !== '0') {
         const url = `https://www.inaturalist.org/observations/${observationId}`;

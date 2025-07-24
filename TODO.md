@@ -9,7 +9,6 @@
 
 ## PDF version
 + make sure spiral binding does not ruin title elements
-+ consider embedding fonts for print shops
 
 ## Landing page
 + improve page layout (laptop/mobile)
