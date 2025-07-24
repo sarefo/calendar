@@ -168,8 +168,8 @@
         .calendar-container {
             height: 250mm;
             /* Expanded from 245mm (+5mm) to use more bottom space */
-            padding: 0 10mm 0 10mm;
-            /* Reduced from 13mm to 10mm each side (+6mm total width) */
+            padding: 0 7mm 0 7mm;
+            /* Elegant side margins - less than year calendar (13mm) but clear of bleed (3mm) */
             margin-top: 38mm;
             /* Account for absolute positioned header */
             position: relative;
@@ -178,14 +178,18 @@
 
         .calendar-table {
             width: 100%;
-            height: 100%;
+            height: calc(100% - 3mm);
+            /* Reduce height to account for top margin */
             border-collapse: separate;
             border-spacing: 1.5mm;
             /* Reduced from 2mm to 1.5mm for optimized spacing */
+            margin-top: 3mm;
+            /* Balance top/bottom margins since no bottom crop */
             
             /* 6-column layout for shorter months - centered */
-            margin: 0 auto;
-            max-width: calc(6 * (65.4mm + 2mm));
+            margin-left: auto;
+            margin-right: auto;
+            max-width: calc(6 * (65.0mm + 2mm));
             
         }
 
@@ -195,13 +199,21 @@
         }
 
         .calendar-day {
-            width: 65.4mm;
+            width: 65.0mm;
             height: 47.3mm; /* Always use 5-row photo height */
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
             background: #F8F9FA;
             border: 1px solid #E9ECEF;
+            padding: 0;
+        }
+
+        .calendar-day-empty {
+            width: 65.0mm;
+            height: 47.3mm;
+            background: white;
+            border: none;
             padding: 0;
         }
 
@@ -302,6 +314,15 @@
                 height: 250mm !important;
                 /* Expanded from 245mm for optimized layout */
                 overflow: visible !important;
+                padding: 0 7mm 0 7mm !important;
+                /* Elegant side margins in PDF */
+            }
+
+            .calendar-table {
+                margin-top: 3mm !important;
+                /* Balance top/bottom margins in PDF */
+                height: calc(100% - 3mm) !important;
+                /* Account for top margin in PDF */
             }
 
             /* Show crop marks in print/PDF */
@@ -334,8 +355,15 @@
             }
 
             .calendar-day {
-                width: 65.4mm !important;
+                width: 65.0mm !important;
                 height: 47.3mm !important;
+            }
+
+            .calendar-day-empty {
+                width: 65.0mm !important;
+                height: 47.3mm !important;
+                background: white !important;
+                border: none !important;
             }
 
             .calendar-week-row {
@@ -505,6 +533,7 @@
                 
                 <tr class="calendar-week-row">
                     
+                    
                     <td class="calendar-day">
                         
                             
@@ -517,6 +546,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -531,6 +562,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -543,6 +576,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -557,6 +592,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -569,6 +606,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -583,9 +622,11 @@
                         
                     </td>
                     
+                    
                 </tr>
                 
                 <tr class="calendar-week-row">
+                    
                     
                     <td class="calendar-day">
                         
@@ -600,6 +641,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -612,6 +655,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -626,6 +671,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -638,6 +685,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -652,6 +701,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -665,9 +716,11 @@
                         
                     </td>
                     
+                    
                 </tr>
                 
                 <tr class="calendar-week-row">
+                    
                     
                     <td class="calendar-day">
                         
@@ -682,6 +735,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -694,6 +749,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -708,6 +765,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -720,6 +779,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -734,6 +795,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -747,9 +810,11 @@
                         
                     </td>
                     
+                    
                 </tr>
                 
                 <tr class="calendar-week-row">
+                    
                     
                     <td class="calendar-day">
                         
@@ -764,6 +829,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -776,6 +843,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -790,6 +859,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -802,6 +873,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -816,6 +889,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -829,9 +904,11 @@
                         
                     </td>
                     
+                    
                 </tr>
                 
                 <tr class="calendar-week-row">
+                    
                     
                     <td class="calendar-day">
                         
@@ -846,6 +923,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -858,6 +937,8 @@
                             
                         
                     </td>
+                    
+                    
                     
                     <td class="calendar-day">
                         
@@ -872,6 +953,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -885,6 +968,8 @@
                         
                     </td>
                     
+                    
+                    
                     <td class="calendar-day">
                         
                             
@@ -896,13 +981,11 @@
                         
                     </td>
                     
-                    <td class="calendar-day">
-                        
-                        <div class="day-overlay">
-                            <div class="day-number"></div>
-                        </div>
-                        
-                    </td>
+                    
+                    
+                    <!-- Empty white cell for positions after the month ends -->
+                    <td class="calendar-day-empty"></td>
+                    
                     
                 </tr>
                 

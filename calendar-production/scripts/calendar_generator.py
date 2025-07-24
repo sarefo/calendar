@@ -444,15 +444,16 @@ class CalendarGenerator:
         month_name = localization.get_month_name(month)
         
         # Dynamic layout based on month length - OPTIMIZED FOR PERPETUAL CALENDARS
-        # Expanded dimensions to better utilize available space without weekday headers/week numbers
+        # Elegant spacing: 7mm side margins (vs 13mm in year calendar) with proper bleed clearance
+        # Available width: 420mm - 6mm (bleed) - 14mm (margins) = 400mm
         if days_in_month == 31:
-            # 7x5 grid for 31-day months - optimized spacing
-            photo_width = 55.9  # Expanded from 54mm (+1.9mm)
+            # 7x5 grid for 31-day months - calculated for elegant fit
+            photo_width = 56.0  # Fits elegantly in 400mm width with spacing (400mm ÷ 7 - spacing)
             photo_height = 47.3  # Expanded from 42.4mm (+4.9mm)  
             row_height = 49.8   # Expanded from 46.4mm to accommodate larger photos
         else:
-            # 6x5 grid for shorter months - wider photos with optimized spacing
-            photo_width = 65.4  # Expanded from 63mm (+2.4mm)
+            # 6x5 grid for shorter months - wider photos with elegant spacing
+            photo_width = 65.0  # Fits elegantly in 400mm width with spacing (400mm ÷ 6 - spacing)
             photo_height = 47.3  # Expanded from 42.4mm (+4.9mm)
             row_height = 49.8   # Expanded from 46.4mm to accommodate larger photos
         

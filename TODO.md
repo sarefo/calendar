@@ -25,7 +25,6 @@
 
 ## Perpetual calendar
 + consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
-+ don't show empty frames for photo places after last day
 + improve layout:
   + left/right page margin same for all months
   + slightly more margin on top
