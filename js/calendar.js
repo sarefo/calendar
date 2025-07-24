@@ -213,7 +213,7 @@ function openCurrentObservation() {
     }
 }
 
-// Check for hash parameter like #202601 or #20260115 or #202601&lang=de
+// Check for hash parameter like #202601 or #20260115 or #202601&lang=de or #01 (perpetual)
 function setDateFromHash() {
     const hash = window.location.hash.substring(1); // Remove #
 
@@ -269,6 +269,29 @@ function setDateFromHash() {
             } else {
                 // Use first day of the target month
                 targetDate = new Date(year, month - 1, 1);
+            }
+
+            updateDateDisplay(targetDate);
+            return true;
+        }
+    }
+    // Check for perpetual calendar format (MM - 1 or 2 digits)
+    else if (dateString && dateString.match(/^\d{1,2}$/)) {
+        // Parse MM format for perpetual calendar
+        const month = parseInt(dateString);
+
+        if (month >= 1 && month <= 12) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+
+            let targetDate;
+            if (currentMonth === month) {
+                // Use current date if we're in the target month
+                targetDate = now;
+            } else {
+                // Use first day of the target month in current year
+                targetDate = new Date(currentYear, month - 1, 1);
             }
 
             updateDateDisplay(targetDate);
