@@ -1,20 +1,17 @@
 ## General
++ --complete does not add cover s
 + replace tabs in photo_information.txt with commas?
-+ observation links in february page still reflect previous photos
 
 ## Photos
 
 ## Cover page
-+ title: Biodiversity Calendar (but choose a more engaging phrasing)
-+ three columns, four rows
-+ lose the month names
-+ don't go all green background. especially on the bottom it needs to be white
 
 ## PDF version
 + make sure spiral binding does not ruin title elements
 + consider embedding fonts for print shops
 
 ## Landing page
++ seems the observation links don't get updated when rebuilding?
 + improve page layout (laptop/mobile)
 + if applicable: show today's photo with short explanation
   + or if full date given in URL
