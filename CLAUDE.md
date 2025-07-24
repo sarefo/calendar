@@ -4,7 +4,7 @@
 **Format**: A3 Landscape (420mm × 297mm)  
 **Target**: Print-ready PDFs for professional printing  
 **Status**: ✅ Production-ready with complete build workflow, multi-format PDF generation, and full internationalization  
-**Date**: July 2025  
+**Date**: Updated July 2025  
 
 ---
 
@@ -101,8 +101,8 @@ calendar/
 │   ├── data/                     # Configuration & content
 │   │   ├── calendar_config.json  # Calendar settings
 ││   ├── output/                   # Generated files
-│   │   ├── print-ready/          # Final PDFs
-│   │   └── previews/             # HTML previews
+│   │   ├── YYYY/lang/pdf/        # Final PDFs (print and web)
+│   │   └── YYYY/lang/html/       # Calendar HTML files
 │   ├── photos/                   # Photo repository (consolidated location)
 │   │   ├── photo_information.txt # Photo ordering file (YYYYMM\tfilename\tobservation_id\tcover_photo)
 │   │   └── YYYY/                 # Year directory
@@ -205,13 +205,12 @@ The system generates three PDF formats optimized for different use cases:
 #### **Multi-Language Location Data**
 - **README.md Format**: 
   ```
-  + location_en: Indonesia
-  + location_de: Indonesien  
-  + location_es: Indonesia
+  + location: Indonesia
   + coordinates: 8°017′03″S 115°035′021″E
+  + year: 2026
   ```
-- **Smart Fallbacks**: German calendar uses German location, falls back to English if missing
-- **Legacy Support**: Old single-language locations still work
+- **Simple Format**: Single location entry per month directory
+- **Consistent Structure**: All location data follows same format
 
 #### **Build System Integration**
 - **Language Parameter**: `--language de/es/en` for all build commands
@@ -305,12 +304,11 @@ python3 scripts/build_calendar.py --year 2026 --language de --complete
 - **World maps**: Simplified SVG with location markers in streamlined header
 - **Data validation**: System stops if location data is missing or has placeholders
 
-#### 5. **Multi-Language Location Data System**
-- **Multi-language entries**: Location data stored in `README.md` files with `location_en`, `location_de`, `location_es`
-- **Smart fallbacks**: German calendars use German locations, fall back to English if German not available
-- **Legacy compatibility**: Old single `location:` entries still work for backwards compatibility
+#### 5. **Location Data System**
+- **Simple format**: Location data stored in `README.md` files with single `location:` entry
+- **Required fields**: Each month directory must contain location and coordinates
 - **Auto-Validation**: Checks for placeholder values and missing required fields
-- **Language-aware errors**: Clear instructions include multi-language format examples
+- **Clear error messages**: Instructions show exact format requirements
 - **Simple Maintenance**: Location data co-located with photos for easy management
 
 ---
@@ -344,7 +342,7 @@ The perpetual calendar system generates universal calendars that work for any ye
 
 ```bash
 # Generate single perpetual month (HTML + both PDFs)
-python3 scripts/build_calendar.py --month 2
+python3 scripts/build_calendar.py --months "2"
 
 # Generate multiple perpetual months  
 python3 scripts/build_calendar.py --months "1,2,3,4"
@@ -353,11 +351,11 @@ python3 scripts/build_calendar.py --months "1,2,3,4"
 python3 scripts/build_calendar.py
 
 # Multi-language perpetual calendars
-python3 scripts/build_calendar.py --month 2 --language de  # German
-python3 scripts/build_calendar.py --month 2 --language es  # Spanish
+python3 scripts/build_calendar.py --months "2" --language de  # German
+python3 scripts/build_calendar.py --months "2" --language es  # Spanish
 
 # HTML only (no PDFs)
-python3 scripts/build_calendar.py --month 2 --no-pdf
+python3 scripts/build_calendar.py --months "2" --no-pdf
 ```
 
 ### **Output Structure**
@@ -389,11 +387,11 @@ output/perpetual/
 ### **Comparison: Year-Based vs Perpetual**
 ```bash
 # Year-based calendar (traditional)
-python3 scripts/build_calendar.py --year 2026 --month 2
+python3 scripts/build_calendar.py --year 2026 --months "2"
 # → Output: 2026/en/html/202602.html
 
 # Perpetual calendar (universal) 
-python3 scripts/build_calendar.py --month 2
+python3 scripts/build_calendar.py --months "2"
 # → Output: perpetual/en/html/02.html
 ```
 
@@ -414,8 +412,8 @@ python3 scripts/build_calendar.py --month 2
    echo "+ year: 2026" >> calendar-production/photos/2026/01/README.md
    
    # Update calendar-production/photos/photo_information.txt with photo order
-   # Format: YYYYMM\tfilename\tobservation_id (tab-separated)
-   # Example: 202601\tIMG_8477\t149640464
+   # Format: YYYYMM\tfilename\tobservation_id\tcover_photo (tab-separated)
+   # Example: 202601\tIMG_8477\t149640464\tcover
    # Note: For partial months, use placeholder entries for missing days
    ```
 
@@ -454,7 +452,7 @@ python3 scripts/build_calendar.py --month 2
 
 1. **Install Dependencies** (first time only)
    ```bash
-   python3 scripts/build_calendar.py --install-deps
+   pip install -r requirements.txt
    ```
 
 2. **Generate Print-Ready PDFs**
@@ -462,9 +460,9 @@ python3 scripts/build_calendar.py --month 2
    python3 scripts/build_calendar.py --year 2026
    ```
 
-3. **Create Print Package**
-   - Automatically generated in `output/print-package-YYYY/`
-   - Includes PDFs, print instructions, and file list
+3. **Access Print-Ready Files**
+   - Generated in `output/YYYY/lang/pdf/print/`
+   - Contains high-quality PDFs optimized for printing
    - Ready for any professional print shop
 
 ---
@@ -590,14 +588,11 @@ python3 scripts/build_calendar.py --cover --year 2026 --language en,de,es
 
 #### **Year-Based Calendar Commands**
 ```bash
-# Check photos for specific month
-python3 scripts/build_calendar.py --check-photos --year 2026 --month 1
-
 # Build single month (creates both print and web PDFs automatically)
-python3 scripts/build_calendar.py --year 2026 --month 1
+python3 scripts/build_calendar.py --year 2026 --months "1"
 
 # Build German calendar for specific month (dual PDF generation)
-python3 scripts/build_calendar.py --year 2026 --month 3 --language de
+python3 scripts/build_calendar.py --year 2026 --months "3" --language de
 
 # Build Spanish calendar for specific months (dual PDF generation)
 python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --language es
@@ -606,16 +601,16 @@ python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --language es
 #### **Perpetual Calendar Commands** 🆕
 ```bash
 # Build single perpetual month (dual PDF generation)
-python3 scripts/build_calendar.py --month 2
+python3 scripts/build_calendar.py --months "2"
 
 # Build German perpetual month with February 29th support
-python3 scripts/build_calendar.py --month 2 --language de
+python3 scripts/build_calendar.py --months "2" --language de
 
 # Build multiple perpetual months
 python3 scripts/build_calendar.py --months "1,2,3,4"
 
 # HTML only (no PDFs)
-python3 scripts/build_calendar.py --month 2 --no-pdf
+python3 scripts/build_calendar.py --months "2" --no-pdf
 ```
 
 # Build full year with print package
@@ -763,17 +758,17 @@ python3 scripts/update_landing_page.py
 
 **"ModuleNotFoundError: No module named 'X'"**
 ```bash
-python3 scripts/build_calendar.py --install-deps
+pip install -r requirements.txt
 ```
 
 **"No photos found for month"**
 - Check photo directory structure: `calendar-production/photos/YYYY/MM/`
 - Ensure photos have `.jpg` extension  
 - Verify `calendar-production/photos/photo_information.txt` has entries in YYYYMM format
-- Ensure tab-separated format: `YYYYMM\tfilename\tobservation_id`
+- Ensure tab-separated format: `YYYYMM\tfilename\tobservation_id\tcover_photo`
 - For partial months, add placeholder entries for missing days
 - Check that `README.md` exists in photo directory with location data
-- Run: `python3 scripts/build_calendar.py --check-photos --year YYYY --month MM`
+- Verify photo files exist in the specified month directory
 
 **"PDF conversion failed"**
 - Install Playwright: `pip install playwright && playwright install chromium`
@@ -792,7 +787,7 @@ python3 scripts/build_calendar.py --install-deps
 **"PDF binding failed"**
 - Install PDF merger: `python3 -m pip install pypdf`
 - Alternative: `pip install PyPDF2`
-- Check existing PDFs are in `output/print-ready/` directory
+- Check existing PDFs are in `output/YYYY/lang/pdf/print/` directory
 - Ensure PDF files follow `YYYYMM.pdf` naming convention
 
 **"No cover photo found for YYYYMM"**
@@ -800,7 +795,7 @@ python3 scripts/build_calendar.py --install-deps
 - Format should be: `YYYYMM\tfilename\tobservation_id\tcover`
 - Ensure all 12 months (202601-202612) have cover photos marked
 - Cover photos must exist as `.jpg` files in respective month directories
-- Run: `python3 scripts/build_calendar.py --cover --no-pdf` to test cover generation
+- Run: `python3 scripts/build_calendar.py --cover --year 2026 --no-pdf` to test cover generation
 
 **"Cover page generation failed"**
 - Verify location data exists in all month README.md files
