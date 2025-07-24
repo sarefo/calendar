@@ -1,11 +1,8 @@
 ## General
-+ consider using sunday first for US/Canada/Mexico/Australia
-  + add that info to pdf filenames
-  + needs to be part of i18n somehow…
-+ improve QR code layout
-  + rounder
-  + fitting better into frame
-  + slightly more transparent (hence more green)
++ replace tabs in photo_information.txt with commas?
++ observation links in february page still reflect previous photos
+
+## Photos
 
 ## PDF version
 + make sure spiral binding does not ruin title elements
@@ -25,12 +22,11 @@
 
 ## Perpetual calendar
 + consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
-+ improve layout:
-  + left/right page margin same for all months
-  + slightly more margin on top
-  + left/right margins to align with month name and qr-section
 
 ## Sunday-first calendar option
++ consider using sunday first for US/Canada/Mexico/Australia
+  + add that info to pdf filenames
+  + needs to be part of i18n somehow…
 + add --sunday-first option to build_calendar.py
 + modify week_calculator.py to support Sunday as first day
 + update calendar templates to handle both Monday and Sunday start
@@ -47,8 +43,6 @@
 
 ## Hosting
 + free webhosting of several 300mb and 30mb files
-
-## Photos
 
 ## World map
 + coordinates are sometimes off, needed to tweak them to the right for some maps

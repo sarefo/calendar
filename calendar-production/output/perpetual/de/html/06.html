@@ -195,12 +195,12 @@
 
         /* No weekday headers or week numbers in perpetual calendar */
         .calendar-week-row {
-            height: 49.8mm; /* Always use 5-row height since perpetual always has 5 rows */
+            height: 49.3mm; /* Always use 5-row height since perpetual always has 5 rows */
         }
 
         .calendar-day {
             width: 65.0mm;
-            height: 47.3mm; /* Always use 5-row photo height */
+            height: 46.8mm; /* Always use 5-row photo height */
             position: relative;
             border-radius: 3mm;
             overflow: hidden;
@@ -211,7 +211,7 @@
 
         .calendar-day-empty {
             width: 65.0mm;
-            height: 47.3mm;
+            height: 46.8mm;
             background: white;
             border: none;
             padding: 0;
@@ -351,23 +351,8 @@
             
             .calendar-container {
                 margin-top: 38mm !important;
+                margin-bottom: 20mm !important;
                 /* Restore top margin for PDF */
-            }
-
-            .calendar-day {
-                width: 65.0mm !important;
-                height: 47.3mm !important;
-            }
-
-            .calendar-day-empty {
-                width: 65.0mm !important;
-                height: 47.3mm !important;
-                background: white !important;
-                border: none !important;
-            }
-
-            .calendar-week-row {
-                height: 49.8mm !important;
             }
 
             /* Ensure image links don't interfere with PDF layout */

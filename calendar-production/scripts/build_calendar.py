@@ -730,60 +730,38 @@ class CalendarBuilder:
 def main():
     parser = argparse.ArgumentParser(description="Build complete calendar production")
     parser.add_argument('--year', type=int, help="Year to build (omit for perpetual calendar)")
-    parser.add_argument('--month', type=int, help="Specific month to build (1-12)")
-    parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3')")
+    parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3' or just '1' for single month)")
     parser.add_argument('--config', help="Path to calendar configuration file")
-    parser.add_argument('--language', choices=['en', 'de', 'es'], default='en', help="Language for calendar generation")
+    parser.add_argument('--language', default='en', help="Language(s) for calendar generation - single (e.g., 'en') or comma-separated (e.g., 'en,de,es')")
     parser.add_argument('--output', default="output", help="Output directory")
     parser.add_argument('--no-pdf', action='store_true', help="Skip PDF generation")
     parser.add_argument('--complete', action='store_true', help="Complete build: generate HTML + both print and web PDFs + bind both versions")
     parser.add_argument('--bind-pdf', action='store_true', help="Bind all monthly PDFs into single file")
     parser.add_argument('--bind-existing', action='store_true', help="Only bind existing PDFs without regenerating")
-    parser.add_argument('--check-photos', action='store_true', help="Only check photo availability")
-    parser.add_argument('--install-deps', action='store_true', help="Install required dependencies")
     
     args = parser.parse_args()
     
-    if args.install_deps:
-        print("Installing dependencies...")
-        deps = ["jinja2", "qrcode[pil]", "playwright", "PyPDF2"]
-        for dep in deps:
-            try:
-                subprocess.check_call([sys.executable, "-m", "pip", "install", dep])
-            except subprocess.CalledProcessError:
-                print(f"Failed to install {dep}")
-        
-        # Install playwright browsers
-        try:
-            subprocess.check_call([sys.executable, "-m", "playwright", "install", "chromium"])
-        except subprocess.CalledProcessError:
-            print("Failed to install playwright browsers")
-        
+    # Check if no meaningful arguments provided - show usage
+    meaningful_args = [
+        args.year, args.months, args.complete, args.bind_pdf, args.bind_existing
+    ]
+    if not any(meaningful_args):
+        parser.print_help()
+        print("\nExamples:")
+        print("  python3 build_calendar.py --year 2026 --complete                    # Complete build for 2026")
+        print("  python3 build_calendar.py --months 1,2,3 --language en,de          # Months 1-3 in English and German")
+        print("  python3 build_calendar.py --months 6 --year 2026                   # Single month (June 2026)")
+        print("  python3 build_calendar.py --complete --language de                  # German perpetual calendar")
+        print("  python3 build_calendar.py --bind-existing --year 2026               # Bind existing 2026 PDFs")
         return 0
     
-    # Initialize builder
-    try:
-        builder = CalendarBuilder(args.config, args.language)
-    except Exception as e:
-        print(f"Failed to initialize builder: {e}")
-        return 1
-    
-    # Handle photo checking mode
-    if args.check_photos:
-        months = []
-        if args.month:
-            months = [args.month]
-        elif args.months:
-            months = [int(m.strip()) for m in args.months.split(',')]
-        else:
-            months = list(range(1, 13))
-        
-        # Use 2026 as default source year for perpetual calendar photo checking
-        check_year = args.year if args.year else 2026
-        print(f"📷 Checking photos for {'perpetual calendar (using ' + str(check_year) + ' photos)' if not args.year else str(args.year)}")
-        for month in months:
-            builder.validate_photos_for_month(check_year, month)
-        return 0
+    # Parse languages (support comma-separated list)
+    languages = [lang.strip() for lang in args.language.split(',')]
+    valid_languages = ['en', 'de', 'es']
+    for lang in languages:
+        if lang not in valid_languages:
+            print(f"❌ Invalid language: {lang}. Supported languages: {', '.join(valid_languages)}")
+            return 1
     
     # Handle bind-existing mode
     if args.bind_existing:
@@ -798,257 +776,290 @@ def main():
         else:
             print("🔗 Binding existing PDFs for perpetual calendar")
         
-        # Get paths for current language
-        paths = builder.get_output_paths(args.year)
-        pdf_print_dir = Path(paths['pdf_print_dir'])
-        pdf_web_dir = Path(paths['pdf_web_dir'])
-        pdf_output_dir = Path(paths['pdf_dir'])
-        
-        if not pdf_print_dir.exists() and not pdf_web_dir.exists():
-            print(f"❌ No PDF directories found for language '{args.language}'")
-            print(f"   Checked: {pdf_print_dir}")
-            print(f"   Checked: {pdf_web_dir}")
-            return 1
-        
-        # Find print and web PDF files separately
-        print_pdfs = []
-        web_pdfs = []
-        
-        # Look for monthly PDFs 
-        for month in range(1, 13):
-            month_str = f"{month:02d}"
+        # Process each language
+        for language in languages:
+            print(f"\n--- Processing language: {language.upper()} ---")
+            
+            # Initialize builder for this language
+            try:
+                builder = CalendarBuilder(args.config, language)
+            except Exception as e:
+                print(f"Failed to initialize builder for {language}: {e}")
+                continue
+            
+            # Get paths for current language
+            paths = builder.get_output_paths(args.year)
+            pdf_print_dir = Path(paths['pdf_print_dir'])
+            pdf_web_dir = Path(paths['pdf_web_dir'])
+            pdf_output_dir = Path(paths['pdf_dir'])
+            
+            if not pdf_print_dir.exists() and not pdf_web_dir.exists():
+                print(f"❌ No PDF directories found for language '{language}'")
+                print(f"   Checked: {pdf_print_dir}")
+                print(f"   Checked: {pdf_web_dir}")
+                continue
+            
+            # Find print and web PDF files separately
+            print_pdfs = []
+            web_pdfs = []
+            
+            # Look for monthly PDFs 
+            for month in range(1, 13):
+                month_str = f"{month:02d}"
+                if args.year:
+                    # Regular calendar: portioid_calendar_YYYYMM_lang_print.pdf
+                    print_pdf = pdf_print_dir / f"portioid_calendar_{args.year}{month_str}_{language}_print.pdf"
+                    web_pdf = pdf_web_dir / f"portioid_calendar_{args.year}{month_str}_{language}_web.pdf"
+                else:
+                    # Perpetual calendar: portioid_calendar_MM_lang_print.pdf
+                    print_pdf = pdf_print_dir / f"portioid_calendar_{month_str}_{language}_print.pdf"
+                    web_pdf = pdf_web_dir / f"portioid_calendar_{month_str}_{language}_web.pdf"
+                
+                if print_pdf.exists():
+                    print_pdfs.append(str(print_pdf))
+                if web_pdf.exists():
+                    web_pdfs.append(str(web_pdf))
+            
+            print(f"📄 Found {len(print_pdfs)} print PDFs and {len(web_pdfs)} web PDFs")
+            
+            if not print_pdfs and not web_pdfs:
+                period_name = str(args.year) if args.year else "perpetual calendar"
+                print(f"❌ No monthly PDF files found for {period_name} in {language}")
+                continue
+            
+            # Delete existing bound PDFs to ensure clean recreation
             if args.year:
-                # Regular calendar: portioid_calendar_YYYYMM_lang_print.pdf
-                print_pdf = pdf_print_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_print.pdf"
-                web_pdf = pdf_web_dir / f"portioid_calendar_{args.year}{month_str}_{args.language}_web.pdf"
+                print_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{language}_print.pdf"
+                web_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{language}_web.pdf"
             else:
-                # Perpetual calendar: portioid_calendar_MM_lang_print.pdf
-                print_pdf = pdf_print_dir / f"portioid_calendar_{month_str}_{args.language}_print.pdf"
-                web_pdf = pdf_web_dir / f"portioid_calendar_{month_str}_{args.language}_web.pdf"
+                print_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{language}_print.pdf"
+                web_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{language}_web.pdf"
             
-            if print_pdf.exists():
-                print_pdfs.append(str(print_pdf))
-            if web_pdf.exists():
-                web_pdfs.append(str(web_pdf))
-        
-        print(f"📄 Found {len(print_pdfs)} print PDFs and {len(web_pdfs)} web PDFs")
-        
-        if not print_pdfs and not web_pdfs:
-            period_name = str(args.year) if args.year else "perpetual calendar"
-            print(f"❌ No monthly PDF files found for {period_name}")
-            return 1
-        
-        # Delete existing bound PDFs to ensure clean recreation
-        if args.year:
-            print_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_print.pdf"
-            web_bound_path = pdf_output_dir / f"portioid_calendar_{args.year}_{args.language}_web.pdf"
-        else:
-            print_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{args.language}_print.pdf"
-            web_bound_path = pdf_output_dir / f"portioid_calendar_perpetual_{args.language}_web.pdf"
-        
-        if print_bound_path.exists():
-            print_bound_path.unlink()
-            print(f"🗑️  Removed existing print bound PDF: {print_bound_path.name}")
+            if print_bound_path.exists():
+                print_bound_path.unlink()
+                print(f"🗑️  Removed existing print bound PDF: {print_bound_path.name}")
+                
+            if web_bound_path.exists():
+                web_bound_path.unlink()
+                print(f"🗑️  Removed existing web bound PDF: {web_bound_path.name}")
             
-        if web_bound_path.exists():
-            web_bound_path.unlink()
-            print(f"🗑️  Removed existing web bound PDF: {web_bound_path.name}")
+            # Bind print PDFs
+            print_success = False
+            if print_pdfs:
+                try:
+                    print(f"\n📚 Binding {len(print_pdfs)} print PDFs...")
+                    bound_print = builder.bind_pdfs_to_single_file(print_pdfs, str(print_bound_path))
+                    print(f"✅ Print calendar created: {Path(bound_print).name}")
+                    print_success = True
+                except Exception as e:
+                    print(f"❌ Failed to bind print PDFs: {e}")
+            
+            # Bind web PDFs
+            web_success = False
+            if web_pdfs:
+                try:
+                    print(f"\n🌐 Binding {len(web_pdfs)} web PDFs...")
+                    bound_web = builder.bind_pdfs_to_single_file(web_pdfs, str(web_bound_path))
+                    print(f"✅ Web calendar created: {Path(bound_web).name}")
+                    web_success = True
+                except Exception as e:
+                    print(f"❌ Failed to bind web PDFs: {e}")
+            
+            # Summary for this language
+            if print_success or web_success:
+                print(f"✅ Bind-existing completed for {language.upper()}:")
+                if print_success:
+                    print(f"   📚 Print bound: {print_bound_path.name}")
+                if web_success:
+                    print(f"   🌐 Web bound: {web_bound_path.name}")
         
-        # Bind print PDFs
-        print_success = False
-        if print_pdfs:
-            try:
-                print(f"\n📚 Binding {len(print_pdfs)} print PDFs...")
-                bound_print = builder.bind_pdfs_to_single_file(print_pdfs, str(print_bound_path))
-                print(f"✅ Print calendar created: {Path(bound_print).name}")
-                print_success = True
-            except Exception as e:
-                print(f"❌ Failed to bind print PDFs: {e}")
-        
-        # Bind web PDFs
-        web_success = False
-        if web_pdfs:
-            try:
-                print(f"\n🌐 Binding {len(web_pdfs)} web PDFs...")
-                bound_web = builder.bind_pdfs_to_single_file(web_pdfs, str(web_bound_path))
-                print(f"✅ Web calendar created: {Path(bound_web).name}")
-                web_success = True
-            except Exception as e:
-                print(f"❌ Failed to bind web PDFs: {e}")
-        
-        # Summary
-        if print_success or web_success:
-            print(f"\n🎉 Bind-existing completed:")
-            if print_success:
-                print(f"   📚 Print bound: {print_bound_path.name}")
-            if web_success:
-                print(f"   🌐 Web bound: {web_bound_path.name}")
-            return 0
-        else:
-            print(f"\n❌ No PDFs were successfully bound")
-            return 1
+        return 0
     
     # Determine months to build
     months_to_build = []
-    if args.month:
-        months_to_build = [args.month]
-    elif args.months:
+    if args.months:
         months_to_build = [int(m.strip()) for m in args.months.split(',')]
     else:
         months_to_build = None  # All months
     
-    # Build calendar(s)
+    # Build calendar(s) - process each language
     async def build():
         try:
-            # Use 2026 as source year for perpetual calendar
-            source_year = args.year if args.year else 2026
+            overall_success = True
             
-            if args.complete:
-                # Complete build: HTML + both print and ultra PDFs + bind both
-                results = await builder.build_complete(args.year, args.output, months_to_build)
+            for language in languages:
+                print(f"\n{'='*50}")
+                print(f"Building calendar for language: {language.upper()}")
+                print(f"{'='*50}")
                 
-                if results["successful_months"]:
-                    build_type = f"{args.year}" if args.year else "perpetual calendar"
-                    print(f"\\n🎉 Complete build finished successfully for {build_type}!")
-                    return 0
-                else:
-                    print(f"\\n❌ Complete build failed")
-                    return 1
+                # Initialize builder for this language
+                try:
+                    builder = CalendarBuilder(args.config, language)
+                except Exception as e:
+                    print(f"Failed to initialize builder for {language}: {e}")
+                    overall_success = False
+                    continue
+                
+                if args.complete:
+                    # Complete build: HTML + both print and ultra PDFs + bind both
+                    results = await builder.build_complete(args.year, args.output, months_to_build)
                     
-            elif months_to_build and len(months_to_build) == 1:
-                # Single month build - generate both print and web PDFs unless specifically disabled
-                month = months_to_build[0]
-                success_count = 0
-                
-                if not args.no_pdf:
-                    # Build print version
-                    print_result = await builder.build_month(
-                        args.year, month, True, False  # generate_pdf=True, web_mode=False
-                    )
-                    if print_result["success"]:
-                        success_count += 1
-                        month_display = f"{month:02d}" if not args.year else f"{args.year}-{month:02d}"
-                        print(f"✅ Print PDF created for {month_display}")
+                    if results["successful_months"]:
+                        build_type = f"{args.year}" if args.year else "perpetual calendar"
+                        print(f"✅ Complete build finished successfully for {build_type} in {language.upper()}!")
                     else:
-                        print(f"❌ Print PDF failed: {print_result.get('reason', 'unknown error')}")
+                        print(f"❌ Complete build failed for {language.upper()}")
+                        overall_success = False
+                
+                elif months_to_build and len(months_to_build) == 1:
+                    # Single month build - generate both print and web PDFs unless specifically disabled
+                    month = months_to_build[0]
+                    success_count = 0
                     
-                    # Build web version
-                    web_result = await builder.build_month(
-                        args.year, month, True, True  # generate_pdf=True, web_mode=True
-                    )
-                    if web_result["success"]:
-                        success_count += 1
-                        month_display = f"{month:02d}" if not args.year else f"{args.year}-{month:02d}"
-                        print(f"✅ Web PDF created for {month_display}")
+                    if not args.no_pdf:
+                        # Build print version
+                        print_result = await builder.build_month(
+                            args.year, month, True, False  # generate_pdf=True, web_mode=False
+                        )
+                        if print_result["success"]:
+                            success_count += 1
+                            month_display = f"{month:02d}" if not args.year else f"{args.year}-{month:02d}"
+                            print(f"✅ Print PDF created for {month_display} in {language.upper()}")
+                        else:
+                            print(f"❌ Print PDF failed for {language.upper()}: {print_result.get('reason', 'unknown error')}")
+                            overall_success = False
+                        
+                        # Build web version
+                        web_result = await builder.build_month(
+                            args.year, month, True, True  # generate_pdf=True, web_mode=True
+                        )
+                        if web_result["success"]:
+                            success_count += 1
+                            month_display = f"{month:02d}" if not args.year else f"{args.year}-{month:02d}"
+                            print(f"✅ Web PDF created for {month_display} in {language.upper()}")
+                        else:
+                            print(f"❌ Web PDF failed for {language.upper()}: {web_result.get('reason', 'unknown error')}")
+                            overall_success = False
                     else:
-                        print(f"❌ Web PDF failed: {web_result.get('reason', 'unknown error')}")
+                        # HTML only
+                        result = await builder.build_month(
+                            args.year, month, False, False
+                        )
+                        if result["success"]:
+                            success_count = 1
+                        else:
+                            overall_success = False
+                    
+                    if success_count > 0:
+                        build_type = f"perpetual calendar month {month:02d}" if not args.year else f"calendar for {args.year}-{month:02d}"
+                        print(f"✅ Successfully built {build_type} in {language.upper()}")
                 else:
-                    # HTML only
-                    result = await builder.build_month(
-                        args.year, month, False, False
-                    )
-                    if result["success"]:
-                        success_count = 1
-                
-                if success_count > 0:
-                    build_type = f"perpetual calendar month {month:02d}" if not args.year else f"calendar for {args.year}-{month:02d}"
-                    print(f"\\n🎉 Successfully built {build_type}")
-                    # Update landing page with latest observation IDs
+                    # Multiple months or full year - build both print and web PDFs by default
+                    if not args.no_pdf:
+                        # Build print PDFs
+                        print(f"\n=== Building Print-Quality PDFs for {language.upper()} ===")
+                        print_results = await builder.build_year(
+                            args.year, args.output, 
+                            months_to_build, True, False, False  # generate_pdf=True, bind_pdf=False, web_mode=False
+                        )
+                        
+                        # Build web PDFs
+                        print(f"\n=== Building Web-Optimized PDFs for {language.upper()} ===")
+                        web_results = await builder.build_year(
+                            args.year, args.output, 
+                            months_to_build, True, False, True  # generate_pdf=True, bind_pdf=False, web_mode=True
+                        )
+                        
+                        # Combine results
+                        results = {
+                            "year": print_results["year"],
+                            "successful_months": list(set(print_results["successful_months"] + web_results["successful_months"])),
+                            "failed_months": list(set(print_results["failed_months"] + web_results["failed_months"])),
+                            "generated_files": print_results["generated_files"] + web_results["generated_files"]
+                        }
+                        
+                        # Handle PDF binding if requested
+                        if args.bind_pdf and results["successful_months"]:
+                            print(f"\n=== Binding PDFs for {language.upper()} ===")
+                            paths = builder.get_output_paths(args.year)
+                            
+                            # Bind print PDFs
+                            print_pdf_files = []
+                            for month in results["successful_months"]:
+                                if args.year:
+                                    pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{args.year}{month:02d}_{language}_print.pdf"
+                                else:
+                                    pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{month:02d}_{language}_print.pdf"
+                                if Path(pdf_file).exists():
+                                    print_pdf_files.append(pdf_file)
+                            
+                            if print_pdf_files:
+                                if args.year:
+                                    print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{args.year}_{language}_print.pdf"
+                                else:
+                                    print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{language}_print.pdf"
+                                try:
+                                    bound_print = builder.bind_pdfs_to_single_file(print_pdf_files, print_bound_file)
+                                    print(f"✅ Print calendar bound: {bound_print}")
+                                    results["bound_print_pdf"] = bound_print
+                                except Exception as e:
+                                    print(f"⚠️ Print PDF binding failed: {e}")
+                                    overall_success = False
+                            
+                            # Bind web PDFs
+                            web_pdf_files = []
+                            for month in results["successful_months"]:
+                                if args.year:
+                                    pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{args.year}{month:02d}_{language}_web.pdf"
+                                else:
+                                    pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{month:02d}_{language}_web.pdf"
+                                if Path(pdf_file).exists():
+                                    web_pdf_files.append(pdf_file)
+                            
+                            if web_pdf_files:
+                                if args.year:
+                                    web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{args.year}_{language}_web.pdf"
+                                else:
+                                    web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{language}_web.pdf"
+                                try:
+                                    bound_web = builder.bind_pdfs_to_single_file(web_pdf_files, web_bound_file)
+                                    print(f"✅ Web calendar bound: {bound_web}")
+                                    results["bound_web_pdf"] = bound_web
+                                except Exception as e:
+                                    print(f"⚠️ Web PDF binding failed: {e}")
+                                    overall_success = False
+                    else:
+                        # HTML only
+                        results = await builder.build_year(
+                            args.year, args.output, 
+                            months_to_build, False, False, False  # generate_pdf=False, bind_pdf=False, web_mode=False
+                        )
+                    
+                    # Save build report
+                    builder.create_build_report(results)
+                    
+                    if results["failed_months"]:
+                        print(f"⚠️  Some months failed to build for {language.upper()}: {results['failed_months']}")
+                        overall_success = False
+                    else:
+                        build_type = f"{args.year}" if args.year else "perpetual calendar"
+                        print(f"✅ Successfully built calendar for {build_type} in {language.upper()}")
+            
+            # Update landing page once after all languages are processed
+            if overall_success:
+                try:
                     update_landing_page()
-                else:
-                    print(f"\\n❌ Failed to build calendar")
-                    return 1
+                    print(f"\n✅ Landing page updated with latest observation IDs")
+                except Exception as e:
+                    print(f"\n⚠️ Landing page update failed: {e}")
+            
+            # Final summary
+            if overall_success:
+                print(f"\n🎉 Successfully built calendars for all languages: {', '.join(lang.upper() for lang in languages)}")
+                return 0
             else:
-                # Multiple months or full year - build both print and web PDFs by default
-                if not args.no_pdf:
-                    # Build print PDFs
-                    print(f"\n=== Building Print-Quality PDFs ===")
-                    print_results = await builder.build_year(
-                        args.year, args.output, 
-                        months_to_build, True, False, False  # generate_pdf=True, bind_pdf=False, web_mode=False
-                    )
-                    
-                    # Build web PDFs
-                    print(f"\n=== Building Web-Optimized PDFs ===")
-                    web_results = await builder.build_year(
-                        args.year, args.output, 
-                        months_to_build, True, False, True  # generate_pdf=True, bind_pdf=False, web_mode=True
-                    )
-                    
-                    # Combine results
-                    results = {
-                        "year": print_results["year"],
-                        "successful_months": list(set(print_results["successful_months"] + web_results["successful_months"])),
-                        "failed_months": list(set(print_results["failed_months"] + web_results["failed_months"])),
-                        "generated_files": print_results["generated_files"] + web_results["generated_files"]
-                    }
-                    
-                    # Handle PDF binding if requested
-                    if args.bind_pdf and results["successful_months"]:
-                        print(f"\n=== Binding PDFs ===")
-                        paths = builder.get_output_paths(args.year)
-                        
-                        # Bind print PDFs
-                        print_pdf_files = []
-                        for month in results["successful_months"]:
-                            if args.year:
-                                pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{args.year}{month:02d}_{args.language}_print.pdf"
-                            else:
-                                pdf_file = f"{paths['pdf_print_dir']}/portioid_calendar_{month:02d}_{args.language}_print.pdf"
-                            if Path(pdf_file).exists():
-                                print_pdf_files.append(pdf_file)
-                        
-                        if print_pdf_files:
-                            if args.year:
-                                print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{args.year}_{args.language}_print.pdf"
-                            else:
-                                print_bound_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{args.language}_print.pdf"
-                            try:
-                                bound_print = builder.bind_pdfs_to_single_file(print_pdf_files, print_bound_file)
-                                print(f"✅ Print calendar bound: {bound_print}")
-                                results["bound_print_pdf"] = bound_print
-                            except Exception as e:
-                                print(f"⚠️ Print PDF binding failed: {e}")
-                        
-                        # Bind web PDFs
-                        web_pdf_files = []
-                        for month in results["successful_months"]:
-                            if args.year:
-                                pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{args.year}{month:02d}_{args.language}_web.pdf"
-                            else:
-                                pdf_file = f"{paths['pdf_web_dir']}/portioid_calendar_{month:02d}_{args.language}_web.pdf"
-                            if Path(pdf_file).exists():
-                                web_pdf_files.append(pdf_file)
-                        
-                        if web_pdf_files:
-                            if args.year:
-                                web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_{args.year}_{args.language}_web.pdf"
-                            else:
-                                web_bound_file = f"{paths['pdf_dir']}/portioid_calendar_perpetual_{args.language}_web.pdf"
-                            try:
-                                bound_web = builder.bind_pdfs_to_single_file(web_pdf_files, web_bound_file)
-                                print(f"✅ Web calendar bound: {bound_web}")
-                                results["bound_web_pdf"] = bound_web
-                            except Exception as e:
-                                print(f"⚠️ Web PDF binding failed: {e}")
-                else:
-                    # HTML only
-                    results = await builder.build_year(
-                        args.year, args.output, 
-                        months_to_build, False, False, False  # generate_pdf=False, bind_pdf=False, web_mode=False
-                    )
-                
-                # Save build report
-                builder.create_build_report(results)
-                
-                if results["failed_months"]:
-                    print(f"\\n⚠️  Some months failed to build: {results['failed_months']}")
-                    return 1
-                else:
-                    build_type = f"{args.year}" if args.year else "perpetual calendar"
-                    print(f"\\n🎉 Successfully built calendar for {build_type}")
-                    # Update landing page with latest observation IDs
-                    update_landing_page()
+                print(f"\n❌ Some builds failed. Check output above for details.")
+                return 1
             
             return 0
             
