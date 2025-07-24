@@ -119,6 +119,59 @@ class CalendarGenerator:
         
         return photo_info
     
+    def _load_photo_observations_from_info_file(self) -> Dict[str, str]:
+        """Load photo observation data directly from photo_information.txt - AUTHORITATIVE SOURCE"""
+        observations = {}
+        photo_info_path = Path("photos/photo_information.txt")
+        
+        if not photo_info_path.exists():
+            print(f"Warning: Photo information file not found: {photo_info_path}")
+            return {}
+            
+        try:
+            with open(photo_info_path, 'r') as f:
+                lines = f.readlines()
+            
+            # Skip header line
+            for line in lines[1:]:
+                parts = line.strip().split('\t')
+                if len(parts) >= 3 and parts[1].strip():  # YYYYMM, filename, and observation_id exist
+                    yyyymm = parts[0].strip()
+                    filename = parts[1].strip() 
+                    observation_id = parts[2].strip()
+                    
+                    # Skip placeholder entries and entries with observation_id "0"
+                    if filename == "placeholder" or observation_id == "0" or not observation_id:
+                        continue
+                    
+                    # Calculate the date for this photo based on position in month
+                    if yyyymm in observations:
+                        day_count = len([obs for date_key in observations.keys() if date_key.startswith(yyyymm[:4] + '-' + yyyymm[4:6])])
+                    else:
+                        day_count = 0
+                    
+                    # Find how many photos we've processed for this month so far
+                    month_photos_count = 0
+                    for existing_date in observations.keys():
+                        if existing_date.startswith(yyyymm[:4] + '-' + yyyymm[4:6] + '-'):
+                            month_photos_count += 1
+                    
+                    # Day number is based on order in file (first photo = day 1, second = day 2, etc.)
+                    day_number = month_photos_count + 1
+                    
+                    # Create date key in YYYY-MM-DD format
+                    year = yyyymm[:4]
+                    month = yyyymm[4:6]
+                    date_key = f"{year}-{month}-{day_number:02d}"
+                    
+                    observations[date_key] = observation_id
+                    
+        except (IOError, IndexError) as e:
+            print(f"Warning: Could not load photo observations from photo_information.txt: {e}")
+            return {}
+            
+        return observations
+    
     def _load_photo_observations(self) -> Dict[str, str]:
         """Load photo observation data from ../data/photo-observations.json"""
         observations_path = Path("../data/photo-observations.json")
@@ -383,8 +436,8 @@ class CalendarGenerator:
             "photographer_name": "Photographer"
         }
         
-        # Load photo observations for iNaturalist links
-        photo_observations = self._load_photo_observations()
+        # Load photo observations for iNaturalist links (from authoritative source)
+        photo_observations = self._load_photo_observations_from_info_file()
         
         # Default photo directories using source year
         if not photo_dirs:
@@ -544,8 +597,8 @@ class CalendarGenerator:
             "photographer_name": "Photographer"
         }
         
-        # Load photo observations for iNaturalist links
-        photo_observations = self._load_photo_observations()
+        # Load photo observations for iNaturalist links (from authoritative source)
+        photo_observations = self._load_photo_observations_from_info_file()
         
         # Default photo directories using new structure
         if not photo_dirs:
@@ -752,7 +805,7 @@ class CalendarGenerator:
         
         # Load photo information and observations
         photo_info = self._load_photo_information()
-        photo_observations = self._load_photo_observations()
+        photo_observations = self._load_photo_observations_from_info_file()
         
         # Get cover photos for all 12 months
         cover_photos = []
