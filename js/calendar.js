@@ -29,14 +29,27 @@ async function loadData() {
     }
 }
 
+// Check for URL parameters (e.g., ?lang=de)
+function checkUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const langParam = urlParams.get('lang');
+    
+    if (langParam && ['en', 'de', 'es'].includes(langParam)) {
+        updateLanguage(langParam);
+    }
+}
+
 // Initialize the application
 function initializeApp() {
+    // Check for URL parameters first
+    checkUrlParameters();
+    
     // Initialize date and language
     if (!setDateFromHash()) {
         updateDateDisplay(new Date());
     }
 
-    // Initialize month links with default language
+    // Initialize month links with current language
     updateMonthLinks(currentLanguage);
 
     // Listen for hash changes
