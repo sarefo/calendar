@@ -12,7 +12,7 @@
 
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
-**Latest Updates (January 2025)**:
+**Latest Updates (July 2025)**:
 - ✅ **MAJOR**: Professional cover page system with 12-photo showcase grid
 - ✅ **MAJOR**: Multi-language cover page support (English, German, Spanish)
 - ✅ **MAJOR**: Cover page integration in complete build workflow (--complete includes cover)
@@ -27,10 +27,12 @@
 - ✅ **MAJOR**: Simplified folder structure - organized output under output/2026/
 - ✅ **MAJOR**: Dual PDF generation - single commands now create both print and web PDFs
 - ✅ **MAJOR**: Optimized A3 layout - extended green header with bleed, added ring binding space
+- ✅ **MAJOR**: Perpetual calendar landing page support - handles #01-#12 parameters
 - ✅ **FIXED**: Complete 12-month cover photo system (all months 1-12 now have cover photos)
 - ✅ **FIXED**: Calendar container height optimized to 208mm to ensure single-page output
 - ✅ **FIXED**: Crop marks only show in PDF, hidden in HTML preview
-- ✅ **FIXED**: QR code processing - excluded from smart cropping, maintains square aspect ratio, saved as PNG  
+- ✅ **FIXED**: QR code processing - excluded from smart cropping, maintains square aspect ratio, saved as PNG
+- ✅ **FIXED**: Landing page perpetual calendar navigation - maps month-only parameters to current year  
 
 ---
 
@@ -153,9 +155,11 @@ calendar/
 
 ### **Smart QR Code Integration**
 - **Hash Parameters**: QR codes generate URLs with flexible hash formats:
-  - `#YYYYMM` (e.g., `#202601`) for month navigation
+  - `#YYYYMM` (e.g., `#202601`) for year-based month navigation
   - `#YYYYMMDD` (e.g., `#20260115`) for specific date navigation
+  - `#MM` (e.g., `#01`, `#12`) for perpetual calendar month navigation
 - **Auto Date Picker**: Landing page automatically sets date based on QR code (month or specific date)
+- **Smart Year Mapping**: Perpetual calendar QR codes map to current year, today's date if in that month
 - **Seamless Flow**: Scan printed calendar → auto-navigate to correct month/date online
 
 ### **Automation Enhancements**
@@ -291,9 +295,11 @@ python3 scripts/build_calendar.py --year 2026 --language de --complete
 - **Multi-language location data**: From `photos/YYYY/MM/README.md` files with language-specific entries
 - **Smart QR codes**: Link to `https://sarefo.github.io/calendar/` with language detection
 - **Enhanced URL formats**: 
-  - `#YYYYMM` (e.g., `#202601`) → English interface, current day if in that month
+  - `#YYYYMM` (e.g., `#202601`) → Year-based calendar, current day if in that month
   - `#YYYYMM&lang=de` (e.g., `#202603&lang=de`) → German interface with automatic translation
   - `#YYYYMMDD&lang=es` (e.g., `#20260215&lang=es`) → Spanish interface with specific date
+  - `#MM` (e.g., `#01`, `#12`) → Perpetual calendar, maps to current year and today if in that month
+  - `#MM&lang=de` (e.g., `#07&lang=de`) → German perpetual calendar interface
 - **Landing page**: Automatic UI language switching and date picker setting
 - **Location fallbacks**: German calendars use German locations, fall back to English if missing
 - **World maps**: Simplified SVG with location markers in streamlined header
@@ -331,7 +337,8 @@ The perpetual calendar system generates universal calendars that work for any ye
 - **No year display** - prominent 50pt month names
 - **No weekday headers** - clean day-only layout (1, 2, 3... 31)
 - **No week numbers** - eliminates year-specific elements
-- **Universal QR codes** - simple month-only hash parameters
+- **Universal QR codes** - simple month-only hash parameters (`#01`, `#02`, etc.)
+- **Smart landing page integration** - automatically maps to current year with today's date if in that month
 
 ### **Usage Commands**
 
@@ -736,7 +743,7 @@ python3 scripts/update_landing_page.py
 - **Mobile-responsive design**
 
 ### Phase 3: Advanced Features
-- **Multi-language support** (Spanish, Portuguese)
+- **Additional language support** (Portuguese, French)
 - **Custom color themes** per location
 - **Enhanced world maps** with terrain/satellite imagery
 - **Photo metadata integration** (camera settings, species info)
@@ -829,6 +836,7 @@ python3 scripts/build_calendar.py --install-deps
 ✅ **Complete build workflow: Single command generates everything**  
 ✅ **Dual PDF binding: Separate print and web-optimized bound versions**  
 ✅ **Landing page with hash parameter support implemented**  
+✅ **Perpetual calendar landing page integration - handles #01-#12 parameters**  
 ✅ **Clean header design with integrated elements**  
 ✅ **Enhanced print media CSS for PDF consistency**  
 ✅ **Cross-year photo support: YYYYMM format with seamless overflow**

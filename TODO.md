@@ -1,9 +1,7 @@
 ## General
 + replace tabs in photo_information.txt with commas?
-+ 2027 images no longer show in 2026 calendar
 
 ## Perpetual calendar
-+ consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
 
 ## Photos
 
@@ -36,12 +34,5 @@
 
 ## Workflow
 
-## Title bar
-+ consider moving title bar to bottom
-
 ## Hosting
 + free webhosting of several 300mb and 30mb files
-
-## World map
-+ coordinates are sometimes off, needed to tweak them to the right for some maps
-+ we probably don't need to create the maps in the assets folder of each language. use one common folder instead?
