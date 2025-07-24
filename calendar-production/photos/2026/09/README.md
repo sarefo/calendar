@@ -1,4 +1,4 @@
-+ location_en: Germany
-+ location_de: Deutschland
-+ location_es: Alemania
-+ coordinates: 50°43′24″N 7°37′12″E
++ location: Hong Kong
++ location_de: Hongkong
++ location_es: Hong Kong
++ coordinates: 22°18′N 114°12′E
