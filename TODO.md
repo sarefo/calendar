@@ -1,8 +1,9 @@
 ## General
-+ seems the observation links don't get updated when rebuilding?
-  + neither in date picker nor in PDF/html page links
 + replace tabs in photo_information.txt with commas?
 + 2027 images no longer show in 2026 calendar
+
+## Perpetual calendar
++ consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
 
 ## Photos
 
@@ -23,9 +24,6 @@
 + website: make calendar html mobile ready
 + remove crop marks and bleed
 + able to navigate to next/previous month
-
-## Perpetual calendar
-+ consider changing qr code #202601 etc. url parameter - implemented simple #MM format for perpetual
 
 ## Sunday-first calendar option
 + consider using sunday first for US/Canada/Mexico/Australia
