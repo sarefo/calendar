@@ -276,40 +276,8 @@ class CalendarGenerator:
                             # Account for new nested structure: output/2026/de/html/ -> photos/
                             return f"../../../../{photo_path}"
         
-        # Fallback to old behavior if photo_information.txt doesn't have entry
-        for photo_dir in photo_dirs:
-            photo_path = Path(photo_dir)
-            if not photo_path.exists():
-                continue
-            
-            # Get all .jpg files in alphanumerical order
-            jpg_files = sorted([f for f in photo_path.iterdir() 
-                              if f.suffix.lower() == '.jpg'])
-            
-            if not jpg_files:
-                continue
-            
-            # Map day of month to photo index (1-based)
-            photo_index = day_of_month - 1  # Convert to 0-based index
-            
-            if photo_index < len(jpg_files):
-                photo_file = jpg_files[photo_index]
-                
-                # Check for web thumbnail if web_optimized is requested
-                if web_optimized and not use_absolute_paths:
-                    web_photo_file = photo_path / "web" / photo_file.name
-                    if web_photo_file.exists():
-                        # Return relative path to web thumbnail
-                        return f"../../../../{web_photo_file}"
-                
-                # Fall back to original photo
-                if use_absolute_paths:
-                    # Return absolute filesystem path for PDF conversion (not file:// URI)
-                    return str(photo_file.resolve())
-                else:
-                    # Return relative path from output directory to source photos
-                    # Account for new nested structure: output/2026/de/html/ -> photos/
-                    return f"../../../../{photo_file}"
+        # No fallback - if photo is not found in photo_information.txt, return None
+        # The build should fail instead of substituting random photos
         
         return None
     
@@ -383,6 +351,7 @@ class CalendarGenerator:
         # Create simple day layout (no weekday alignment)
         weeks = []
         current_week = {"dates": []}
+        missing_photos = []
         
         for day in range(1, days_in_month + 1):
             # Create date object using source year for photo lookup
@@ -402,6 +371,10 @@ class CalendarGenerator:
             
             # Find photo for this day
             day_info['image_path'] = self.find_photo_for_date(day_date, photo_dirs, use_absolute_paths, web_optimized)
+            
+            # Check if photo is missing
+            if day_info['image_path'] is None:
+                missing_photos.append(day_date.strftime('%Y-%m-%d'))
             
             # Add iNaturalist observation ID if available
             date_key = day_date.strftime('%Y-%m-%d')
@@ -430,6 +403,16 @@ class CalendarGenerator:
                     'image_path': None
                 })
             weeks.append(current_week)
+        
+        # Fail the build if any photos are missing
+        if missing_photos:
+            missing_list = '\n  - '.join(missing_photos)
+            raise FileNotFoundError(
+                f"❌ BUILD FAILED: Missing photos for perpetual month {month:02d}:\n  - {missing_list}\n\n"
+                f"Photos must be listed in photo_information.txt with format:\n"
+                f"  {source_year}{month:02d}\tfilename\tobservation_id\n\n"
+                f"No fallback substitution will be performed. Fix the missing photos and try again."
+            )
         
         # Generate world map SVG content
         world_map_svg = self._generate_world_map_content(location_data)
@@ -506,6 +489,7 @@ class CalendarGenerator:
             ]
         
         # Add photo paths and observation data to each day
+        missing_photos = []
         for week in grid_data['weeks']:
             for day_info in week['dates']:
                 # Determine which photo directory to use based on month
@@ -523,6 +507,10 @@ class CalendarGenerator:
                     ]
                     day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths, web_optimized)
                 
+                # Check if photo is missing for current month days
+                if current_month == month and current_year == year and day_info['image_path'] is None:
+                    missing_photos.append(day_info['date'].strftime('%Y-%m-%d'))
+                
                 # Add iNaturalist observation ID if available
                 date_key = day_info['date'].strftime('%Y-%m-%d')
                 observation_id = photo_observations.get(date_key)
@@ -530,7 +518,15 @@ class CalendarGenerator:
                     day_info['observation_id'] = observation_id
                     day_info['inaturalist_url'] = f"https://www.inaturalist.org/observations/{observation_id}"
                 
-                # Don't add placeholder for empty days
+        # Fail the build if any photos are missing
+        if missing_photos:
+            missing_list = '\n  - '.join(missing_photos)
+            raise FileNotFoundError(
+                f"❌ BUILD FAILED: Missing photos for {year}-{month:02d}:\n  - {missing_list}\n\n"
+                f"Photos must be listed in photo_information.txt with format:\n"
+                f"  {year}{month:02d}\tfilename\tobservation_id\n\n"
+                f"No fallback substitution will be performed. Fix the missing photos and try again."
+            )
         
         # Generate world map SVG content
         world_map_svg = self._generate_world_map_content(location_data)

@@ -597,18 +597,24 @@ python3 scripts/build_calendar.py --year 2026 --bind-pdf
 # Bind existing monthly PDFs without regenerating - creates both print and web versions
 python3 scripts/build_calendar.py --year 2026 --bind-existing
 
+# Build full year with both print and web PDFs + binding
+python3 scripts/build_calendar.py --year 2026 --bind-pdf
+
 # Skip PDF generation (HTML only)
 python3 scripts/build_calendar.py --year 2026 --no-pdf
 ```
 
-**💾 Compression Options**
+**💾 PDF Output Formats** 🆕
+By default, all calendar build commands create BOTH print and web PDFs automatically:
 ```bash
-# Web-optimized PDFs (smaller file sizes for digital sharing)
-python3 scripts/build_calendar.py --year 2026 --web-pdf
+# Single month - creates both print (33MB) and web (2.5MB) PDFs
+python3 scripts/build_calendar.py --year 2026 --month 1
 
-# Compare both formats
-python3 scripts/build_calendar.py --year 2026 --month 1          # Print (33MB)
-python3 scripts/build_calendar.py --year 2026 --month 1 --web-pdf    # Web (2.5MB)
+# Multiple months - creates both formats for each month  
+python3 scripts/build_calendar.py --year 2026 --months "11,12"
+
+# Full year - creates both formats (print: ~400MB, web: ~30MB total)
+python3 scripts/build_calendar.py --year 2026
 ```
 
 ### Individual Script Usage
