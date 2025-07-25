@@ -68,6 +68,13 @@ function initializeApp() {
 
     // Event listeners
     currentDateDisplay.addEventListener('click', openCurrentObservation);
+    
+    // Add window resize listener to readjust font size
+    window.addEventListener('resize', function() {
+        if (currentDateDisplay) {
+            adjustFontSize(currentDateDisplay);
+        }
+    });
 
     let isDatePickerOpen = false;
 
@@ -241,9 +248,45 @@ function updateDateDisplay(date) {
     currentDate = date;
     if (currentDateDisplay) {
         currentDateDisplay.textContent = formatDateForDisplay(date);
+        adjustFontSize(currentDateDisplay);
     }
     if (todayInput) {
         todayInput.valueAsDate = date;
+    }
+}
+
+// Dynamically adjust font size to fill the button
+function adjustFontSize(element) {
+    const maxFontSize = 1.3; // em
+    const minFontSize = 0.8; // em
+    
+    // Start with a reasonable font size
+    let fontSize = maxFontSize;
+    element.style.fontSize = fontSize + 'em';
+    
+    // Check if text overflows and reduce font size if needed
+    let iterations = 0;
+    while (element.scrollWidth > element.clientWidth && fontSize > minFontSize && iterations < 10) {
+        fontSize -= 0.05;
+        element.style.fontSize = fontSize + 'em';
+        iterations++;
+    }
+    
+    // If text is much smaller than container, try to increase font size
+    const textWidth = element.scrollWidth;
+    const containerWidth = element.clientWidth;
+    
+    if (textWidth < containerWidth * 0.8 && fontSize < maxFontSize) {
+        while (element.scrollWidth < containerWidth * 0.9 && fontSize < maxFontSize && iterations < 20) {
+            fontSize += 0.02;
+            element.style.fontSize = fontSize + 'em';
+            if (element.scrollWidth > containerWidth) {
+                fontSize -= 0.02;
+                element.style.fontSize = fontSize + 'em';
+                break;
+            }
+            iterations++;
+        }
     }
 }
 
