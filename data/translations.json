@@ -27,7 +27,7 @@
         "coverSubtitle": "A Daily Journey Through Global Biodiversity",
         "perpetualBadge": "Perpetual Calendar",
         "duonatTitle": "Test Your Nature Knowledge",
-        "duonatDescription": "Learn to identify species with our educational biodiversity game"
+        "duonatDescription": "Learn to identify species with our educational biodiversity game!"
     },
     "de": {
         "title": "In 365 Arten um die Welt",
@@ -57,7 +57,7 @@
         "coverSubtitle": "Eine tägliche Reise durch die globale Artenvielfalt",
         "perpetualBadge": "Dauerkalender",
         "duonatTitle": "Testen Sie Ihr Naturwissen",
-        "duonatDescription": "Lernen Sie Arten zu erkennen, mit unserem Biodiversitäts-Lernspiel"
+        "duonatDescription": "Lernen Sie Arten zu erkennen, mit unserem Biodiversitäts-Lernspiel!"
     },
     "es": {
         "title": "Alrededor del Mundo en 365 Especies",
@@ -87,6 +87,6 @@
         "coverSubtitle": "Un Viaje Diario por la Biodiversidad Global",
         "perpetualBadge": "Calendario Perpetuo",
         "duonatTitle": "Pon a Prueba tu Conocimiento Natural",
-        "duonatDescription": "Aprende a distinguir especies con nuestro juego educativo de biodiversidad"
+        "duonatDescription": "Aprende a distinguir especies con nuestro juego educativo de biodiversidad!"
     }
 }
