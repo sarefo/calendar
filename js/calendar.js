@@ -257,36 +257,46 @@ function updateDateDisplay(date) {
 
 // Dynamically adjust font size to fill the button
 function adjustFontSize(element) {
-    const maxFontSize = 2.0; // em
-    const minFontSize = 1.3; // em
+    // Different font size ranges based on screen width
+    const screenWidth = window.innerWidth;
+    let maxFontSize, minFontSize;
     
-    // Start with a reasonable font size
+    if (screenWidth <= 600) {
+        maxFontSize = 1.6;
+        minFontSize = 1.2;
+    } else if (screenWidth <= 800) {
+        maxFontSize = 1.9;
+        minFontSize = 1.5;
+    } else {
+        maxFontSize = 2.2;
+        minFontSize = 1.8;
+    }
+    
+    // Start with max font size
     let fontSize = maxFontSize;
     element.style.fontSize = fontSize + 'em';
     
-    // Check if text overflows and reduce font size if needed
+    // Reduce font size until text fits (both width and height)
     let iterations = 0;
-    while (element.scrollWidth > element.clientWidth && fontSize > minFontSize && iterations < 10) {
+    const maxIterations = 15;
+    
+    while (iterations < maxIterations && fontSize > minFontSize) {
+        const fitsWidth = element.scrollWidth <= element.clientWidth;
+        const fitsHeight = element.scrollHeight <= element.clientHeight;
+        
+        if (fitsWidth && fitsHeight) {
+            break; // Text fits perfectly
+        }
+        
         fontSize -= 0.05;
         element.style.fontSize = fontSize + 'em';
         iterations++;
     }
     
-    // If text is much smaller than container, try to increase font size
-    const textWidth = element.scrollWidth;
-    const containerWidth = element.clientWidth;
-    
-    if (textWidth < containerWidth * 0.8 && fontSize < maxFontSize) {
-        while (element.scrollWidth < containerWidth * 0.9 && fontSize < maxFontSize && iterations < 20) {
-            fontSize += 0.02;
-            element.style.fontSize = fontSize + 'em';
-            if (element.scrollWidth > containerWidth) {
-                fontSize -= 0.02;
-                element.style.fontSize = fontSize + 'em';
-                break;
-            }
-            iterations++;
-        }
+    // Ensure we never go below minimum
+    if (fontSize < minFontSize) {
+        fontSize = minFontSize;
+        element.style.fontSize = fontSize + 'em';
     }
 }
 
