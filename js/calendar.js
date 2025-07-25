@@ -41,8 +41,16 @@ function checkUrlParameters() {
 
 // Initialize the application
 function initializeApp() {
+    // Ensure language is always explicitly set
+    if (!currentLanguage || currentLanguage === '') {
+        currentLanguage = 'en';
+    }
+    
     // Check for URL parameters first
     checkUrlParameters();
+    
+    // Always update to the current language (even if it's 'en')
+    updateLanguage(currentLanguage);
     
     // Initialize date and language
     if (!setDateFromHash()) {
@@ -54,9 +62,6 @@ function initializeApp() {
 
     // Initialize DuoNat link based on device
     updateDuoNatLink();
-    
-    // Set fallback footer text if translations didn't load
-    setFallbackFooter();
 
     // Listen for hash changes
     window.addEventListener('hashchange', setDateFromHash);
@@ -356,13 +361,6 @@ function setDateFromHash() {
     return false;
 }
 
-// Set fallback footer text when translations fail to load
-function setFallbackFooter() {
-    const footerElement = document.querySelector('.footer');
-    if (footerElement && (!footerElement.innerHTML || footerElement.innerHTML.trim() === '<!-- Footer content will be populated by JavaScript for i18n support -->')) {
-        footerElement.innerHTML = 'All photos taken by <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> on iNaturalist';
-    }
-}
 
 // Load data when the page loads
 document.addEventListener('DOMContentLoaded', loadData);
