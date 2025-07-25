@@ -52,6 +52,9 @@ function initializeApp() {
     // Initialize month links with current language
     updateMonthLinks(currentLanguage);
 
+    // Initialize DuoNat link based on device
+    updateDuoNatLink();
+
     // Listen for hash changes
     window.addEventListener('hashchange', setDateFromHash);
 
@@ -120,6 +123,23 @@ function initializeApp() {
     });
 }
 
+// Detect Android devices
+function isAndroid() {
+    return /Android/i.test(navigator.userAgent);
+}
+
+// Update DuoNat link based on device
+function updateDuoNatLink() {
+    const duonatLink = document.querySelector('.duonat-link');
+    if (duonatLink) {
+        if (isAndroid()) {
+            duonatLink.href = 'https://play.google.com/store/apps/details?id=app.duo_nat';
+        } else {
+            duonatLink.href = 'https://duo-nat.web.app/';
+        }
+    }
+}
+
 // Update UI language
 function updateLanguage(language) {
     currentLanguage = language;
@@ -146,6 +166,12 @@ function updateLanguage(language) {
     const calendarSectionElement = document.querySelector('.calendar-section h3');
     if (calendarSectionElement && t.viewCalendar) calendarSectionElement.textContent = t.viewCalendar;
     
+    const duonatTitleElement = document.querySelector('.duonat-title');
+    if (duonatTitleElement && t.duonatTitle) duonatTitleElement.textContent = t.duonatTitle;
+    
+    const duonatDescriptionElement = document.querySelector('.duonat-description');
+    if (duonatDescriptionElement && t.duonatDescription) duonatDescriptionElement.textContent = t.duonatDescription;
+    
     const footerElement = document.querySelector('.footer');
     if (footerElement && t.footerText && t.onINaturalist) {
         footerElement.innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> ' + t.onINaturalist;
@@ -153,6 +179,9 @@ function updateLanguage(language) {
 
     // Update calendar month links
     updateMonthLinks(language);
+
+    // Update DuoNat link based on device
+    updateDuoNatLink();
 
     // Update date display
     updateDateDisplay(currentDate);

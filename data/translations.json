@@ -6,13 +6,28 @@
         "dateHelp": "👆 Click the date above to see detailed info about that day's photo",
         "pickDateBtn": "Pick Other Date",
         "viewCalendar": "View Calendar Pages",
-        "footerText": "Explore the beauty of macro photography through our <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3 landscape calendar</a> featuring daily photos from locations around the world.<br>All photos by",
+        "footerText": "Explore the beauty of biodiversity through our <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3 landscape calendar</a> featuring daily photos from locations around the world.<br>All photos by",
         "onINaturalist": "on iNaturalist.",
         "noObservation": "No observation available for this date yet. Photos for this date may not be added to the calendar.",
-        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "months": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
         "coverTitle": "Around the World in 365 Species",
         "coverSubtitle": "A Daily Journey Through Global Biodiversity",
-        "perpetualBadge": "Perpetual Calendar"
+        "perpetualBadge": "Perpetual Calendar",
+        "duonatTitle": "Test Your Nature Knowledge",
+        "duonatDescription": "Learn to identify species with our educational biodiversity game"
     },
     "de": {
         "title": "In 365 Arten um die Welt",
@@ -21,13 +36,28 @@
         "dateHelp": "👆 Klicken Sie auf das Datum, um detaillierte Informationen zu diesem Foto zu sehen",
         "pickDateBtn": "Anderes Datum wählen",
         "viewCalendar": "Kalenderseiten ansehen",
-        "footerText": "Entdecken Sie die Schönheit der Makrofotografie mit unserem <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3-Querformat-Kalender</a> mit täglich neuen Fotos aus aller Welt.<br>Alle Fotos von",
+        "footerText": "Entdecken Sie die Schönheit der Biodiversität mit unserem <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3-Querformat-Kalender</a> mit täglich neuen Fotos aus aller Welt.<br>Alle Fotos von",
         "onINaturalist": "auf iNaturalist.",
         "noObservation": "Für dieses Datum ist noch keine Beobachtung verfügbar. Fotos für dieses Datum wurden möglicherweise noch nicht zum Kalender hinzugefügt.",
-        "months": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+        "months": [
+            "Januar",
+            "Februar",
+            "März",
+            "April",
+            "Mai",
+            "Juni",
+            "Juli",
+            "August",
+            "September",
+            "Oktober",
+            "November",
+            "Dezember"
+        ],
         "coverTitle": "In 365 Arten um die Welt",
         "coverSubtitle": "Eine tägliche Reise durch die globale Artenvielfalt",
-        "perpetualBadge": "Dauerkalender"
+        "perpetualBadge": "Dauerkalender",
+        "duonatTitle": "Testen Sie Ihr Naturwissen",
+        "duonatDescription": "Lernen Sie Arten zu erkennen, mit unserem Biodiversitäts-Lernspiel"
     },
     "es": {
         "title": "Alrededor del Mundo en 365 Especies",
@@ -36,12 +66,27 @@
         "dateHelp": "👆 Haz clic en la fecha para ver información detallada sobre la foto de ese día",
         "pickDateBtn": "Elegir otra fecha",
         "viewCalendar": "Ver páginas del calendario",
-        "footerText": "Explora la belleza de la fotografía macro con nuestro <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>calendario A3 horizontal</a> con fotos diarias de ubicaciones de todo el mundo.<br>Todas las fotos por",
+        "footerText": "Explora la belleza de la biodiversidad con nuestro <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>calendario A3 horizontal</a> con fotos diarias de ubicaciones de todo el mundo.<br>Todas las fotos por",
         "onINaturalist": "en iNaturalist.",
         "noObservation": "Aún no hay observación disponible para esta fecha. Es posible que las fotos de esta fecha no se hayan agregado al calendario.",
-        "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        "months": [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre"
+        ],
         "coverTitle": "Alrededor del Mundo en 365 Especies",
         "coverSubtitle": "Un Viaje Diario por la Biodiversidad Global",
-        "perpetualBadge": "Calendario Perpetuo"
+        "perpetualBadge": "Calendario Perpetuo",
+        "duonatTitle": "Pon a Prueba tu Conocimiento Natural",
+        "duonatDescription": "Aprende a distinguir especies con nuestro juego educativo de biodiversidad"
     }
 }
