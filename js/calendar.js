@@ -210,7 +210,6 @@ function updateMonthLinks(language) {
 function formatDateForDisplay(date) {
     const t = translations[currentLanguage] || translations.en || {};
     const options = {
-        weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'

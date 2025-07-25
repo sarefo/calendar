@@ -15,14 +15,16 @@
 
         <div class="date-section">
             <h2>What's on the photo?</h2>
-            <div class="current-date" id="currentDateDisplay"
-                title="Click to view this photo's observation on iNaturalist">
-                <!-- Date will be set by JavaScript -->
+            <div class="date-buttons-container">
+                <div class="current-date" id="currentDateDisplay"
+                    title="Click to view this photo's observation on iNaturalist">
+                    <!-- Date will be set by JavaScript -->
+                </div>
+                <button class="pick-date-btn" id="pickDateBtn">Pick Other Date</button>
             </div>
             <div class="date-help">
                 👆 Click the date above to see detailed info about that day's photo
             </div>
-            <button class="pick-date-btn" id="pickDateBtn">Pick Other Date</button>
             <input type="date" class="date-input" id="todayDate">
         </div>
 
