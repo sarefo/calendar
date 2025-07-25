@@ -380,23 +380,19 @@ h1 {
     }
 
     .container {
-        padding: 15px;
-        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+        padding: 12px;
+        padding-bottom: max(25px, env(safe-area-inset-bottom, 25px));
         margin: 0;
         border-radius: 0;
         box-shadow: none;
-        height: 100vh;
-        height: 100dvh; /* Use dynamic viewport height when available */
-        max-height: 100vh;
-        max-height: 100dvh; /* Ensure it doesn't exceed viewport */
+        min-height: 100vh;
+        min-height: 100dvh; /* Use dynamic viewport height when available */
         width: 100%;
         max-width: none;
         background: white;
         position: relative;
         box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto; /* Allow scrolling if content is too tall */
+        display: block; /* Use normal document flow */
     }
 
     h1 {
@@ -453,10 +449,7 @@ h1 {
     .calendar-section {
         margin-top: 10px;
         padding-top: 6px;
-        flex-grow: 1; /* Allow to expand and take available space */
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* Center the calendar vertically in available space */
+        flex-shrink: 0; /* Don't allow shrinking */
     }
 
     .calendar-section h3 {
@@ -522,10 +515,9 @@ h1 {
     }
 
     .footer {
-        margin-top: auto; /* Push footer to bottom */
-        padding-top: 10px; /* Space above footer */
+        margin-top: 8px; /* Small margin above footer */
+        padding-top: 8px; /* Space above footer */
         font-size: 0.7em; /* Slightly smaller for compactness */
         line-height: 1.2; /* Tighter line height */
-        flex-shrink: 0; /* Prevent footer from shrinking */
     }
 }
