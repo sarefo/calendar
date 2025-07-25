@@ -146,18 +146,23 @@ h1 {
     flex-wrap: nowrap;
 }
 
+.calendar-container {
+    background: #e9ecef;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #dee2e6;
+}
+
 .year-label {
     font-size: 1.4em;
     font-weight: 700;
     color: #2C3E50;
-    background: #e9ecef;
-    padding: 10px 18px;
-    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 12px;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    flex-shrink: 0;
 }
 
 .months-grid {
@@ -167,7 +172,7 @@ h1 {
     background: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #dee2e6;
 }
 
 .month-link {
@@ -230,7 +235,7 @@ h1 {
 
 .duonat-content {
     flex: 1;
-    text-align: left;
+    text-align: center;
 }
 
 .duonat-title {
@@ -318,9 +323,13 @@ h1 {
         gap: 12px;
     }
     
+    .calendar-container {
+        padding: 12px;
+    }
+    
     .year-label {
         font-size: 1.2em;
-        padding: 8px 14px;
+        margin-bottom: 10px;
     }
     
     .months-grid {
@@ -462,9 +471,13 @@ h1 {
         flex-wrap: nowrap;
     }
 
+    .calendar-container {
+        padding: 12px;
+    }
+
     .year-label {
         font-size: 1.2em;
-        padding: 8px 16px;
+        margin-bottom: 8px;
     }
 
     .months-grid {
@@ -501,7 +514,7 @@ h1 {
     }
     
     .duonat-content {
-        text-align: left;
+        text-align: center;
     }
     
     .duonat-title {
