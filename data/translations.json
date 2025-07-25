@@ -3,10 +3,10 @@
         "title": "Around the World in 365 Species",
         "subtitle": "A Daily Journey Through Global Biodiversity",
         "dateQuestion": "What's on the photo?",
-        "dateHelp": "👆 Click the date above to see detailed info about that day's photo",
+        "dateHelp": "👆 Click date for photo details",
         "pickDateBtn": "Other Date",
         "viewCalendar": "View Calendar Pages",
-        "footerText": "Explore the beauty of biodiversity through our <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3 landscape calendar</a> featuring daily photos from locations around the world.<br>All photos by",
+        "footerText": "Daily biodiversity photos from our <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3 calendar</a>.<br>All photos by",
         "onINaturalist": "on iNaturalist.",
         "noObservation": "No observation available for this date yet. Photos for this date may not be added to the calendar.",
         "months": [
@@ -27,16 +27,16 @@
         "coverSubtitle": "A Daily Journey Through Global Biodiversity",
         "perpetualBadge": "Perpetual Calendar",
         "duonatTitle": "Test Your Nature Knowledge",
-        "duonatDescription": "Learn to identify species with our educational biodiversity game!"
+        "duonatDescription": "Identify species with our nature quiz game!"
     },
     "de": {
         "title": "In 365 Arten um die Welt",
         "subtitle": "Eine tägliche Reise durch die globale Artenvielfalt",
         "dateQuestion": "Was ist auf dem Foto?",
-        "dateHelp": "👆 Klicken Sie auf das Datum, um detaillierte Informationen zu diesem Foto zu sehen",
+        "dateHelp": "👆 Klicken Sie auf das Datum für Foto-Details",
         "pickDateBtn": "Anderes Datum",
         "viewCalendar": "Kalenderseiten ansehen",
-        "footerText": "Entdecken Sie die Schönheit der Biodiversität mit unserem <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3-Querformat-Kalender</a> mit täglich neuen Fotos aus aller Welt.<br>Alle Fotos von",
+        "footerText": "Tägliche Biodiversitäts-Fotos aus unserem <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3-Kalender</a>.<br>Alle Fotos von",
         "onINaturalist": "auf iNaturalist.",
         "noObservation": "Für dieses Datum ist noch keine Beobachtung verfügbar. Fotos für dieses Datum wurden möglicherweise noch nicht zum Kalender hinzugefügt.",
         "months": [
@@ -57,16 +57,16 @@
         "coverSubtitle": "Eine tägliche Reise durch die globale Artenvielfalt",
         "perpetualBadge": "Dauerkalender",
         "duonatTitle": "Testen Sie Ihr Naturwissen",
-        "duonatDescription": "Lernen Sie Arten zu erkennen, mit unserem Biodiversitäts-Lernspiel!"
+        "duonatDescription": "Arten erkennen mit unserem Natur-Quiz!"
     },
     "es": {
         "title": "Alrededor del Mundo en 365 Especies",
         "subtitle": "Un Viaje Diario por la Biodiversidad Global",
         "dateQuestion": "¿Qué hay en la foto?",
-        "dateHelp": "👆 Haz clic en la fecha para ver información detallada sobre la foto de ese día",
+        "dateHelp": "👆 Haz clic en la fecha para detalles de la foto",
         "pickDateBtn": "Otra Fecha",
         "viewCalendar": "Ver páginas del calendario",
-        "footerText": "Explora la belleza de la biodiversidad con nuestro <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>calendario A3 horizontal</a> con fotos diarias de ubicaciones de todo el mundo.<br>Todas las fotos por",
+        "footerText": "Fotos diarias de biodiversidad de nuestro <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>calendario A3</a>.<br>Todas las fotos por",
         "onINaturalist": "en iNaturalist.",
         "noObservation": "Aún no hay observación disponible para esta fecha. Es posible que las fotos de esta fecha no se hayan agregado al calendario.",
         "months": [
@@ -87,6 +87,6 @@
         "coverSubtitle": "Un Viaje Diario por la Biodiversidad Global",
         "perpetualBadge": "Calendario Perpetuo",
         "duonatTitle": "Pon a Prueba tu Conocimiento Natural",
-        "duonatDescription": "Aprende a distinguir especies con nuestro juego educativo de biodiversidad!"
+        "duonatDescription": "Identifica especies con nuestro juego de naturaleza!"
     }
 }
