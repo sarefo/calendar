@@ -64,8 +64,8 @@ h1 {
 }
 
 .current-date {
-    font-size: 1.1em;
-    padding: 16px 20px;
+    font-size: 1.8em;
+    padding: 20px 24px;
     background: linear-gradient(135deg, #74ac00, #8bc34a);
     color: white;
     border-radius: 8px;
@@ -80,7 +80,7 @@ h1 {
     text-align: center;
     max-width: 350px;
     line-height: 1.2;
-    height: 52px;
+    height: 64px;
     box-sizing: border-box;
 }
 
@@ -100,7 +100,7 @@ h1 {
     background: linear-gradient(135deg, #74ac00, #8bc34a);
     color: white;
     border: none;
-    padding: 16px 20px;
+    padding: 20px 24px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1.1em;
@@ -110,7 +110,7 @@ h1 {
     white-space: nowrap;
     min-width: 120px;
     line-height: 1.2;
-    height: 52px;
+    height: 64px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -303,16 +303,16 @@ h1 {
     }
     
     .current-date {
-        font-size: 1em;
-        padding: 12px 16px;
-        height: 44px;
+        font-size: 1.6em;
+        padding: 16px 20px;
+        height: 56px;
     }
     
     .pick-date-btn {
         font-size: 1em;
-        padding: 12px 16px;
+        padding: 16px 20px;
         min-width: 100px;
-        height: 44px;
+        height: 56px;
     }
     
     .date-help {
@@ -444,12 +444,12 @@ h1 {
     }
 
     .current-date {
-        font-size: 1em;
-        padding: 12px 16px;
+        font-size: 1.6em;
+        padding: 16px 20px;
         max-width: none;
         flex: 1;
         min-width: 0;
-        height: 44px;
+        height: 56px;
     }
 
     .date-help {
@@ -458,13 +458,13 @@ h1 {
     }
 
     .pick-date-btn {
-        padding: 12px 14px;
+        padding: 16px 20px;
         font-size: 1em;
         font-weight: 600;
         min-width: auto;
         white-space: nowrap;
         flex-shrink: 0;
-        height: 44px;
+        height: 56px;
     }
 
     .calendar-section {

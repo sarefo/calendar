@@ -257,8 +257,8 @@ function updateDateDisplay(date) {
 
 // Dynamically adjust font size to fill the button
 function adjustFontSize(element) {
-    const maxFontSize = 1.3; // em
-    const minFontSize = 0.8; // em
+    const maxFontSize = 2.0; // em
+    const minFontSize = 1.3; // em
     
     // Start with a reasonable font size
     let fontSize = maxFontSize;
