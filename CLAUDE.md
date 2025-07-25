@@ -35,6 +35,7 @@ This system generates professional A3 landscape photo calendars featuring:
 - **February 29th support** included for leap year compatibility
 - **Larger month names** (no year display) with prominent 50pt typography
 - **Universal QR codes** with simplified month-only hash parameters
+- **Cleaner build syntax** using `--year perpetual` for explicit perpetual calendar generation
 
 ### **Professional Cover Page System** 🆕
 - **4×3 photo showcase grid** featuring 12 selected photos (one per month)
@@ -322,20 +323,20 @@ The perpetual calendar system generates universal calendars that work for any ye
 
 ```bash
 # Generate single perpetual month (HTML + both PDFs)
-python3 scripts/build_calendar.py --months "2"
+python3 scripts/build_calendar.py --year perpetual --months "2"
 
 # Generate multiple perpetual months  
-python3 scripts/build_calendar.py --months "1,2,3,4"
+python3 scripts/build_calendar.py --year perpetual --months "1,2,3,4"
 
 # Generate all 12 perpetual months
-python3 scripts/build_calendar.py
+python3 scripts/build_calendar.py --year perpetual
 
 # Multi-language perpetual calendars
-python3 scripts/build_calendar.py --months "2" --language de  # German
-python3 scripts/build_calendar.py --months "2" --language es  # Spanish
+python3 scripts/build_calendar.py --year perpetual --months "2" --language de  # German
+python3 scripts/build_calendar.py --year perpetual --months "2" --language es  # Spanish
 
-# HTML only (no PDFs)
-python3 scripts/build_calendar.py --months "2" --no-pdf
+# HTML only (no PDFs) - multiple languages
+python3 scripts/build_calendar.py --year perpetual --language de,en,es --no-pdf
 ```
 
 ### **Output Structure**
@@ -371,7 +372,7 @@ python3 scripts/build_calendar.py --year 2026 --months "2"
 # → Output: 2026/en/html/202602.html
 
 # Perpetual calendar (universal) 
-python3 scripts/build_calendar.py --months "2"
+python3 scripts/build_calendar.py --year perpetual --months "2"
 # → Output: perpetual/en/html/02.html
 ```
 
@@ -540,13 +541,13 @@ python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --complete
 #### **Perpetual Calendars** 🆕
 ```bash
 # Complete perpetual calendar - all 12 months + cover page (HTML + both PDF formats)
-python3 scripts/build_calendar.py --complete
+python3 scripts/build_calendar.py --year perpetual --complete
 
 # Complete German perpetual calendar with cover page and localized QR codes
-python3 scripts/build_calendar.py --language de --complete
+python3 scripts/build_calendar.py --year perpetual --language de --complete
 
 # Complete perpetual calendar for specific months (no cover page for partial builds)
-python3 scripts/build_calendar.py --months "1,2,3" --complete
+python3 scripts/build_calendar.py --year perpetual --months "1,2,3" --complete
 ```
 
 #### **Cover Page Generation** 🆕
@@ -555,7 +556,7 @@ python3 scripts/build_calendar.py --months "1,2,3" --complete
 python3 scripts/build_calendar.py --cover --year 2026 --language en
 
 # Generate German perpetual cover page (HTML + both PDFs)
-python3 scripts/build_calendar.py --cover --language de
+python3 scripts/build_calendar.py --cover --year perpetual --language de
 
 # Generate Spanish cover page (HTML only)
 python3 scripts/build_calendar.py --cover --year 2026 --language es --no-pdf
@@ -581,16 +582,16 @@ python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --language es
 #### **Perpetual Calendar Commands** 🆕
 ```bash
 # Build single perpetual month (dual PDF generation)
-python3 scripts/build_calendar.py --months "2"
+python3 scripts/build_calendar.py --year perpetual --months "2"
 
 # Build German perpetual month with February 29th support
-python3 scripts/build_calendar.py --months "2" --language de
+python3 scripts/build_calendar.py --year perpetual --months "2" --language de
 
 # Build multiple perpetual months
-python3 scripts/build_calendar.py --months "1,2,3,4"
+python3 scripts/build_calendar.py --year perpetual --months "1,2,3,4"
 
-# HTML only (no PDFs)
-python3 scripts/build_calendar.py --months "2" --no-pdf
+# HTML only (no PDFs) - multiple languages
+python3 scripts/build_calendar.py --year perpetual --language de,en,es --no-pdf
 ```
 
 # Build full year with print package
@@ -782,6 +783,7 @@ pip install -r requirements.txt
 - **Cover PDFs**: `portioid_calendar_cover_YYYY_lang_print.pdf` and `portioid_calendar_cover_YYYY_lang_web.pdf`
 - **Check current directory**: Run commands from `calendar-production/` directory
 - **Verify build success**: Look for "✅ Generated HTML:" and "🎉 Successfully built" messages
+- **Perpetual calendar syntax**: Use `--year perpetual` instead of omitting `--year` for clearer commands
 
 ---
 
