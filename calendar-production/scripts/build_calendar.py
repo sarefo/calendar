@@ -870,7 +870,7 @@ class CalendarBuilder:
 
 def main():
     parser = argparse.ArgumentParser(description="Build complete calendar production")
-    parser.add_argument('--year', help="Year to build (use 'perpetual' for perpetual calendar, or omit for perpetual)")
+    parser.add_argument('--year', required=True, help="Year to build (use 'perpetual' for perpetual calendar or a numeric year like 2026)")
     parser.add_argument('--months', help="Comma-separated list of months (e.g., '1,2,3' or just '1' for single month)")
     parser.add_argument('--config', help="Path to calendar configuration file")
     parser.add_argument('--language', default='en', help="Language(s) for calendar generation - single (e.g., 'en') or comma-separated (e.g., 'en,de,es')")
@@ -897,6 +897,15 @@ def main():
                 print(f"❌ Invalid year: '{args.year}'. Use a numeric year (e.g., 2026) or 'perpetual'")
                 return 1
     
+    # Require explicit --year parameter (either numeric year or "perpetual")
+    if not year_provided:
+        print("❌ --year parameter is required. Use a numeric year (e.g., --year 2026) or --year perpetual")
+        print("\nExamples:")
+        print("  python3 build_calendar.py --year 2026 --complete")
+        print("  python3 build_calendar.py --year perpetual --complete")
+        print("  python3 build_calendar.py --year perpetual --months 1,2,3")
+        return 1
+    
     # Check if no meaningful arguments provided - show usage
     meaningful_args = [
         year_provided, args.months, args.complete, args.cover, args.bind_pdf, args.bind_existing
@@ -907,7 +916,7 @@ def main():
         print("  python3 build_calendar.py --year 2026 --complete                    # Complete build for 2026 with cover")
         print("  python3 build_calendar.py --cover --year 2026 --language de         # German cover page for 2026")
         print("  python3 build_calendar.py --cover --year perpetual --language es    # Spanish perpetual cover page")
-        print("  python3 build_calendar.py --months 1,2,3 --language en,de          # Perpetual months 1-3 in English and German")
+        print("  python3 build_calendar.py --year perpetual --months 1,2,3 --language en,de # Perpetual months 1-3 in English and German")
         print("  python3 build_calendar.py --months 6 --year 2026                   # Single month (June 2026)")
         print("  python3 build_calendar.py --complete --year perpetual --language de # German perpetual calendar")
         print("  python3 build_calendar.py --year perpetual --language de,en,es --no-pdf # Update perpetual HTML only")
