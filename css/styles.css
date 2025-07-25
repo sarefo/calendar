@@ -372,8 +372,6 @@ h1 {
         padding: 0;
         margin: 0;
         min-height: 100vh;
-        height: 100vh; /* Fallback for older browsers */
-        height: 100dvh; /* Use dynamic viewport height for mobile */
         background: white !important;
         background-image: none !important;
         display: flex;
@@ -383,13 +381,11 @@ h1 {
     }
 
     .container {
-        padding: 15px;
+        padding: 15px 15px 30px 15px; /* Extra bottom padding for breathing room */
         margin: 0;
         border-radius: 0;
         box-shadow: none;
-        min-height: 100vh;
-        height: 100vh; /* Fallback for older browsers */
-        height: 100dvh; /* Use dynamic viewport height */
+        min-height: calc(100vh - 30px); /* Natural height with breathing room */
         width: 100%;
         max-width: none;
         background: white;
@@ -397,7 +393,6 @@ h1 {
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
     }
 
     h1 {
@@ -451,6 +446,8 @@ h1 {
     .calendar-section {
         margin-top: 12px;
         padding-top: 8px;
+        flex-grow: 0; /* Don't force expansion on mobile */
+        display: block; /* Natural flow instead of flex centering */
     }
 
     .calendar-section h3 {
