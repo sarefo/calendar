@@ -372,12 +372,14 @@ h1 {
         padding: 0;
         margin: 0;
         min-height: 100vh;
-        height: 100vh;
+        height: 100vh; /* Fallback for older browsers */
+        height: 100dvh; /* Use dynamic viewport height for mobile */
         background: white !important;
         background-image: none !important;
         display: flex;
         flex-direction: column;
         overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     .container {
@@ -386,7 +388,8 @@ h1 {
         border-radius: 0;
         box-shadow: none;
         min-height: 100vh;
-        height: 100vh;
+        height: 100vh; /* Fallback for older browsers */
+        height: 100dvh; /* Use dynamic viewport height */
         width: 100%;
         max-width: none;
         background: white;
@@ -394,6 +397,7 @@ h1 {
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
     }
 
     h1 {
