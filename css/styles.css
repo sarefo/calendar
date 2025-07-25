@@ -13,7 +13,7 @@ body {
 }
 
 .container {
-    background: white;
+    background: linear-gradient(135deg, #f8fdf4 0%, #f0f9e8 50%, #e8f5dc 100%);
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -409,7 +409,7 @@ h1 {
         /* Remove height constraints - let content flow naturally */
         width: 100%;
         max-width: none;
-        background: white;
+        background: linear-gradient(135deg, #f8fdf4 0%, #f0f9e8 50%, #e8f5dc 100%);
         position: relative;
         box-sizing: border-box;
     }
