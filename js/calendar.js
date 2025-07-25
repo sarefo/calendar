@@ -248,7 +248,7 @@ function updateDateDisplay(date) {
     currentDate = date;
     if (currentDateDisplay) {
         currentDateDisplay.textContent = formatDateForDisplay(date);
-        adjustFontSize(currentDateDisplay);
+        // Temporarily disabled: adjustFontSize(currentDateDisplay);
     }
     if (todayInput) {
         todayInput.valueAsDate = date;
