@@ -59,6 +59,7 @@ function initializeApp() {
 
     // Initialize month links with current language
     updateMonthLinks(currentLanguage);
+    updatePerpetualMonthLinks(currentLanguage);
 
     // Initialize DuoNat link based on device
     updateDuoNatLink();
@@ -191,9 +192,13 @@ function updateLanguage(language) {
     if (footerElement && t.footerText && t.onINaturalist) {
         footerElement.innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> ' + t.onINaturalist;
     }
+    
+    const anyYearLabelElement = document.getElementById('anyYearLabel');
+    if (anyYearLabelElement && t.anyYear) anyYearLabelElement.textContent = t.anyYear;
 
     // Update calendar month links
     updateMonthLinks(language);
+    updatePerpetualMonthLinks(language);
 
     // Update DuoNat link based on device
     updateDuoNatLink();
@@ -218,6 +223,24 @@ function updateMonthLinks(language) {
         link.className = 'month-link';
         link.textContent = month.toString();
         monthsGrid.appendChild(link);
+    }
+}
+
+// Update perpetual calendar month links based on language
+function updatePerpetualMonthLinks(language) {
+    const perpetualMonthsGrid = document.getElementById('perpetualMonthsGrid');
+    if (!perpetualMonthsGrid) return;
+    
+    perpetualMonthsGrid.innerHTML = '';
+
+    // Generate perpetual month links for the specified language
+    for (let month = 1; month <= 12; month++) {
+        const monthStr = month.toString().padStart(2, '0');
+        const link = document.createElement('a');
+        link.href = `calendar-production/output/perpetual/${language}/html/${monthStr}.html`;
+        link.className = 'month-link';
+        link.textContent = month.toString();
+        perpetualMonthsGrid.appendChild(link);
     }
 }
 

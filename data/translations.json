@@ -27,7 +27,8 @@
         "coverSubtitle": "A Daily Journey Through Global Biodiversity",
         "perpetualBadge": "Perpetual Calendar",
         "duonatTitle": "DuoNat - Test Your Nature Knowledge",
-        "duonatDescription": "Identify species with our nature quiz game!"
+        "duonatDescription": "Identify species with our nature quiz game!",
+        "anyYear": "Any Year"
     },
     "de": {
         "title": "In 365 Arten um die Welt",
@@ -57,7 +58,8 @@
         "coverSubtitle": "Eine tägliche Reise durch die globale Artenvielfalt",
         "perpetualBadge": "Dauerkalender",
         "duonatTitle": "DuoNat - Testen Sie Ihr Naturwissen",
-        "duonatDescription": "Arten erkennen mit unserem Natur-Quiz!"
+        "duonatDescription": "Arten erkennen mit unserem Natur-Quiz!",
+        "anyYear": "Jedes Jahr"
     },
     "es": {
         "title": "Alrededor del Mundo en 365 Especies",
@@ -87,6 +89,7 @@
         "coverSubtitle": "Un Viaje Diario por la Biodiversidad Global",
         "perpetualBadge": "Calendario Perpetuo",
         "duonatTitle": "DuoNat - Pon a Prueba tu Conocimiento Natural",
-        "duonatDescription": "Identifica especies con nuestro juego de naturaleza!"
+        "duonatDescription": "Identifica especies con nuestro juego de naturaleza!",
+        "anyYear": "Cualquier Año"
     }
 }
