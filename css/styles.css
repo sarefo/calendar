@@ -22,8 +22,8 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 40px);
-    overflow-y: auto;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -280,111 +280,111 @@ h1 {
 @media (min-width: 601px) and (max-height: 800px) {
     .container {
         padding: 15px;
-        height: calc(100vh - 30px);
+        max-height: calc(100vh - 30px);
     }
-    
+
     h1 {
         font-size: 1.8em;
         margin-bottom: 3px;
     }
-    
+
     .subtitle {
         margin-bottom: 12px;
         font-size: 1.1em;
     }
-    
+
     .date-section {
         margin: 10px 0;
     }
-    
+
     .date-section h2 {
         font-size: 1.2em;
         margin-bottom: 10px;
     }
-    
+
     .date-buttons-container {
         margin-bottom: 8px;
         gap: 10px;
     }
-    
+
     .current-date {
         font-size: 2.0em;
         padding: 16px 20px;
         height: 56px;
         font-weight: 700;
     }
-    
+
     .pick-date-btn {
-        font-size: 1.0em;
+        font-size: 1.1em;
         padding: 16px 20px;
         min-width: 100px;
         max-width: 120px;
         height: 56px;
         font-weight: 500;
     }
-    
+
     .date-help {
         font-size: 1.1em;
         margin-bottom: 8px;
     }
-    
+
     .calendar-section {
         margin-top: 15px;
         padding-top: 10px;
     }
-    
+
     .calendar-section h3 {
         font-size: 1.1em;
         margin-bottom: 10px;
     }
-    
+
     .calendar-grid {
         gap: 12px;
     }
-    
+
     .calendar-container {
         padding: 12px;
     }
-    
+
     .year-label {
         font-size: 1.2em;
         margin-bottom: 10px;
     }
-    
+
     .months-grid {
         padding: 12px;
         gap: 6px;
     }
-    
+
     .month-link {
         padding: 6px 4px;
         font-size: 1em;
     }
-    
+
     .duonat-section {
         margin-top: 15px;
         padding-top: 10px;
     }
-    
+
     .duonat-link {
         padding: 12px;
     }
-    
+
     .duonat-logo {
         width: 35px;
         height: 35px;
         margin-right: 10px;
     }
-    
+
     .duonat-title {
         font-size: 1.2em;
         margin-bottom: 2px;
     }
-    
+
     .duonat-description {
         font-size: 1.0em;
     }
-    
+
     .footer {
         margin-top: 15px;
         font-size: 1.1em;
@@ -398,14 +398,14 @@ h1 {
         background-image: none !important;
         height: 100%;
     }
-    
+
     body {
         padding: 0;
         margin: 0;
         background: white !important;
         background-image: none !important;
         overflow-x: hidden;
-        overflow-y: auto; /* Allow vertical scrolling */
+        overflow-y: auto;
         box-sizing: border-box;
     }
 
@@ -414,8 +414,9 @@ h1 {
         margin: 0;
         border-radius: 0;
         box-shadow: none;
-        /* Remove height constraints - let content flow naturally */
+        /* Fill at least entire viewport, expand as needed */
         width: 100%;
+        min-height: 100vh;
         max-width: none;
         background: linear-gradient(135deg, #f8fdf4 0%, #f0f9e8 50%, #e8f5dc 100%);
         position: relative;
@@ -471,7 +472,7 @@ h1 {
 
     .pick-date-btn {
         padding: 16px 20px;
-        font-size: 1.0em;
+        font-size: 1.1em;
         font-weight: 500;
         min-width: auto;
         max-width: 120px;
@@ -484,7 +485,8 @@ h1 {
     .calendar-section {
         margin-top: 10px;
         padding-top: 6px;
-        flex-shrink: 0; /* Don't allow shrinking */
+        flex-shrink: 0;
+        /* Don't allow shrinking */
     }
 
     .calendar-section h3 {
@@ -522,13 +524,13 @@ h1 {
         margin-top: 8px;
         padding-top: 6px;
     }
-    
+
     .duonat-link {
         padding: 12px;
         flex-direction: row;
         text-align: left;
     }
-    
+
     .duonat-logo {
         width: 35px;
         height: 35px;
@@ -539,31 +541,33 @@ h1 {
         padding: 3px;
         box-sizing: border-box;
     }
-    
+
     .duonat-content {
         text-align: center;
     }
-    
+
     .duonat-title {
         font-size: 1.2em;
         margin-bottom: 2px;
     }
-    
+
     .duonat-description {
         font-size: 1.0em;
     }
 
     .footer {
         margin-top: 20px;
-        padding-bottom: 80px; /* White space below footer for mobile browser bars */
+        padding-bottom: 80px;
+        /* White space below footer for mobile browser bars */
         color: #495057;
         font-size: 1.1em;
         line-height: 1.4;
         flex-shrink: 0;
         font-weight: 500;
     }
-    
+
     .mobile-spacer {
-        display: none; /* Not needed with padding approach */
+        display: none;
+        /* Not needed with padding approach */
     }
 }
