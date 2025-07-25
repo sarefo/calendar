@@ -366,27 +366,29 @@ h1 {
     html {
         background: white !important;
         background-image: none !important;
+        height: 100%;
     }
     
     body {
         padding: 0;
         margin: 0;
-        min-height: 100vh;
         background: white !important;
         background-image: none !important;
-        display: flex;
-        flex-direction: column;
+        display: block;
         overflow-x: hidden;
         box-sizing: border-box;
     }
 
     .container {
-        padding: 15px 15px 80px 15px; /* Much more bottom padding for Chrome bar */
-        padding-bottom: max(80px, env(safe-area-inset-bottom, 80px)); /* Use safe area if available */
+        padding: 15px;
+        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
         margin: 0;
         border-radius: 0;
         box-shadow: none;
-        min-height: calc(100vh - 80px); /* Account for more padding */
+        height: 100vh;
+        height: 100dvh; /* Use dynamic viewport height when available */
+        max-height: 100vh;
+        max-height: 100dvh; /* Ensure it doesn't exceed viewport */
         width: 100%;
         max-width: none;
         background: white;
@@ -394,25 +396,29 @@ h1 {
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        overflow-y: auto; /* Allow scrolling if content is too tall */
     }
 
     h1 {
-        font-size: 1.8em;
-        margin-bottom: 3px;
+        font-size: 1.7em;
+        margin-bottom: 2px;
+        margin-top: 0;
     }
 
     .subtitle {
-        margin-bottom: 15px;
-        font-size: 0.95em;
+        margin-bottom: 12px;
+        margin-top: 0;
+        font-size: 0.9em;
     }
 
     .date-section {
-        margin: 8px 0;
+        margin: 6px 0;
     }
 
     .date-section h2 {
-        font-size: 1.3em;
-        margin-bottom: 12px;
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        margin-top: 0;
     }
 
     .date-buttons-container {
@@ -445,10 +451,12 @@ h1 {
     }
 
     .calendar-section {
-        margin-top: 12px;
-        padding-top: 8px;
-        flex-grow: 0; /* Don't force expansion on mobile */
-        display: block; /* Natural flow instead of flex centering */
+        margin-top: 10px;
+        padding-top: 6px;
+        flex-grow: 1; /* Allow to expand and take available space */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center the calendar vertically in available space */
     }
 
     .calendar-section h3 {
@@ -479,8 +487,8 @@ h1 {
     }
 
     .duonat-section {
-        margin-top: 12px;
-        padding-top: 8px;
+        margin-top: 8px;
+        padding-top: 6px;
     }
     
     .duonat-link {
@@ -514,9 +522,10 @@ h1 {
     }
 
     .footer {
-        margin-top: 10px; /* Reduced margin */
-        margin-bottom: 0; /* No extra bottom margin */
+        margin-top: auto; /* Push footer to bottom */
+        padding-top: 10px; /* Space above footer */
         font-size: 0.7em; /* Slightly smaller for compactness */
         line-height: 1.2; /* Tighter line height */
+        flex-shrink: 0; /* Prevent footer from shrinking */
     }
 }
