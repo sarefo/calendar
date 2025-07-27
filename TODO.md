@@ -11,6 +11,7 @@
 + make sure spiral binding does not ruin title elements
 
 ## Landing page
++ only one calendar table, but two buttons (2026/any)
 + if applicable: show today's photo with short explanation
   + or if full date given in URL
   + need to add species names for that (i18n!)
