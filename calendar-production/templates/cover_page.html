@@ -7,11 +7,11 @@
     <title>{{ calendar_title }} {% if year %}{{ year }}{% endif %}</title>
     <link rel="stylesheet" href="print_styles.css">
     <style>
-        /* Print-specific styles for A3 landscape */
+        /* Print-specific styles for A3 landscape with bleed */
         @page {
-            size: A3 landscape;
+            size: 424mm 301mm; /* A3 (420×297) + 2mm bleed on all sides */
             margin: 0;
-            bleed: 3mm;
+            marks: crop; /* Add crop marks for print */
         }
 
         /* Reset browser defaults */
@@ -24,8 +24,8 @@
         }
 
         .cover-page {
-            width: 420mm;
-            height: 297mm;
+            width: 424mm; /* A3 + 2mm bleed on each side */
+            height: 301mm; /* A3 + 2mm bleed on each side */
             position: relative;
             background: 
                 linear-gradient(180deg, #74ac00 0%, #5a8500 35%, #ffffff 50%);
@@ -185,7 +185,7 @@
                 page-break-after: always;
                 page-break-inside: avoid !important;
                 overflow: hidden !important;
-                height: 297mm !important;
+                height: 301mm !important;
                 box-sizing: border-box !important;
             }
 
