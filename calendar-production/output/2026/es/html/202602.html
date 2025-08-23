@@ -7,11 +7,11 @@
     <title>Febrero 2026 - Tailandia</title>
     <link rel="stylesheet" href="print_styles.css">
     <style>
-        /* Print-specific styles for A3 landscape */
+        /* Print-specific styles for A3 landscape with bleed */
         @page {
-            size: A3 landscape;
+            size: 424mm 301mm; /* A3 (420×297) + 2mm bleed on all sides */
             margin: 0;
-            bleed: 3mm;
+            marks: crop; /* Add crop marks for print */
         }
 
         /* Reset browser defaults */
@@ -24,8 +24,8 @@
         }
 
         .calendar-page {
-            width: 420mm;
-            height: 297mm;
+            width: 424mm; /* A3 + 2mm bleed on each side */
+            height: 301mm; /* A3 + 2mm bleed on each side */
             position: relative;
             background: white;
             box-sizing: border-box;
@@ -40,7 +40,7 @@
             height: 38mm;
             padding: 0;
             margin: 0;
-            width: 420mm;
+            width: 424mm;
             /* Match calendar page width for proper alignment */
             position: absolute;
             top: 0;
@@ -300,7 +300,7 @@
         /* Screen/HTML view optimizations - fix header layout without affecting PDF */
         @media screen {
             .header {
-                width: 420mm;
+                width: 424mm;
                 /* Ensure header matches calendar page width */
                 position: relative;
                 /* Change from absolute to relative for HTML view */
@@ -324,7 +324,7 @@
                 page-break-inside: avoid !important;
                 overflow: hidden !important;
                 /* Prevent overflow to next page */
-                height: 297mm !important;
+                height: 301mm !important;
                 /* Enforce A3 height limit */
                 box-sizing: border-box !important;
             }
@@ -368,7 +368,7 @@
                 print-color-adjust: exact !important;
                 position: absolute !important;
                 /* Ensure absolute positioning for PDF */
-                width: 420mm !important;
+                width: 424mm !important;
             }
             
             .calendar-container {
