@@ -170,7 +170,7 @@
 
 
         /* Main calendar grid - Dynamic 5-row layout */
-        /* Photo dimensions: 55mm × 44.4mm */
+        /* Photo dimensions: 56mm × 44.4mm */
         /* Optimized height to fit exactly in A3 with ring binding margin */
         .calendar-container {
             height: 245mm;
@@ -232,7 +232,7 @@
         }
 
         .calendar-day {
-            width: 55mm;
+            width: 56mm;
             height: 44.4mm; /* Dynamic height calculated by week_calculator.py */
             position: relative;
             border-radius: 3mm;
@@ -377,7 +377,7 @@
             }
 
             .calendar-day {
-                width: 55mm !important;
+                width: 56mm !important;
                 height: 44.4mm !important; /* Use dynamic height calculation */
             }
 
@@ -424,7 +424,7 @@
             height: 5mm;
         }
 
-        /* Crop marks positioned AT the crop lines (3mm from edges) */
+        /* Crop marks positioned AT the crop lines (2mm from edges) */
         .crop-mark.horizontal {
             height: 0.5px;
             width: 10mm;
@@ -439,24 +439,24 @@
 
         /* Top corner crop marks only - no bottom cropping needed */
         .crop-mark.top-left {
-            top: 3mm;
+            top: 2mm;
             left: -2mm;
         }
 
         .crop-mark.top-right {
-            top: 3mm;
+            top: 2mm;
             right: -2mm;
         }
 
         /* Vertical marks for top corners */
         .crop-mark.vertical.top-left {
             top: -2mm;
-            left: 3mm;
+            left: 2mm;
         }
 
         .crop-mark.vertical.top-right {
             top: -2mm;
-            right: 3mm;
+            right: 2mm;
         }
     </style>
 </head>
