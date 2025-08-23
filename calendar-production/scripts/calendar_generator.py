@@ -547,7 +547,7 @@ class CalendarGenerator:
         
         # Dynamic layout based on month length - OPTIMIZED FOR PERPETUAL CALENDARS
         # Elegant spacing: 7mm side margins (vs 13mm in year calendar) with proper bleed clearance
-        # Available width: 420mm - 6mm (bleed) - 14mm (margins) = 400mm
+        # Available width: 424mm - 4mm (bleed) - 14mm (margins) = 406mm
         if days_in_month == 31:
             # 7x5 grid for 31-day months - calculated for elegant fit
             photo_width = 56.0  # Fits elegantly in 400mm width with spacing (400mm ÷ 7 - spacing)

@@ -155,12 +155,12 @@ class WeekCalculator:
         layout_type = f"{rows_needed}-row"
         
         # Calculate optimal photo width with equal padding
-        # A3 width: 420mm, padding: 20mm total (10mm each side), available: 400mm
+        # Custom width: 424mm, padding: 20mm total (10mm each side), available: 404mm
         # 7 weekday columns only (week numbers are now outside table in left margin)
         # Border spacing: 2mm × 6 gaps between 7 columns = 12mm
-        # Available for 7 photos: 400 - 12 = 388mm
-        photo_width = 388 / 7  # Approximately 55.4mm, round to 55mm
-        photo_width = round(photo_width)  # 55mm - even wider!
+        # Available for 7 photos: 404 - 12 = 392mm
+        photo_width = 392 / 7  # Approximately 56.0mm, round to 56mm
+        photo_width = round(photo_width)  # 56mm - even wider with new format!
         
         return {
             "rows_needed": rows_needed,

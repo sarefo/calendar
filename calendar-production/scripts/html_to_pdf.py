@@ -122,8 +122,8 @@ class HTMLToPDFConverter:
                 try:
                     await page.pdf(
                         path=str(pdf_path),
-                        format='A3',
-                        landscape=True,
+                        width='424mm',
+                        height='301mm',
                         print_background=True,
                         margin={
                             'top': '0mm',
@@ -138,8 +138,8 @@ class HTMLToPDFConverter:
                     # Try with simpler options
                     await page.pdf(
                         path=str(pdf_path),
-                        format='A3',
-                        landscape=True,
+                        width='424mm',
+                        height='301mm',
                         print_background=True
                     )
                 
@@ -174,8 +174,8 @@ class HTMLToPDFConverter:
         
         await page.pdf({
             'path': str(pdf_path),
-            'format': 'A3',
-            'landscape': True,
+            'width': '424mm',
+            'height': '301mm',
             'printBackground': True,
             'margin': {
                 'top': '0mm',
@@ -198,7 +198,7 @@ class HTMLToPDFConverter:
         # Additional CSS for WeasyPrint with better PDF compatibility
         css_string = """
         @page {
-            size: A3 landscape;
+            size: 424mm 301mm;
             margin: 0;
         }
         * {
@@ -206,8 +206,8 @@ class HTMLToPDFConverter:
             -webkit-print-color-adjust: exact !important;
         }
         .calendar-page {
-            width: 420mm !important;
-            height: 297mm !important;
+            width: 424mm !important;
+            height: 301mm !important;
         }
         .world-map-svg {
             display: block !important;
@@ -685,17 +685,17 @@ class HTMLToPDFConverter:
 ==========================================
 
 Package Contents: {len(pdf_files)} PDF files
-Format: A3 Landscape (420mm × 297mm)
+Format: Custom Landscape (424mm × 301mm with 2mm bleed)
 Print Specification: PDF/X compliant
 
 PRINTER REQUIREMENTS:
-- A3 paper support (minimum)
+- Custom format support (424mm × 301mm minimum)
 - Color printing capability
 - 300 DPI minimum resolution
 - CMYK color space support
 
 PRINT SETTINGS:
-- Paper Size: A3 (420mm × 297mm)
+- Paper Size: 424mm × 301mm (custom format)
 - Orientation: Landscape
 - Quality: Highest/Best available
 - Color Mode: CMYK

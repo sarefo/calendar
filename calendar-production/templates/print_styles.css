@@ -27,7 +27,7 @@ CMYK-optimized colors and print-ready specifications
     
     /* Print specifications */
     --print-resolution: 300dpi;
-    --bleed-size: 3mm;
+    --bleed-size: 2mm;
     --crop-mark-length: 5mm;
     --crop-mark-offset: 2mm;
 }
@@ -47,9 +47,9 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Page setup for A3 landscape printing */
+/* Page setup for custom landscape printing (424×301mm with 2mm bleed) */
 @page {
-    size: A3 landscape;
+    size: 424mm 301mm;
     margin: 0;
     bleed: var(--bleed-size);
     marks: crop;
