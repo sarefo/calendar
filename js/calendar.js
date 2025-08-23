@@ -118,8 +118,14 @@ function initializeApp() {
 
     // Handle date selection
     todayInput.addEventListener('change', function () {
-        const selectedDate = this.valueAsDate;
-        if (selectedDate) {
+        if (this.value) {
+            // Parse the date string directly to avoid timezone issues
+            const dateParts = this.value.split('-');
+            const year = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1; // Month is 0-indexed
+            const day = parseInt(dateParts[2]);
+            const selectedDate = new Date(year, month, day);
+            
             updateDateDisplay(selectedDate);
             resetDatePickerState();
             openCurrentObservation();
