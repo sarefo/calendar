@@ -251,6 +251,12 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
         }
 
+        /* Style for previous/next month overflow days - match year-based calendar */
+        .calendar-day.previous-month,
+        .calendar-day.next-month {
+            opacity: 0.5;
+        }
+
         /* Image link styles - maintain same appearance as non-linked images */
         .image-link {
             display: block;
@@ -484,7 +490,7 @@
                     <!-- Empty white cell for positions after the month ends -->
                     <td class="calendar-day-empty"></td>
                     {% else %}
-                    <td class="calendar-day">
+                    <td class="calendar-day {% if day.is_previous_month %}previous-month{% elif day.is_next_month %}next-month{% endif %}">
                         {% if day.image_path %}
                             {% if day.inaturalist_url %}
                             <a href="{{ day.inaturalist_url }}" target="_blank" rel="noopener noreferrer" class="image-link">

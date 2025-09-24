@@ -466,7 +466,15 @@ class CalendarGenerator:
         weeks = []
         current_week = {"dates": []}
         missing_photos = []
-        
+
+        # For perpetual calendars, we can optionally add previous month days at the beginning
+        # to fill the first row if we want to match the year-based calendar behavior
+        # Since perpetual calendars use a simple grid layout, let's add this capability
+
+        # Calculate if we need to add previous month days to fill first row
+        # In a perfect grid, we might want all months to start from row 1, column 1
+        # But for now, let's maintain the simple approach and only fill end positions
+
         for day in range(1, days_in_month + 1):
             # Create date object - handle Feb 29th for non-leap years
             if month == 2 and day == 29 and not calendar.isleap(source_year):
@@ -511,16 +519,49 @@ class CalendarGenerator:
         
         # Add any remaining days in final week
         if current_week["dates"]:
-            # Fill remaining slots with empty days
+            # Fill remaining slots with photos from next month
+            next_month = month + 1 if month < 12 else 1
+            next_year = source_year if month < 12 else source_year + 1
+            next_month_day = 1
+
             while len(current_week["dates"]) < columns:
-                current_week["dates"].append({
-                    'date': None,
-                    'day': "",
+                # Create date for next month's day
+                try:
+                    next_day_date = date(next_year, next_month, next_month_day)
+                except ValueError:
+                    # Handle invalid dates (e.g., Feb 30)
+                    next_day_date = None
+
+                next_day_info = {
+                    'date': next_day_date,
+                    'day': next_month_day if next_day_date else "",
                     'is_current_month': False,
                     'is_previous_month': False,
-                    'is_next_month': False,
-                    'image_path': None
-                })
+                    'is_next_month': True
+                }
+
+                # Find photo for next month's day
+                if next_day_date:
+                    next_month_photo_dirs = [
+                        f"photos/{next_year}/{next_month:02d}",
+                        f"photos/{next_year}/{next_month:02d}-processed"
+                    ]
+                    next_day_info['image_path'] = self.find_photo_for_date(next_day_date, next_month_photo_dirs, use_absolute_paths, web_optimized)
+                else:
+                    next_day_info['image_path'] = None
+
+                # Add iNaturalist observation ID if available
+                if next_day_date:
+                    photo_observations = self._load_photo_observations_from_info_file()
+                    date_key = next_day_date.strftime('%Y-%m-%d')
+                    observation_id = photo_observations.get(date_key)
+                    if observation_id and observation_id != "0":
+                        next_day_info['observation_id'] = observation_id
+                        next_day_info['inaturalist_url'] = f"https://www.inaturalist.org/observations/{observation_id}"
+
+                current_week["dates"].append(next_day_info)
+                next_month_day += 1
+
             weeks.append(current_week)
         
         # Fail the build if any photos are missing
