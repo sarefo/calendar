@@ -15,7 +15,7 @@ body {
 .container {
     background: linear-gradient(135deg, #f8fdf4 0%, #f0f9e8 50%, #e8f5dc 100%);
     border-radius: 12px;
-    padding: 20px;
+    padding: 18px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
     max-width: 600px;
@@ -29,28 +29,28 @@ body {
 
 h1 {
     color: #2C3E50;
-    margin-bottom: 5px;
-    font-size: 2.1em;
+    margin-bottom: 3px;
+    font-size: 2.0em;
     font-weight: 700;
     flex-shrink: 0;
 }
 
 .subtitle {
     color: #7f8c8d;
-    margin-bottom: 15px;
-    font-size: 1.2em;
+    margin-bottom: 12px;
+    font-size: 1.15em;
     flex-shrink: 0;
 }
 
 .date-section {
-    margin: 15px 0;
+    margin: 12px 0;
     flex-shrink: 0;
 }
 
 .date-section h2 {
     color: #2C3E50;
-    margin-bottom: 15px;
-    font-size: 1.5em;
+    margin-bottom: 12px;
+    font-size: 1.4em;
     text-align: center;
 }
 
@@ -137,9 +137,9 @@ h1 {
 }
 
 .calendar-section {
-    margin-top: 20px;
+    margin-top: 12px;
     border-top: 2px solid #e9ecef;
-    padding-top: 15px;
+    padding-top: 10px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -210,9 +210,9 @@ h1 {
 }
 
 .duonat-section {
-    margin-top: 20px;
+    margin-top: 12px;
     border-top: 2px solid #e9ecef;
-    padding-top: 15px;
+    padding-top: 10px;
     flex-shrink: 0;
 }
 
@@ -268,10 +268,11 @@ h1 {
 }
 
 .footer {
-    margin-top: 20px;
+    margin-top: 12px;
+    margin-bottom: 18px;
     color: #495057;
-    font-size: 1.1em;
-    line-height: 1.4;
+    font-size: 1.05em;
+    line-height: 1.3;
     flex-shrink: 0;
     font-weight: 500;
 }

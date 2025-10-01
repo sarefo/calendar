@@ -278,8 +278,12 @@ function updateLanguage(language) {
     if (duonatDescriptionElement && t.duonatDescription) duonatDescriptionElement.textContent = t.duonatDescription;
     
     const footerElement = document.querySelector('.footer');
-    if (footerElement && t.footerText && t.onINaturalist) {
-        footerElement.innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> ' + t.onINaturalist;
+    if (footerElement) {
+        if (t.footerText && t.onINaturalist) {
+            footerElement.innerHTML = t.footerText + ' <a href="https://www.inaturalist.org/observations?place_id=any&user_id=portioid&verifiable=any" target="_blank" style="color: #74ac00; text-decoration: none; font-weight: 600;">portioid</a> ' + t.onINaturalist;
+        } else {
+            console.warn('Footer translation missing for language:', language, 'footerText:', !!t.footerText, 'onINaturalist:', !!t.onINaturalist);
+        }
     }
     
     const anyYearLabelElement = document.getElementById('anyYearLabel');
