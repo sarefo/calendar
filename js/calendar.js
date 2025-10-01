@@ -29,13 +29,96 @@ async function loadData() {
     }
 }
 
-// Check for URL parameters (e.g., ?lang=de)
+// Check for URL parameters (e.g., ?lang=de, ?print=1)
 function checkUrlParameters() {
     const urlParams = new URLSearchParams(window.location.search);
     const langParam = urlParams.get('lang');
-    
+
     if (langParam && ['en', 'de', 'es'].includes(langParam)) {
         updateLanguage(langParam);
+    }
+
+    // Check for print parameter
+    const printParam = urlParams.get('print') || urlParams.get('printable');
+    if (printParam === '1' || printParam === 'true') {
+        showPrintPopup();
+    }
+}
+
+// Show print popup
+function showPrintPopup() {
+    const overlay = document.getElementById('printPopupOverlay');
+    if (overlay) {
+        overlay.classList.add('show');
+
+        // Update popup content with current language
+        updatePrintPopupText();
+
+        // Setup event listeners for popup buttons
+        const driveBtn = document.getElementById('printPopupDriveBtn');
+        const closeBtn = document.getElementById('printPopupCloseBtn');
+
+        if (driveBtn) {
+            driveBtn.onclick = function() {
+                window.open('https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link', '_blank');
+                hidePrintPopup();
+            };
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = hidePrintPopup;
+        }
+
+        // Close on backdrop click
+        overlay.onclick = function(e) {
+            if (e.target === overlay) {
+                hidePrintPopup();
+            }
+        };
+
+        // Close on ESC key
+        document.addEventListener('keydown', handleEscKey);
+    }
+}
+
+// Hide print popup
+function hidePrintPopup() {
+    const overlay = document.getElementById('printPopupOverlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        document.removeEventListener('keydown', handleEscKey);
+    }
+}
+
+// Handle ESC key press
+function handleEscKey(e) {
+    if (e.key === 'Escape') {
+        hidePrintPopup();
+    }
+}
+
+// Update print popup text based on current language
+function updatePrintPopupText() {
+    const t = translations[currentLanguage] || translations.en || {};
+
+    const titleElement = document.getElementById('printPopupTitle');
+    if (titleElement && t.printPopupTitle) {
+        titleElement.textContent = t.printPopupTitle;
+    }
+
+    const messageElement = document.getElementById('printPopupMessage');
+    if (messageElement && t.printPopupMessage) {
+        messageElement.textContent = t.printPopupMessage;
+    }
+
+    const driveBtnElement = document.getElementById('printPopupDriveBtn');
+    if (driveBtnElement && t.printPopupDriveBtn) {
+        driveBtnElement.textContent = t.printPopupDriveBtn;
+    }
+
+    const closeBtnElement = document.getElementById('printPopupCloseBtn');
+    if (closeBtnElement && t.printPopupCloseBtn) {
+        closeBtnElement.textContent = t.printPopupCloseBtn;
     }
 }
 

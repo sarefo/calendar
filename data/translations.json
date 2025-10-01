@@ -9,6 +9,10 @@
         "footerText": "Daily biodiversity photos from our <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3 calendar</a>.<br>All photos by",
         "onINaturalist": "on iNaturalist.",
         "noObservation": "No observation available for this date yet. Photos for this date may not be added to the calendar.",
+        "printPopupTitle": "Print Your Own Calendar!",
+        "printPopupMessage": "Want to print this calendar yourself? Download the print-ready PDF files from our Google Drive folder.",
+        "printPopupDriveBtn": "Get Print Files",
+        "printPopupCloseBtn": "View Calendar Online",
         "months": [
             "January",
             "February",
@@ -40,6 +44,10 @@
         "footerText": "Tägliche Biodiversitäts-Fotos aus unserem <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>A3-Kalender</a>.<br>Alle Fotos von",
         "onINaturalist": "auf iNaturalist.",
         "noObservation": "Für dieses Datum ist noch keine Beobachtung verfügbar. Fotos für dieses Datum wurden möglicherweise noch nicht zum Kalender hinzugefügt.",
+        "printPopupTitle": "Drucken Sie Ihren eigenen Kalender!",
+        "printPopupMessage": "Möchten Sie diesen Kalender selbst drucken? Laden Sie die druckfertigen PDF-Dateien aus unserem Google Drive-Ordner herunter.",
+        "printPopupDriveBtn": "Druckdateien abrufen",
+        "printPopupCloseBtn": "Kalender online ansehen",
         "months": [
             "Januar",
             "Februar",
@@ -71,6 +79,10 @@
         "footerText": "Fotos diarias de biodiversidad de nuestro <a href='https://drive.google.com/drive/folders/1ruTXLxR3I0eDZwea4KkOVjJhpZ3FucSm?usp=drive_link' target='_blank' style='color: #74ac00; text-decoration: none; font-weight: 600;'>calendario A3</a>.<br>Todas las fotos por",
         "onINaturalist": "en iNaturalist.",
         "noObservation": "Aún no hay observación disponible para esta fecha. Es posible que las fotos de esta fecha no se hayan agregado al calendario.",
+        "printPopupTitle": "¡Imprime tu propio calendario!",
+        "printPopupMessage": "¿Quieres imprimir este calendario tú mismo? Descarga los archivos PDF listos para imprimir desde nuestra carpeta de Google Drive.",
+        "printPopupDriveBtn": "Obtener archivos de impresión",
+        "printPopupCloseBtn": "Ver calendario en línea",
         "months": [
             "Enero",
             "Febrero",
