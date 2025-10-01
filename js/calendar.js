@@ -364,7 +364,8 @@ function updateDateDisplay(date) {
     currentDate = date;
     if (currentDateDisplay) {
         currentDateDisplay.textContent = formatDateForDisplay(date);
-        // Temporarily disabled: adjustFontSize(currentDateDisplay);
+        // Use setTimeout to ensure DOM has rendered before adjusting font size
+        setTimeout(() => adjustFontSize(currentDateDisplay), 0);
     }
     if (todayInput) {
         todayInput.valueAsDate = date;
