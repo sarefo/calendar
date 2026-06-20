@@ -180,7 +180,9 @@ class CalendarBuilder:
             web_mode: If True, creates web-optimized PDFs (smaller file sizes).
         """
         is_perpetual = year is None
-        photo_year = self.source_year if is_perpetual else year
+        # source_year overrides the photo directory for both perpetual and year-based builds.
+        # Typical use: --year 2027 --source-year 2026 reuses 2026 photos in a 2027 grid.
+        photo_year = self.source_year or year
 
         if is_perpetual:
             if photo_year is None:
@@ -406,9 +408,8 @@ class CalendarBuilder:
         web_results = await self.build_year(year, output_dir, months, generate_pdf=True, bind_pdf=False, web_mode=True)
         
         # Step 3: Generate cover page (only for full 12-month builds)
-        # For year-based calendars the cover uses photos from that year;
-        # for perpetual calendars it uses self.source_year.
-        cover_source_year = year if year else self.source_year
+        # cover_source_year = the photo year actually used when building months.
+        cover_source_year = self.source_year or year
         cover_print_result = None
         cover_web_result = None
         if len(months) == 12:  # Only generate cover for complete calendar
