@@ -246,7 +246,8 @@ class CalendarBuilder:
             else:
                 html_file = self.calendar_gen.generate_calendar_page(
                     year, month, None, photo_dirs=photo_dirs,
-                    output_dir=paths["html_dir"], use_absolute_paths=False
+                    output_dir=paths["html_dir"], use_absolute_paths=False,
+                    photo_year=photo_year if photo_year != year else None
                 )
             print(f"✅ Generated HTML: {html_file}")
 
@@ -271,7 +272,8 @@ class CalendarBuilder:
                 else:
                     pdf_html_file = self.calendar_gen.generate_calendar_page(
                         year, month, None, photo_dirs=photo_dirs,
-                        output_dir=paths["html_dir"], use_absolute_paths=True
+                        output_dir=paths["html_dir"], use_absolute_paths=True,
+                        photo_year=photo_year if photo_year != year else None
                     )
 
                 pdf_file = await self._convert_to_pdf(pdf_html_file, pdf_output_dir, year, month, web_mode)

@@ -544,67 +544,84 @@ class CalendarGenerator:
             'website_url': location_data.get('website_url', _CALENDAR_BASE_URL)
         }
 
-    def generate_month_data(self, year: int, month: int, location_data: Dict = None, photo_dirs: List[str] = None, use_absolute_paths: bool = False, web_optimized: bool = False) -> Dict:
-        """Generate all data needed for a month's calendar"""
-        
-        # Get calendar grid from week calculator
+    def generate_month_data(self, year: int, month: int, location_data: Dict = None,
+                           photo_dirs: List[str] = None, use_absolute_paths: bool = False,
+                           web_optimized: bool = False, photo_year: int = None) -> Dict:
+        """Generate all data needed for a month's calendar.
+
+        photo_year: if set and different from year, use this year's photos and
+        location data (e.g. build a 2027 grid with 2026 photos via --source-year 2026).
+        """
+        effective_photo_year = photo_year or year
+
+        # Get calendar grid from week calculator (always uses display year)
         grid_data = self.week_calculator.generate_calendar_grid(year, month)
-        
-        # Always load location data from README.md
-        readme_location = self._load_location_from_readme(year, month)
+
+        # Load location data from the photo-source year's README
+        readme_location = self._load_location_from_readme(effective_photo_year, month)
         location_data = {
             **readme_location,
             "website_url": _CALENDAR_BASE_URL,
             "photographer_name": "Photographer"
         }
-        
+
         # Load photo observations for iNaturalist links (from authoritative source)
         photo_observations = self._load_photo_observations_from_info_file()
-        
-        # Default photo directories using new structure
+
+        # Default photo directories using the effective photo year
         if not photo_dirs:
             photo_dirs = [
-                f"photos/{year}/{month:02d}",
-                f"photos/{year}/{month:02d}-processed"
+                f"photos/{effective_photo_year}/{month:02d}",
+                f"photos/{effective_photo_year}/{month:02d}-processed"
             ]
-        
+
         # Add photo paths and observation data to each day
         missing_photos = []
         for week in grid_data['weeks']:
             for day_info in week['dates']:
-                # Determine which photo directory to use based on month
                 current_month = day_info['date'].month
                 current_year = day_info['date'].year
-                
+
+                # When a photo-year override is active, remap calendar-year dates to
+                # the source year for both directory paths and photo_information.txt keys.
+                # Dates from adjacent years (overflow months) keep their own year.
+                lookup_year = effective_photo_year if current_year == year else current_year
+                key_override = f"{lookup_year}{current_month:02d}" if lookup_year != current_year else None
+
                 if current_month == month and current_year == year:
-                    # Current month - use main photo directories
-                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], photo_dirs, use_absolute_paths, web_optimized)
+                    day_info['image_path'] = self.find_photo_for_date(
+                        day_info['date'], photo_dirs, use_absolute_paths, web_optimized,
+                        month_key_override=key_override
+                    )
                 else:
-                    # Previous/next month - look in respective directories
                     overflow_dirs = [
-                        f"photos/{current_year}/{current_month:02d}",
-                        f"photos/{current_year}/{current_month:02d}-processed"
+                        f"photos/{lookup_year}/{current_month:02d}",
+                        f"photos/{lookup_year}/{current_month:02d}-processed"
                     ]
-                    day_info['image_path'] = self.find_photo_for_date(day_info['date'], overflow_dirs, use_absolute_paths, web_optimized)
-                
+                    day_info['image_path'] = self.find_photo_for_date(
+                        day_info['date'], overflow_dirs, use_absolute_paths, web_optimized,
+                        month_key_override=key_override
+                    )
+
                 # Check if photo is missing for current month days
                 if current_month == month and current_year == year and day_info['image_path'] is None:
                     missing_photos.append(day_info['date'].strftime('%Y-%m-%d'))
-                
-                # Add iNaturalist observation ID if available
-                date_key = day_info['date'].strftime('%Y-%m-%d')
-                observation_id = photo_observations.get(date_key)
+
+                # iNaturalist observation ID — look up using the source year's date key
+                obs_date_key = f"{lookup_year}-{current_month:02d}-{day_info['date'].day:02d}"
+                observation_id = photo_observations.get(obs_date_key)
                 if observation_id and observation_id != "0":
                     day_info['observation_id'] = observation_id
                     day_info['inaturalist_url'] = f"https://www.inaturalist.org/observations/{observation_id}"
-                
-        # Fail the build if any photos are missing
+
+        # Fail the build if any current-month photos are missing
         if missing_photos:
             missing_list = '\n  - '.join(missing_photos)
             raise FileNotFoundError(
-                f"❌ BUILD FAILED: Missing photos for {year}-{month:02d}:\n  - {missing_list}\n\n"
+                f"❌ BUILD FAILED: Missing photos for {year}-{month:02d} "
+                f"(photo source: {effective_photo_year}-{month:02d}):\n  - {missing_list}\n\n"
                 f"Photos must be listed in photo_information.txt with format:\n"
-                f"  {year}{month:02d}\tfilename\tobservation_id\n\n"
+                f"  {effective_photo_year}{month:02d}\tfilename\tobservation_id\n\n"
                 f"No fallback substitution will be performed. Fix the missing photos and try again."
             )
         
@@ -637,16 +654,19 @@ class CalendarGenerator:
     
     def generate_calendar_page(self, year: int, month: int, location_data: Dict = None,
                               photo_dirs: List[str] = None, output_dir: str = "output",
-                              use_absolute_paths: bool = False, web_optimized: bool = None) -> str:
+                              use_absolute_paths: bool = False, web_optimized: bool = None,
+                              photo_year: int = None) -> str:
         """Generate a calendar page for one month.
 
-        When use_absolute_paths=True the output uses absolute image paths (for PDF conversion)
-        and web optimisation is disabled. Pass web_optimized explicitly to override.
+        photo_year: if set, use this year's photos (see generate_month_data).
+        When use_absolute_paths=True web optimisation is disabled (for PDF conversion).
         """
         if web_optimized is None:
             web_optimized = not use_absolute_paths
 
-        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs, use_absolute_paths, web_optimized)
+        calendar_data = self.generate_month_data(year, month, location_data, photo_dirs,
+                                                 use_absolute_paths, web_optimized,
+                                                 photo_year=photo_year)
         html_content = self.render_calendar_html(calendar_data)
         suffix = "_pdf" if use_absolute_paths else ""
         output_path = Path(output_dir) / f"{year}{month:02d}{suffix}.html"
@@ -655,9 +675,11 @@ class CalendarGenerator:
 
     def generate_calendar_page_for_pdf(self, year: int, month: int, location_data: Dict = None,
                                        photo_dirs: List[str] = None, output_dir: str = "output",
-                                       use_absolute_paths: bool = True) -> str:
+                                       use_absolute_paths: bool = True,
+                                       photo_year: int = None) -> str:
         """Thin wrapper kept for backward compatibility."""
-        return self.generate_calendar_page(year, month, location_data, photo_dirs, output_dir, use_absolute_paths)
+        return self.generate_calendar_page(year, month, location_data, photo_dirs, output_dir,
+                                           use_absolute_paths, photo_year=photo_year)
     
     def generate_perpetual_calendar_page(self, month: int, source_year: int = None,
                                         location_data: Dict = None, photo_dirs: List[str] = None,
