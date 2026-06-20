@@ -15,6 +15,7 @@ calendar-production/output/**/assets/qr/
 # Temporary files created during PDF conversion
 calendar-production/output/**/*_pdf.html
 calendar-production/output/**/*_pdf_optimized.html
+calendar-production/output/**/*_web_optimized.html
 calendar-production/output/**/temp_pdf_optimized/
 calendar-production/output/**/temp_web_optimized/
 
