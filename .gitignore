@@ -4,23 +4,24 @@ __pycache__/
 *$py.class
 *.so
 
-# Calendar production temporary files
+# Virtual environment
+.venv/
+
+# Calendar production: generated files never committed
+calendar-production/output/**/*.pdf
+calendar-production/output/**/assets/qr/
+**/build_report_*.json
+
+# Temporary files created during PDF conversion
+calendar-production/output/**/*_pdf.html
+calendar-production/output/**/*_pdf_optimized.html
+calendar-production/output/**/temp_pdf_optimized/
+
+# Legacy output directories
+calendar-production/output/print-ready/
+calendar-production/output/print-package-*/
 calendar-production/test_*.html
 calendar-production/test_*.pdf
-
-# Generated calendar output - new clean structure
-# Exclude large PDF files but allow HTML files for GitHub Pages
-calendar-production/output/**/*.pdf
-calendar-production/output/*/assets/qr/
-!calendar-production/output/*/assets/maps/
-calendar-production/output/build_report_*.json
-!calendar-production/output/.gitkeep
-
-# Legacy output directories (can be removed after migration)
-calendar-production/output/print-ready/*.pdf
-calendar-production/output/print-package-*/*.pdf
-calendar-production/output/print-package-*/FILE_LIST.txt
-calendar-production/fonts/
 
 # IDE
 .vscode/
@@ -30,4 +31,3 @@ calendar-production/fonts/
 .DS_Store
 Thumbs.db
 *.swp
-calendar-production/scripts/output/build_report_20250923_162134.json
