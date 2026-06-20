@@ -16,6 +16,7 @@ calendar-production/output/**/assets/qr/
 calendar-production/output/**/*_pdf.html
 calendar-production/output/**/*_pdf_optimized.html
 calendar-production/output/**/temp_pdf_optimized/
+calendar-production/output/**/temp_web_optimized/
 
 # Legacy output directories
 calendar-production/output/print-ready/
