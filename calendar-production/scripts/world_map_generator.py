@@ -74,7 +74,7 @@ class SimpleWorldProjection:
         self.y_scale = target_y_range / raw_y_range
         self.y_offset = dublin_target_y - (dublin_raw['y'] * self.y_scale)
 
-        print(f"Projection calibrated: scale({self.x_scale:.3f}, {self.y_scale:.3f}) offset({self.x_offset:.1f}, {self.y_offset:.1f})")
+        # Calibration complete — suppress noisy output in production builds
 
     def _robinson_project(self, lng, lat):
         """

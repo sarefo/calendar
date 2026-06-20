@@ -13,7 +13,8 @@
 **IMPORTANT**: Always update this CLAUDE.md file after successfully implementing any changes to the calendar production system. This ensures the documentation stays current with the actual functionality and provides accurate guidance for future development.
 
 **Latest Updates (July 2025)**:
-- ✅ **FIXED**: Landing page perpetual calendar navigation - maps month-only parameters to current year  
+- ✅ **FIXED**: Landing page perpetual calendar navigation - maps month-only parameters to current year
+- ✅ **REFACTORED (June 2026)**: Build scripts for 2027-readiness: removed all hardcoded `source_year=2026`, added `--source-year` CLI arg, merged duplicate methods, centralized PDF filename construction  
 
 ---
 
@@ -323,20 +324,20 @@ The perpetual calendar system generates universal calendars that work for any ye
 
 ```bash
 # Generate single perpetual month (HTML + both PDFs)
-python3 scripts/build_calendar.py --year perpetual --months "2"
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --months "2"
 
 # Generate multiple perpetual months  
-python3 scripts/build_calendar.py --year perpetual --months "1,2,3,4"
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --months "1,2,3,4"
 
 # Generate all 12 perpetual months
-python3 scripts/build_calendar.py --year perpetual
+python3 scripts/build_calendar.py --year perpetual --source-year 2026
 
 # Multi-language perpetual calendars
-python3 scripts/build_calendar.py --year perpetual --months "2" --language de  # German
-python3 scripts/build_calendar.py --year perpetual --months "2" --language es  # Spanish
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --months "2" --language de  # German
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --months "2" --language es  # Spanish
 
 # HTML only (no PDFs) - multiple languages
-python3 scripts/build_calendar.py --year perpetual --language de,en,es --no-pdf
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --language de,en,es --no-pdf
 ```
 
 ### **Output Structure**
@@ -541,13 +542,13 @@ python3 scripts/build_calendar.py --year 2026 --months "1,2,3" --complete
 #### **Perpetual Calendars** 🆕
 ```bash
 # Complete perpetual calendar - all 12 months + cover page (HTML + both PDF formats)
-python3 scripts/build_calendar.py --year perpetual --complete
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --complete
 
 # Complete German perpetual calendar with cover page and localized QR codes
-python3 scripts/build_calendar.py --year perpetual --language de --complete
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --language de --complete
 
 # Complete perpetual calendar for specific months (no cover page for partial builds)
-python3 scripts/build_calendar.py --year perpetual --months "1,2,3" --complete
+python3 scripts/build_calendar.py --year perpetual --source-year 2026 --months "1,2,3" --complete
 ```
 
 #### **Cover Page Generation** 🆕
